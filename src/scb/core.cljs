@@ -125,6 +125,14 @@
                    ((:fmt m) (:value v)) [:sup (count (:runs v))]]
                   [:span.none "—"])]))])]]]]))
 
+;; Sins listed in the not-serious tab; add more at will.
+(def ^:private heresies
+  ["Adding a second Kafka to coordinate the first one."
+   "Complaining about parentheses while nesting callbacks eleven levels deep."
+   "Writing four hundred lines of YAML and calling it infrastructure."
+   "Adding a state-management library to manage the other state-management library."
+   "Discovering immutability last year and giving a conference talk about it."])
+
 (def ^:private creed-text
   {:semi
    [[:h3 "Why this exists"]
@@ -211,24 +219,25 @@
     [:p "Attempts are summed per run. The page shows the mean over complete runs per project, "
      "then averages across the projects of a topic, so each project weighs the same."]]
    :jest
-   [[:h3 "Hear ye"]
-    [:p "Every tech stack swears it is lean. Every stack has a conference talk proving it. "
-     "We stopped listening and built a cathedral instead."]
-    [:p "Into the nave we send a scribe who never sleeps, never complains and bills by the token. "
-     "It must build the same three humble works in every stack: a scroll-reader for logs, "
-     "a ledger of one's shameful spending, and a board of cards to be moved about for no clear reason."]
-    [:h3 "The tithe"]
-    [:p "Each token the scribe burns is tithe, and the tithe is recorded in stained glass, forever, "
-     "in colours chosen by a committee of one. The stack that tithes least is crowned with the ✠. "
-     "The others are displayed beside it. Publicly. On canvas. There are no appeals."]
+   [[:h3 "The gospel"]
+    [:p "In the beginning was the list, and the list was code, and the code was data. "
+     "Lisp is the Lord's language, and Clojure is its prophet — on the JVM, in the browser, "
+     "and wherever else parentheses may roam. Everyone should write it. Everyone."]
+    [:p "It has not come to pass, because the average engineer solves async programming with Kafka."]
+    [:h3 "The heresies"]
+    (into [:ul] (for [h heresies] [:li h]))
+    [:h3 "The crusade"]
+    [:p "Preaching did not work, so I built a cathedral. Into its nave goes a scribe who never sleeps and "
+     "bills by the token, and it must build the same humble works in every stack — the faithful and the heathen "
+     "alike. Every token it burns is tithe, recorded forever in stained glass. The leanest stack is crowned "
+     "with the ✠, and the numbers will surely vindicate the one true language."]
     [:h3 "Articles of faith"]
     [:ul
-     [:li "The scribe's retries are penance. Five attempts means none were needed."]
+     [:li "Retries are penance. Five attempts for five steps means none were needed."]
      [:li "Wall time is measured in candles and depends on how many other scribes are praying at once."]
-     [:li "A stack that fails a step is not damned, merely left out of the means until it repents."]
      [:li "Dollars shown are list-price indulgences. Nobody actually paid them. Probably."]]
-    [:p "Should your favourite stack come last: the projects are small, the runs are few, "
-     "and the cathedral is still under construction. Pray for bigger projects."]]})
+    [:p "Should the numbers ever crown a heathen stack: the projects are small, the runs are few, "
+     "and the Lord works in mysterious ways. More runs are being prayed for."]]})
 
 (defn- close-creed [] (some-> (creed-el) (.close)))
 
