@@ -3,7 +3,7 @@
    arcade of pointed arches, shafts of coloured light and drifting dust.
    Static stone is drawn once per resize; each frame only composites.")
 
-(def ^:private jewels ["#e0344c" "#3f7cf0" "#c9830c" "#15a06f" "#a86ef2"])
+(def ^:private jewels ["#a63a48" "#4a6fb0" "#a57f2e" "#7d5fa6" "#2f8a68"])
 
 (defonce ^:private st #js {:c nil :ctx nil :stone nil :rose nil :w 0 :h 0 :dpr 1 :dust nil :raf nil
                            :reduced false})
@@ -33,19 +33,19 @@
         ctx (.getContext c "2d")]
     (.scale ctx dpr dpr)
     (let [g (.createLinearGradient ctx 0 0 0 h)]
-      (.addColorStop g 0 "#0b0910")
-      (.addColorStop g 0.45 "#0d0a12")
-      (.addColorStop g 1 "#050407")
+      (.addColorStop g 0 "#08070a")
+      (.addColorStop g 0.45 "#0a090c")
+      (.addColorStop g 1 "#040305")
       (set! (.-fillStyle ctx) g)
       (.fillRect ctx 0 0 w h))
     ;; two tiers of arcade down the sides, fading toward the centre
-    (doseq [[tier aw ah alpha] [[0 (max 90 (/ w 9)) (* h 0.62) 0.075] [1 (max 60 (/ w 15)) (* h 0.36) 0.05]]]
+    (doseq [[tier aw ah alpha] [[0 (max 90 (/ w 9)) (* h 0.62) 0.05] [1 (max 60 (/ w 15)) (* h 0.36) 0.035]]]
       (let [n (js/Math.ceil (/ w aw))]
         (doseq [i (range n)]
           (let [x (* i aw)
                 d (js/Math.abs (- (+ x (/ aw 2)) (/ w 2)))
                 fade (min 1 (/ d (* w 0.42)))]
-            (set! (.-strokeStyle ctx) (str "rgba(214,200,232," (* alpha fade) ")"))
+            (set! (.-strokeStyle ctx) (str "rgba(200,192,184," (* alpha fade) ")"))
             (set! (.-lineWidth ctx) (if (zero? tier) 1.4 1))
             (.beginPath ctx)
             (arch! ctx (+ x 6) h (- aw 12) ah)
@@ -54,7 +54,7 @@
             (arch! ctx (+ x 18) h (- aw 36) (- ah 26))
             (.stroke ctx)))))
     ;; ribs of the vault
-    (set! (.-strokeStyle ctx) "rgba(214,200,232,0.035)")
+    (set! (.-strokeStyle ctx) "rgba(200,192,184,0.025)")
     (set! (.-lineWidth ctx) 1)
     (doseq [i (range -6 7)]
       (.beginPath ctx)
@@ -82,13 +82,13 @@
         (.arc ctx 0 0 (* r 0.94) a0 a1)
         (.closePath ctx)
         (let [g (.createRadialGradient ctx 0 0 (* r 0.2) 0 0 r)]
-          (.addColorStop g 0 (rgba col 0.03))
-          (.addColorStop g 0.7 (rgba col 0.16))
-          (.addColorStop g 1 (rgba col 0.05))
+          (.addColorStop g 0 (rgba col 0.015))
+          (.addColorStop g 0.7 (rgba col 0.075))
+          (.addColorStop g 1 (rgba col 0.025))
           (set! (.-fillStyle ctx) g))
         (.fill ctx)))
     ;; tracery
-    (set! (.-strokeStyle ctx) "rgba(226,212,240,0.16)")
+    (set! (.-strokeStyle ctx) "rgba(200,192,184,0.09)")
     (set! (.-lineWidth ctx) 1.4)
     (doseq [k [1 0.94 0.62 0.3 0.12]]
       (.beginPath ctx) (.arc ctx 0 0 (* r k) 0 tau) (.stroke ctx))
@@ -138,15 +138,15 @@
     (.save ctx)
     (.translate ctx (/ w 2) (- (* h 0.34) (* sc 0.35)))
     (.rotate ctx (* secs 0.018))
-    (set! (.-globalAlpha ctx) (+ 0.8 (* 0.2 (js/Math.sin (* secs 0.5)))))
+    (set! (.-globalAlpha ctx) (+ 0.75 (* 0.1 (js/Math.sin (* secs 0.5)))))
     (.drawImage ctx (.-img rose) (- (/ rs dpr 2)) (- (/ rs dpr 2)) (/ rs dpr) (/ rs dpr))
     (.restore ctx)
     ;; shafts of light falling from the clerestory
     (.save ctx)
     (set! (.-globalCompositeOperation ctx) "lighter")
-    (doseq [[i col] (map-indexed vector ["#e0344c" "#3f7cf0" "#a86ef2"])]
+    (doseq [[i col] (map-indexed vector ["#c8c0d0" "#b8b4c4" "#c4b8a8"])]
       (let [x0 (+ (* w (+ 0.12 (* i 0.3))) (* 40 (js/Math.sin (+ (* secs 0.07) i))))
-            a (+ 0.035 (* 0.02 (js/Math.sin (+ (* secs 0.3) (* i 2)))))
+            a (+ 0.018 (* 0.01 (js/Math.sin (+ (* secs 0.3) (* i 2)))))
             g (.createLinearGradient ctx x0 0 (+ x0 (* h 0.45)) h)]
         (.addColorStop g 0 (rgba col a))
         (.addColorStop g 1 (rgba col 0))
@@ -159,7 +159,7 @@
         (.closePath ctx)
         (.fill ctx)))
     ;; dust in the light
-    (set! (.-fillStyle ctx) "rgba(255,238,220,0.5)")
+    (set! (.-fillStyle ctx) "rgba(220,210,196,0.35)")
     (doseq [^js d (.-dust st)]
       (let [y (mod (- (.-y d) (* secs (.-v d))) h)
             x (+ (.-x d) (* 12 (js/Math.sin (+ (.-p d) (* secs 0.4)))))]

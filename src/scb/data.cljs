@@ -4,14 +4,14 @@
    scope, so a topic with two projects weighs both equally."
   (:require [clojure.string :as str]))
 
-;; Colour follows the stack, never its rank. The five jewel tones pass the
-;; dataviz validator on the #0c0a10 surface in this adjacent order.
+;; Colour follows the stack, never its rank. The five muted jewel tones pass
+;; the dataviz validator on the #0a090c surface in this adjacent order.
 (def stack-order ["re-frame-clojure" "clojure" "replicant-clojure" "reagami+squint-clojure"
                   "svelte-java" "svelte-kotlin"])
 
-(def stack-colors {"re-frame-clojure" "#e0344c" "clojure" "#e0344c"
-                   "replicant-clojure" "#3f7cf0" "reagami+squint-clojure" "#c9830c"
-                   "svelte-java" "#15a06f" "svelte-kotlin" "#a86ef2"})
+(def stack-colors {"re-frame-clojure" "#a63a48" "clojure" "#a63a48"
+                   "replicant-clojure" "#4a6fb0" "reagami+squint-clojure" "#a57f2e"
+                   "svelte-java" "#7d5fa6" "svelte-kotlin" "#2f8a68"})
 
 (def fallback-color "#8a8594")
 
