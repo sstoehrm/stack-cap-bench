@@ -1,0 +1,7 @@
+{
+  "name": "stack-cap-bench",
+  "private": true,
+  "devDependencies": {
+    "shadow-cljs": "3.5.3"
+  }
+}

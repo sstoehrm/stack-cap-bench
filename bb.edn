@@ -1,0 +1,11 @@
+{:paths ["scripts"]
+ :tasks
+ {import  {:doc "Regenerate public/results.json: bb import ../token-comparision"
+           :task (apply import/-main *command-line-args*)
+           :requires ([import])}
+  dev     {:doc "Watch build, served on http://localhost:8290"
+           :task (shell "npx shadow-cljs watch app")}
+  release {:doc "Optimized build into public/js"
+           :task (shell "npx shadow-cljs release app")}
+  serve   {:doc "Serve public/ on http://localhost:8290 (after bb release)"
+           :task (shell "npx --yes http-server public -p 8290 -c-1 -s")}}}
