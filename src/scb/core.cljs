@@ -65,6 +65,8 @@
     [:p.disclaimer-links
      [:button.linkish {:on-click [:creed :semi]} "Read the vision"]
      [:span.sep "·"]
+     [:button.linkish {:on-click [:creed :method]} "how the data is gathered"]
+     [:span.sep "·"]
      [:button.linkish {:on-click [:creed :jest]} "or the version nobody should take seriously"]]]
    [:div.tiles.hero-tiles
     (tile "Runs" (str (count (filter :complete runs)) "/" (count runs)) "complete / recorded")
@@ -140,6 +142,7 @@
      "and retries a failed step up to three times."]
     [:p "Every attempt is recorded: input and output tokens, list-price cost, wall time, attempts and tool calls. "
      "Only runs where every step passed count toward the means you see here."]
+    [:p [:button.linkish {:on-click [:tone :method]} "How the data is gathered, in detail"]]
     [:h3 "What it is not"]
     [:ul
      [:li "Not a verdict. The projects are small, and most configurations have one or two runs."]
@@ -149,6 +152,64 @@
      [:li "Not a clean stopwatch. Runs share a machine, so wall time grows with parallel load."]]
     [:p "Bigger projects and more runs per configuration come next. Until then, read the rankings as a hint "
      "about where the trade-offs are, not as the answer."]]
+   :method
+   [[:h3 "Easy problems, exact targets"]
+    [:p "The projects are deliberately not hard. No algorithm puzzles, no research: a log analyzer, "
+     "an expense tracker, a kanban board — work a competent developer finishes in an afternoon. "
+     "What makes them useful is how precisely they are defined."]
+    [:p "Building software professionally is rarely about solving something nobody could solve. "
+     "It is about reaching an agreed, well-defined state — this output, this API, this screen — "
+     "reliably and at a known cost. So every step names that state exactly, and the harness checks it exactly. "
+     "The question is not " [:em "can"] " the agent do it, but what it costs to get there in each stack."]
+    [:h3 "Three projects, five steps each"]
+    [:ul
+     [:li [:em "loga"] " (CLI) — a log analyzer: summaries, time filters, top messages, JSON output, "
+      "several inputs and stdin, histograms. "
+      "Acceptance is the exact stdout and exit code of " [:code "./run.sh"] " for fixed arguments."]
+     [:li [:em "spendly"] " (full stack) — an expense tracker: a JSON API with validation and persistence, "
+      "categories and filters, a monthly summary with a bar chart, CSV import with a validation report, "
+      "editing, and budgets with over-budget highlights."]
+     [:li [:em "kanbn"] " (single-page app) — a kanban board whose logic lives in the browser: "
+      "cards moved across three columns by button and drag and drop, undo and redo, labels and search, "
+      "several boards with routing, reordering and work-in-progress limits. The backend only stores the board."]]
+    [:p "Each step's prompt is the feature text, plus a run contract (how to start the program, "
+     "where data lives, which port to use), plus a stack block naming the languages and libraries "
+     "— for example ClojureScript with Replicant and a Clojure backend. Web steps also fix the API contract, "
+     "the " [:code "data-testid"] " attributes and the exact DOM, down to the Tailwind classes."]
+    [:h3 "The agent"]
+    [:ul
+     [:li "Claude Code, headless (" [:code "claude -p"] "), in a fresh workspace per run. "
+      "Model and effort level stay the same for every step of a run."]
+     [:li "Nobody answers its questions. Where it would ask, it decides the simplest option that meets "
+      "the acceptance criteria and records the choice in " [:code "DECISIONS.md"] "."]
+     [:li "It writes no tests of its own and skips test-driven development, so every stack spends its "
+      "effort on the same thing: the feature. It checks the examples by running the program."]
+     [:li "Steps build on each other in the same workspace; each finished step is a git commit. "
+      "The advisor tool is switched off so a second model never helps in secret."]]
+    [:h3 "Verification"]
+    [:ul
+     [:li "After every attempt the harness runs the checks for this step and every earlier one, "
+      "so a regression fails the step."]
+     [:li "CLI: " [:code "./run.sh"] " with fixed arguments; stdout and exit code must match exactly."]
+     [:li "Web: the harness starts the server on a random port with an empty data directory, "
+      "runs the HTTP contract, restarts the server on a new port to prove persistence, and drives the UI "
+      "in headless Chromium. Screenshots are kept for side-by-side review against a reference UI."]
+     [:li "Stack check: the workspace must contain the stack's own sources, config and dependencies "
+      "(e.g. " [:code "squint.edn"] " and " [:code "reagami"] " in " [:code "package.json"]
+      "). Building it in something else fails the step."]
+     [:li "The checks themselves pass against a reference implementation of every project first."]]
+    [:h3 "Retries"]
+    [:p "A failed attempt resumes the same agent session with the list of failures. "
+     "Each step gets up to three attempts of at most an hour each. After the third failure the run stops: "
+     "it still shows up in the run counts, but never in the means."]
+    [:h3 "What is recorded"]
+    [:ul
+     [:li "Input tokens, including cache reads and writes, summed over every model the session used."]
+     [:li "Output tokens, including thinking."]
+     [:li "Cost as reported by " [:code "claude -p"] " at list price, and wall-clock time."]
+     [:li "Tool calls, pass or fail, the failure messages and the screenshots."]]
+    [:p "Attempts are summed per run. The page shows the mean over complete runs per project, "
+     "then averages across the projects of a topic, so each project weighs the same."]]
    :jest
    [[:h3 "Hear ye"]
     [:p "Every tech stack swears it is lean. Every stack has a conference talk proving it. "
@@ -180,7 +241,7 @@
      [:h2#creed-title "The Creed"]
      [:button.creed-close {:on-click close-creed :aria-label "Close"} "✕"]]
     [:div.chips {:role "tablist" :aria-label "Tone"}
-     (for [[k label] [[:semi "Semi-serious"] [:jest "Not serious at all"]]]
+     (for [[k label] [[:semi "Semi-serious"] [:method "The method"] [:jest "Not serious at all"]]]
        ^{:key k}
        [:button.chip {:class (when (= tone k) "on") :role "tab" :aria-selected (str (= tone k))
                       :on-click [:tone k]} label])]
