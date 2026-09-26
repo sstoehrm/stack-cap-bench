@@ -4,18 +4,21 @@
    scope, so a topic with two projects weighs both equally."
   (:require [clojure.string :as str]))
 
-;; Colour follows the stack, never its rank. The five muted jewel tones pass
-;; the dataviz validator on the #0a090c surface in this adjacent order.
+;; Colour follows the stack, never its rank: each stack owns a slot, and each
+;; mode's stylesheet defines --st1..--st5 (validated palettes, adjacent in this
+;; order) plus --st0 for stacks without a slot.
 (def stack-order ["re-frame-clojure" "clojure" "replicant-clojure" "reagami+squint-clojure"
                   "svelte-java" "svelte-kotlin"])
 
-(def stack-colors {"re-frame-clojure" "#a63a48" "clojure" "#a63a48"
-                   "replicant-clojure" "#4a6fb0" "reagami+squint-clojure" "#a57f2e"
-                   "svelte-java" "#7d5fa6" "svelte-kotlin" "#2f8a68"})
+(def stack-slots {"re-frame-clojure" 1 "clojure" 1 "replicant-clojure" 2
+                  "reagami+squint-clojure" 3 "svelte-java" 4 "svelte-kotlin" 5})
 
-(def fallback-color "#8a8594")
+(defn slot [stack] (get stack-slots stack 0))
 
-(defn color [stack] (get stack-colors stack fallback-color))
+(defn color
+  "CSS colour for a stack, for DOM styles; the canvas resolves it itself."
+  [stack]
+  (str "var(--st" (slot stack) ")"))
 
 (def efforts ["default" "low" "medium" "high" "xhigh" "max"])
 
@@ -122,22 +125,33 @@
                         [(:key c) (apply min (map :value vs))]))]
     {:topic t :configs cfgs :stacks stacks :cells cells :best best}))
 
+(defn- ranks
+  "[stack rank last?] for every config of `tbl` where at least two stacks compete."
+  [{:keys [configs stacks cells]}]
+  (for [c configs
+        :let [vs (->> stacks
+                      (keep #(when-let [v (get cells [% (:key c)])] [% (:value v)]))
+                      (sort-by second))]
+        :when (> (count vs) 1)
+        [i [s _]] (map-indexed vector vs)]
+    [s i (= i (dec (count vs)))]))
+
+(defn standings
+  "Stacks by mean rank over the configs of `tables`, best first:
+   {:stack :mean-rank :configs :wins :losses}."
+  [tables]
+  (let [rs (mapcat ranks tables)]
+    (->> (group-by first rs)
+         (map (fn [[s xs]] {:stack s :mean-rank (mean (map second xs)) :configs (count xs)
+                            :wins (count (filter #(zero? (second %)) xs))
+                            :losses (count (filter #(nth % 2) xs))}))
+         (sort-by (juxt :mean-rank (comp - :configs))))))
+
 (defn leanest
   "Stack with the lowest mean rank across configs where at least two stacks
    compete; nil when nothing competes."
-  [{:keys [configs stacks cells]}]
-  (let [ranks (for [c configs
-                    :let [vs (->> stacks
-                                  (keep #(when-let [v (get cells [% (:key c)])] [% (:value v)]))
-                                  (sort-by second))]
-                    :when (> (count vs) 1)
-                    [i [s _]] (map-indexed vector vs)]
-                [s i])]
-    (when (seq ranks)
-      (->> (group-by first ranks)
-           (map (fn [[s rs]] [s (mean (map second rs)) (count rs)]))
-           (sort-by (juxt second (comp - #(nth % 2))))
-           ffirst))))
+  [tbl]
+  (:stack (first (standings [tbl]))))
 
 (defn topic-totals [data topic-id]
   (let [rs (topic-runs data topic-id)]
@@ -165,4 +179,4 @@
                                           :let [v (cell runs scope s (:key c) mk)]
                                           :when v]
                                       (assoc v :id (str s "|" (:key c)) :stack s
-                                             :color (color s) :config (:label c))))}))})))
+                                             :slot (slot s) :config (:label c))))}))})))

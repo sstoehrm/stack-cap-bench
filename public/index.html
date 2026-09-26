@@ -5,11 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Stack Cap Bench</title>
   <meta name="description" content="Token, cost and time a headless coding agent spends building the same projects in different tech stacks.">
-  <meta name="color-scheme" content="dark">
+  <meta name="color-scheme" content="light dark">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="style.css">
+  <link id="css-serious" rel="stylesheet" href="serious.css">
+  <link id="css-evil" rel="stylesheet" href="evil.css" media="not all">
+  <script>
+    // Pick the mode (and serious mode's light/dark override) before first paint.
+    (function () {
+      var mode = "serious", theme = null, root = document.documentElement;
+      try { mode = localStorage.getItem("scb-mode") || mode; theme = localStorage.getItem("scb-theme"); } catch (e) {}
+      if (location.hash === "#evil" || location.hash === "#serious") mode = location.hash.slice(1);
+      if (mode !== "evil") mode = "serious";
+      root.dataset.mode = mode;
+      if (mode === "serious" && (theme === "light" || theme === "dark")) root.dataset.theme = theme;
+      document.getElementById("css-evil").media = mode === "evil" ? "all" : "not all";
+      document.getElementById("css-serious").media = mode === "evil" ? "not all" : "all";
+    })();
+  </script>
 </head>
 <body>
   <canvas id="nave" aria-hidden="true"></canvas>

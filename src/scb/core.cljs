@@ -24,6 +24,33 @@
 
 (reg-fx :show-creed (fn [_] (some-> (creed-el) (.showModal))))
 
+(defn- store! [k v] (try (.setItem js/localStorage k v) (catch :default _ nil)))
+
+(defn- apply-look!
+  "Switch stylesheet, <html> attributes, background and chart to `mode`
+   (\"serious\" | \"evil\") and `theme` (\"auto\" | \"light\" | \"dark\", serious only)."
+  [[mode theme]]
+  (let [root (.-documentElement js/document)
+        evil? (= mode "evil")]
+    (set! (.. root -dataset -mode) mode)
+    (if (and (not evil?) (not= theme "auto"))
+      (set! (.. root -dataset -theme) theme)
+      (.removeAttribute root "data-theme"))
+    (.setAttribute (.getElementById js/document "css-evil") "media" (if evil? "all" "not all"))
+    (.setAttribute (.getElementById js/document "css-serious") "media" (if evil? "not all" "all"))
+    (store! "scb-mode" mode)
+    (store! "scb-theme" theme)
+    (if evil? (nave/start!) (nave/stop!))
+    (chart/restyle!)))
+
+(reg-fx :look apply-look!)
+
+(reg-event :mode (fn [db m] {:db (assoc db :mode m) :look [m (:theme db)]}))
+(reg-event :cycle-theme
+           (fn [db]
+             (let [t (case (:theme db) "auto" "light" "light" "dark" "auto")]
+               {:db (assoc db :theme t) :look [(:mode db) t]})))
+
 (reg-event :toggle-config
            (fn [db k]
              (let [h (:hidden db)]
@@ -32,6 +59,26 @@
 ;; ---- helpers
 
 (def ^:private numerals ["I" "II" "III" "IV" "V" "VI"])
+
+(defn- evil? [mode] (= mode "evil"))
+
+(defn- numeral [mode idx] (if (evil? mode) (nth numerals idx) (str "0" (inc idx))))
+
+(defn- mark [mode] (if (evil? mode) "✠" "↓"))
+
+(defn- version-key [v] (mapv #(js/parseInt % 10) (str/split (or v "") #"\.")))
+
+(defn- agents
+  "\"claude-code 2.1.274–2.1.283\": each agent with its version range."
+  [runs]
+  (->> (mapcat #(str/split % #", ") (keep :agent runs))
+       (map #(let [[n v] (str/split % #" " 2)] [n v]))
+       (group-by first)
+       (map (fn [[n xs]]
+              (let [vs (sort-by version-key (distinct (keep second xs)))]
+                (str n (when (seq vs) (str " " (first vs) (when (> (count vs) 1) (str "–" (last vs)))))))))
+       sort
+       (str/join ", ")))
 
 (defn- usd [v] (str "$" (.toLocaleString (js/Math.round v) "en-US")))
 
@@ -52,40 +99,87 @@
 
 (defc hero []
   [d [:data]
+   mode [:mode]
    runs (:runs d)]
-  [:header.hero
-   [:p.kicker (:source d) " · imported " (:imported d)]
-   [:h1 "Stack Cap Bench"]
-   [:p.lede "One headless agent builds the same projects, step by step, in every stack. "
-    "Each token it burns is counted. Each dollar is on the ledger. No stack is absolved."]
-   [:aside.disclaimer.glass {:aria-label "Disclaimer"}
-    [:span.disclaimer-label "Disclaimer"]
-    [:p "This benchmark tries to measure the token cost and performance of technology stacks — "
-     "for now, on small projects. Treat the numbers as a direction, not a verdict."]
-    [:p.disclaimer-links
-     [:button.linkish {:on-click [:creed :semi]} "Read the vision"]
-     [:span.sep "·"]
-     [:button.linkish {:on-click [:creed :method]} "how the data is gathered"]
-     [:span.sep "·"]
-     [:button.linkish {:on-click [:creed :jest]} "or the version nobody should take seriously"]]]
-   [:div.tiles.hero-tiles
-    (tile "Runs" (str (count (filter :complete runs)) "/" (count runs)) "complete / recorded")
-    (tile "Stacks" (count (distinct (map :stack runs))) "in the dock")
-    (tile "Spent" (usd (reduce + (map :cost_usd runs))) "list price, every attempt")
-    (tile "Tokens burnt" (compact (reduce + (map #(+ (:input_tokens %) (:output_tokens %)) runs)))
-          "input + output")]])
+  (let [e? (evil? mode)]
+    [:header.hero
+     [:p.kicker (:source d) " · imported " (:imported d) " · agent: " (agents runs)]
+     [:h1 "Stack Cap Bench"]
+     (if e?
+       [:p.lede "One headless agent builds the same projects, step by step, in every stack. "
+        "Each token it burns is counted. Each dollar is on the ledger. No stack is absolved."]
+       [:p.lede "What does it cost a coding agent to build the same small projects in different tech stacks? "
+        "Tokens, dollars, minutes and retries — per stack, model and effort level."])
+     [:aside.disclaimer.glass {:aria-label "Disclaimer"}
+      [:span.disclaimer-label "Disclaimer"]
+      [:p "This benchmark tries to measure the token cost and performance of technology stacks — "
+       "for now, on small projects. Treat the numbers as a direction, not a verdict."]
+      (if e?
+        [:p.disclaimer-links
+         [:button.linkish {:on-click [:creed :semi]} "Read the vision"]
+         [:span.sep "·"]
+         [:button.linkish {:on-click [:creed :method]} "how the data is gathered"]
+         [:span.sep "·"]
+         [:button.linkish {:on-click [:creed :jest]} "or the version nobody should take seriously"]]
+        [:p.disclaimer-links
+         [:button.linkish {:on-click [:creed :semi]} "Vision"]
+         [:button.linkish {:on-click [:creed :method]} "How the data is gathered"]])]
+     [:div.tiles.hero-tiles
+      (tile "Runs" (str (count (filter :complete runs)) "/" (count runs)) "complete / recorded")
+      (tile "Stacks" (count (distinct (map :stack runs))) (if e? "in the dock" "compared"))
+      (tile (if e? "Spent" "Cost") (usd (reduce + (map :cost_usd runs))) "list price, every attempt")
+      (tile (if e? "Tokens burnt" "Tokens")
+            (compact (reduce + (map #(+ (:input_tokens %) (:output_tokens %)) runs)))
+            "input + output")]]))
+
+(defc modebar []
+  [mode [:mode]
+   theme [:theme]]
+  [:div.modebar
+   [:div.seg.glass {:role "group" :aria-label "Mode"}
+    (for [[k label] [["serious" "Serious"] ["evil" "Evil"]]]
+      ^{:key k} [:button {:class (when (= mode k) "on") :aria-pressed (str (= mode k)) :on-click [:mode k]} label])]
+   (when-not (evil? mode)
+     [:button.theme-btn.glass {:on-click [:cycle-theme] :title "Colour theme: auto, light or dark"}
+      (case theme "light" "☀ light" "dark" "☾ dark" "◐ auto")])])
+
+(defc lord []
+  [d [:data]
+   standing (data/standings (for [t (:topics d)] (data/table d (:id t) "cost_usd")))
+   month (.toLocaleDateString (js/Date.) "en-US" #js {:month "long" :year "numeric"})]
+  (let [{god :stack :as best} (first standing)
+        {devil :stack :as worst} (last standing)]
+    (when (and best worst (not= god devil))
+      [:section.lord {:aria-label "The Lord's stack of the month"}
+       [:div.lord-card.glass
+        [:span.lord-kicker "The Lord's Stack of the Month" [:span.lord-month month]]
+        [:div.lord-name (swatch god) god]
+        [:p.lord-stats "leanest in " (:wins best) " of " (:configs best) " configurations · mean rank "
+         (.toFixed (inc (:mean-rank best)) 1) " by cost"]
+        [:p.lord-decree "Thou shalt use " [:b god] ". Rewrite thy monolith this weekend; thy manager will understand."]
+        [:p.lord-fine "Doubters shall be assigned to the Kafka cluster. Chosen by the numbers, "
+         "which is to say by the Lord."]]
+       [:div.lord-card.heretic.glass
+        [:span.lord-kicker "Heretic of the Month"]
+        [:div.lord-name (swatch devil) devil]
+        [:p.lord-stats "last in " (:losses worst) " of " (:configs worst) " configurations · mean rank "
+         (.toFixed (inc (:mean-rank worst)) 1)]
+        [:p.lord-decree "Penance: rewrite it in " [:b god] "."]
+        [:p.lord-fine "Confession is accepted as a pull request."]]])))
 
 (defc metric-bar []
   [metric [:metric]
+   mode [:mode]
    m (data/metric metric)]
   [:nav.rood.glass {:aria-label "Measure"}
-   [:span.rood-label "Judge by"]
+   [:span.rood-label (if (evil? mode) "Judge by" "Measure")]
    [:div.chips (for [x data/metrics]
                  ^{:key (:key x)} (chip (= metric (:key x)) [:metric (:key x)] (:label x)))]
    [:span.rood-note (:note m)]])
 
 (defc topic-section [tid idx]
   [d [:data]
+   mode [:mode]
    metric [:metric]
    m (data/metric metric)
    tbl (data/table d tid metric)
@@ -94,19 +188,21 @@
   (let [{:keys [topic configs stacks cells best]} tbl]
     [:section.topic {:id (str "topic-" tid)}
      [:header.topic-head
-      [:span.numeral (nth numerals idx)]
+      [:span.numeral (numeral mode idx)]
       [:div [:h2 (:label topic)]
        [:p.topic-sub "Project" (when (> (count (:projects topic)) 1) "s") " " (project-names d (:projects topic))]]]
      [:div.tiles
       (tile "Runs" (str (:complete totals) "/" (:runs totals)) "complete / recorded")
-      (tile "Spent" (usd (:cost totals)) "list price, every attempt")
-      (tile "Tokens burnt" (compact (:tokens totals)) "input + output")
-      (tile "Leanest" (if lean [:span (swatch lean) lean] "—") (str "lowest mean rank by " (str/lower-case (:label m))) "tile-name")]
+      (tile (if (evil? mode) "Spent" "Cost") (usd (:cost totals)) "list price, every attempt")
+      (tile (if (evil? mode) "Tokens burnt" "Tokens") (compact (:tokens totals)) "input + output")
+      (tile (if (evil? mode) "Leanest" "Lowest") (if lean [:span (swatch lean) lean] "—")
+            (str "best mean rank by " (str/lower-case (:label m))) "tile-name")]
      [:div.table-wrap.glass
       [:table
        [:caption (:label m) " — mean over complete runs"
         (when (> (count (:projects topic)) 1) ", averaged across projects")
-        ". ✠ marks the leanest stack per configuration; superscript is the run count."]
+        ". " (mark mode) " marks the " (if (evil? mode) "leanest stack" "lowest value")
+        " per configuration; superscript is the run count."]
        [:thead [:tr [:th {:scope "col"} "Stack"]
                 (for [c configs]
                   (let [[mdl eff] (str/split (:label c) #" · ")]
@@ -121,7 +217,7 @@
                ^{:key (:key c)}
                [:td {:class (when win? "best")}
                 (if v
-                  [:span (when win? [:span.cross {:aria-label "leanest"} "✠ "])
+                  [:span (when win? [:span.cross {:aria-label "lowest"} (str (mark mode) " ")])
                    ((:fmt m) (:value v)) [:sup (count (:runs v))]]
                   [:span.none "—"])]))])]]]]))
 
@@ -215,7 +311,8 @@
      [:li "Input tokens, including cache reads and writes, summed over every model the session used."]
      [:li "Output tokens, including thinking."]
      [:li "Cost as reported by " [:code "claude -p"] " at list price, and wall-clock time."]
-     [:li "Tool calls, pass or fail, the failure messages and the screenshots."]]
+     [:li "Tool calls, pass or fail, the failure messages and the screenshots."]
+     [:li "The agent harness and its version (e.g. claude-code 2.1.282), from the session's start event."]]
     [:p "Attempts are summed per run. The page shows the mean over complete runs per project, "
      "then averages across the projects of a topic, so each project weighs the same."]]
    :jest
@@ -242,19 +339,24 @@
 (defn- close-creed [] (some-> (creed-el) (.close)))
 
 (defc creed []
-  [tone [:tone]]
+  [tone [:tone]
+   mode [:mode]
+   tabs (if (evil? mode)
+          [[:semi "Semi-serious"] [:method "The method"] [:jest "Not serious at all"]]
+          [[:semi "Vision"] [:method "Method"]])
+   shown (if (some #(= tone (first %)) tabs) tone :semi)]
   [:dialog#creed.creed {:aria-labelledby "creed-title"
                         :on-click #(when (identical? (.-target %) (.-currentTarget %)) (close-creed))}
    [:div.creed-body
     [:header.creed-head
-     [:h2#creed-title "The Creed"]
+     [:h2#creed-title (if (evil? mode) "The Creed" "About")]
      [:button.creed-close {:on-click close-creed :aria-label "Close"} "✕"]]
     [:div.chips {:role "tablist" :aria-label "Tone"}
-     (for [[k label] [[:semi "Semi-serious"] [:method "The method"] [:jest "Not serious at all"]]]
+     (for [[k label] tabs]
        ^{:key k}
-       [:button.chip {:class (when (= tone k) "on") :role "tab" :aria-selected (str (= tone k))
+       [:button.chip {:class (when (= shown k) "on") :role "tab" :aria-selected (str (= shown k))
                       :on-click [:tone k]} label])]
-    (into [:div.creed-text {:role "tabpanel"}] (creed-text tone))]])
+    (into [:div.creed-text {:role "tabpanel"}] (creed-text shown))]])
 
 (defc chart-canvas []
   []
@@ -264,6 +366,7 @@
 
 (defc nave-chart [idx]
   [d [:data]
+   mode [:mode]
    tid [:topic]
    pid [:project]
    hidden [:hidden]
@@ -272,9 +375,10 @@
    stacks (data/sort-stacks (distinct (map :stack (data/topic-runs d tid))))]
   [:section.topic.nave-section {:id "chart"}
    [:header.topic-head
-    [:span.numeral (nth numerals idx)]
-    [:div [:h2 "The Nave"]
-     [:p.topic-sub "One chart. Every dimension. Choose the topic, the project, the measure; "
+    [:span.numeral (numeral mode idx)]
+    [:div [:h2 (if (evil? mode) "The Nave" "Compare")]
+     [:p.topic-sub (if (evil? mode) "One chart. Every dimension. " "One chart for every dimension. ")
+      "Choose the topic, the project, the measure; "
       "strike configurations out to widen what remains."]]]
    [:div.controls.glass
     [:div.control [:span.control-label "Topic"]
@@ -289,21 +393,27 @@
                    ^{:key (:key c)} (chip (not (contains? hidden (:key c))) [:toggle-config (:key c)] (:label c)))]]]
    [:div.legend (for [s stacks] ^{:key s} [:span.legend-item (swatch s) s])]
    [:div.canvas-wrap.glass [chart-canvas]]
-   [:p.chart-note "Each window rises to the mean over complete runs; its apex is the value. "
-    "✠ crowns the leanest stack in each configuration. Hover, or focus the chart and use the arrow keys, "
-    "for the runs behind a bar. The measure follows the bar at the top of the page."]])
+   [:p.chart-note
+    (if (evil? mode)
+      "Each window rises to the mean over complete runs; its apex is the value. ✠ crowns the leanest stack in each configuration. "
+      "Each bar is the mean over complete runs. ↓ marks the lowest value in each configuration. ")
+    "Hover, or focus the chart and use the arrow keys, for the runs behind a bar. "
+    "The measure follows the bar at the top of the page."]])
 
 (defc app []
   [d [:data]
-   err [:error]]
+   err [:error]
+   mode [:mode]]
   [:div.shell
    (cond
-     err [:p.state "The candles went out: " err]
-     (nil? d) [:p.state "Lighting the candles…"]
+     err [:p.state "Could not load results.json: " err]
+     (nil? d) [:p.state "Loading…"]
      :else
      (list
+      ^{:key "modebar"} [modebar]
       ^{:key "hero"} [hero]
       ^{:key "creed"} [creed]
+      (when (evil? mode) ^{:key "lord"} [lord])
       ^{:key "bar"} [metric-bar]
       ^{:key "main"}
       [:main
@@ -328,8 +438,14 @@
       (.then #(dispatch [:loaded (js->clj % :keywordize-keys true)]))
       (.catch #(dispatch [:failed (str (.-message %))]))))
 
+(defn- stored [k default] (or (try (.getItem js/localStorage k) (catch :default _ nil)) default))
+
 (defn ^:export main []
-  (nave/start!)
-  (mount! [app] (.getElementById js/document "app")
-          {:data nil :error nil :metric "cost_usd" :topic nil :project "all" :hidden #{} :tone :semi})
-  (load!))
+  (let [mode (or (.. js/document -documentElement -dataset -mode) "serious")
+        theme (stored "scb-theme" "auto")]
+    (when (evil? mode) (nave/start!))
+    (.addEventListener (js/matchMedia "(prefers-color-scheme: dark)") "change" chart/restyle!)
+    (mount! [app] (.getElementById js/document "app")
+            {:data nil :error nil :metric "cost_usd" :topic nil :project "all" :hidden #{} :tone :semi
+             :mode mode :theme theme})
+    (load!)))

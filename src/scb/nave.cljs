@@ -6,7 +6,7 @@
 (def ^:private jewels ["#a63a48" "#4a6fb0" "#a57f2e" "#7d5fa6" "#2f8a68"])
 
 (defonce ^:private st #js {:c nil :ctx nil :stone nil :rose nil :w 0 :h 0 :dpr 1 :dust nil :raf nil
-                           :reduced false})
+                           :reduced false :active false :wired false})
 
 (defn- rgba [hex a]
   (let [n (js/parseInt (subs hex 1) 16)]
@@ -166,21 +166,35 @@
         (set! (.-globalAlpha ctx) (+ 0.25 (* 0.35 (js/Math.sin (+ (.-p d) secs)))))
         (.beginPath ctx) (.arc ctx x y (.-r d) 0 6.2832) (.fill ctx)))
     (.restore ctx))
-  (when-not (or (.-reduced st) (.-hidden js/document))
+  (when-not (or (.-reduced st) (.-hidden js/document) (not (.-active st)))
     (set! (.-raf st) (js/requestAnimationFrame frame))))
 
 (defn- kick! []
-  (when-not (.-raf st) (set! (.-raf st) (js/requestAnimationFrame frame))))
+  (when (and (.-active st) (not (.-raf st)))
+    (set! (.-raf st) (js/requestAnimationFrame frame))))
 
 (defn start!
-  "Paint the nave into canvas#nave; animated unless the reader prefers reduced motion."
+  "Paint the nave into canvas#nave (evil mode); animated unless the reader
+   prefers reduced motion."
   []
   (when-let [c (.getElementById js/document "nave")]
-    (set! (.-c st) c)
-    (set! (.-ctx st) (.getContext c "2d"))
-    (set! (.-reduced st) (.-matches (js/matchMedia "(prefers-reduced-motion: reduce)")))
+    (when-not (.-wired st)
+      (set! (.-wired st) true)
+      (set! (.-c st) c)
+      (set! (.-ctx st) (.getContext c "2d"))
+      (set! (.-reduced st) (.-matches (js/matchMedia "(prefers-reduced-motion: reduce)")))
+      (.addEventListener js/window "resize" #(when (.-active st) (rebuild!) (kick!)))
+      (.addEventListener js/window "scroll" #(when (.-reduced st) (kick!)) #js {:passive true})
+      (.addEventListener js/document "visibilitychange" kick!))
+    (set! (.-active st) true)
     (rebuild!)
-    (.addEventListener js/window "resize" #(do (rebuild!) (kick!)))
-    (.addEventListener js/window "scroll" #(when (.-reduced st) (kick!)) #js {:passive true})
-    (.addEventListener js/document "visibilitychange" kick!)
     (kick!)))
+
+(defn stop!
+  "Serious mode: stop drawing and blank the canvas."
+  []
+  (set! (.-active st) false)
+  (when-let [r (.-raf st)] (js/cancelAnimationFrame r) (set! (.-raf st) nil))
+  (when-let [^js ctx (.-ctx st)]
+    (.setTransform ctx 1 0 0 1 0 0)
+    (.clearRect ctx 0 0 (.. st -c -width) (.. st -c -height))))

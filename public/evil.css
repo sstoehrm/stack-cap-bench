@@ -16,6 +16,12 @@
   --caps: "Cinzel", "Times New Roman", serif;
   --body: "Cormorant Garamond", Georgia, serif;
   --mono: "JetBrains Mono", ui-monospace, monospace;
+  /* series: muted jewel tones (validated on #0a090c) */
+  --st0: #8a8594; --st1: #a63a48; --st2: #4a6fb0; --st3: #a57f2e; --st4: #7d5fa6; --st5: #2f8a68;
+  --chart-ink: rgba(222, 214, 206, 0.9); --chart-ink-2: rgba(179, 169, 191, 0.85);
+  --chart-grid: rgba(236, 230, 242, 0.07); --chart-base: rgba(120, 108, 134, 0.9);
+  --chart-frame: rgba(44, 40, 50, 0.95); --chart-hot: rgba(214, 204, 188, 0.75); --chart-mark: #d9cfbf;
+  --chart-label-font: Cinzel, serif; --chart-num-font: "JetBrains Mono", monospace;
 }
 
 * { box-sizing: border-box; }
@@ -76,7 +82,7 @@ code { font: 500 0.78em var(--mono); color: var(--bone); background: rgba(255,25
 .tile-value { font: 700 clamp(22px, 3vw, 32px)/1.1 var(--mono); color: var(--bone); display: flex; align-items: center; gap: 8px; overflow-wrap: anywhere; }
 .tile-value .swatch { width: 12px; height: 26px; }
 .tile-name .tile-value { font-size: clamp(17px, 1.9vw, 23px); overflow-wrap: normal; white-space: nowrap; }
-.tile-name .tile-value .swatch { height: 20px; }
+.tile-name .tile-value .swatch { height: 20px; margin-right: 8px; }
 .tile-note { font-size: 15px; color: var(--ink-2); font-style: italic; }
 
 /* ---- sticky measure bar: the rood screen */
@@ -226,3 +232,29 @@ tbody tr:hover { background: rgba(255,255,255,0.03); }
   .creed-body { padding: 18px 16px 22px; }
 }
 @media (prefers-reduced-motion: reduce) { .creed[open] { animation: none; } }
+
+/* ---- mode switch */
+.modebar { position: absolute; top: 16px; right: 16px; z-index: 6; display: flex; gap: 8px; }
+.seg { display: inline-flex; padding: 3px; }
+.seg button {
+  font: 700 11px var(--caps); letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-2);
+  background: none; border: 0; padding: 7px 12px; cursor: pointer;
+}
+.seg button.on { color: var(--bone); background: linear-gradient(180deg, #4a1822, #2e0d15); }
+.seg button:focus-visible { outline: 2px solid var(--bone); outline-offset: 2px; }
+.theme-btn { display: none; }
+
+/* ---- the Lord's stack of the month */
+.lord { display: grid; grid-template-columns: 1.4fr 1fr; gap: 14px; margin: 0 0 56px; }
+.lord-card { padding: 30px 26px 24px; clip-path: polygon(0 22px, 50% 0, 100% 22px, 100% 100%, 0 100%); }
+.lord-card.heretic { border-top: 0; }
+.lord-kicker { font: 700 11px var(--caps); letter-spacing: 0.28em; text-transform: uppercase; color: var(--blood-ink); }
+.lord-month { font: 400 13px var(--mono); color: var(--muted); margin-left: 8px; letter-spacing: 0; text-transform: none; }
+.lord-name { display: flex; align-items: center; gap: 12px; font: 700 clamp(24px, 3.6vw, 40px)/1.1 var(--caps); color: var(--bone); margin: 12px 0 6px; text-shadow: 0 2px 0 #000; overflow-wrap: anywhere; }
+.lord-name .swatch { width: 14px; height: 30px; flex: none; }
+.lord-stats { font: 500 13px var(--mono); color: var(--ink-2); margin: 0 0 14px; }
+.lord-decree { font-size: 20px; font-style: italic; color: var(--ink); margin: 0 0 8px; }
+.lord-decree b { font-style: normal; font-family: var(--caps); letter-spacing: 0.06em; color: var(--bone); }
+.lord-fine { font-size: 15px; color: var(--muted); margin: 0; }
+.heretic .lord-name { color: var(--ink-2); font-size: clamp(20px, 2.6vw, 28px); }
+@media (max-width: 760px) { .lord { grid-template-columns: 1fr; } }

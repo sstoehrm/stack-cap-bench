@@ -28,6 +28,10 @@
     (reduce + (map #(or (:outputTokens %) 0) (vals (:model_usage line))))
     (or (:output_tokens (:usage line)) 0)))
 
+(defn- agent-label [lines]
+  (let [vs (distinct (keep #(when (:agent %) (str/trim (str (:agent %) " " (:agent_version %)))) lines))]
+    (when (seq vs) (str/join ", " (sort vs)))))
+
 (defn- run-summaries [lines steps-by-project]
   (vec
    (for [[[project stack run] ls] (sort-by key (group-by (juxt :project :stack :run_id) lines))
@@ -36,6 +40,7 @@
                n (get steps-by-project project)]]
      {:project project :stack stack :run_id run
       :model (:model (first ls)) :effort (or (:effort (first ls)) "default")
+      :agent (agent-label ls)
       :input_tokens (sum line-input-tokens)
       :output_tokens (sum line-output-tokens)
       :cost_usd (double (sum #(or (:cost_usd %) 0)))

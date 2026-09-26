@@ -1,8 +1,15 @@
 (ns scb.chart
-  "The one chart: grouped bars drawn as lancet windows on a canvas. A bar's
-   value is its apex; the arch sits inside the bar, never on top of it. Every
-   change tweens from what is on screen to the new target."
+  "The one chart: grouped bars on a canvas — lancet windows in evil mode,
+   plain rounded bars in serious mode. A bar's value is its top (the apex of
+   an arch, which sits inside the bar). Every change tweens from what is on
+   screen to the new target. Colours and fonts come from the stylesheet."
   (:require [clojure.string :as str]))
+
+(defonce ^:private theme
+  #js {:evil false :st #js ["#8a8594" "#8a8594" "#8a8594" "#8a8594" "#8a8594" "#8a8594"]
+       :ink "#ddd" :ink2 "#aaa" :grid "rgba(255,255,255,0.07)" :base "rgba(120,108,134,0.9)"
+       :label "Cinzel, serif" :num "'JetBrains Mono', monospace" :frame "rgba(44,40,50,0.95)"
+       :hot "rgba(214,204,188,0.75)" :mark "#d9cfbf"})
 
 (def ^:private dur 850)
 (def ^:private stagger 32)
@@ -133,8 +140,10 @@
     (.closePath ctx)
     ah))
 
-(defn- draw-bar! [^js ctx b x top w base alpha hot? dim? t]
-  (let [color (:color b)
+(defn- bar-color [b] (aget (.-st theme) (:slot b)))
+
+(defn- draw-lancet! [^js ctx b x top w base alpha hot? dim? t]
+  (let [color (bar-color b)
         h (- base top)]
     (when (and (> h 0.5) (> w 1))
       (.save ctx)
@@ -188,15 +197,47 @@
         (.restore ctx)
         ;; stone frame
         (lancet-path! ctx x top w base)
-        (set! (.-strokeStyle ctx) (if hot? "rgba(214,204,188,0.75)" "rgba(44,40,50,0.95)"))
+        (set! (.-strokeStyle ctx) (if hot? (.-hot theme) (.-frame theme)))
         (set! (.-lineWidth ctx) (if hot? 2 1.6))
         (.stroke ctx))
       (.restore ctx))))
 
+(defn- draw-plain!
+  "Serious mode: a flat bar, 4px rounded at the top, anchored to the baseline."
+  [^js ctx b x top w base alpha hot? dim?]
+  (let [h (- base top)]
+    (when (and (> h 0.5) (> w 1))
+      (let [r (min 4 (/ w 2) h)]
+        (.save ctx)
+        (set! (.-globalAlpha ctx) (* alpha (if dim? 0.35 1)))
+        (set! (.-fillStyle ctx) (bar-color b))
+        (.beginPath ctx)
+        (.moveTo ctx x base)
+        (.lineTo ctx x (+ top r))
+        (.arcTo ctx x top (+ x r) top r)
+        (.lineTo ctx (- (+ x w) r) top)
+        (.arcTo ctx (+ x w) top (+ x w) (+ top r) r)
+        (.lineTo ctx (+ x w) base)
+        (.closePath ctx)
+        (.fill ctx)
+        (when hot?
+          (set! (.-strokeStyle ctx) (.-hot theme))
+          (set! (.-lineWidth ctx) 2)
+          (.stroke ctx))
+        (.restore ctx)))))
+
+(defn- draw-bar! [ctx b x top w base alpha hot? dim? t]
+  (if (.-evil theme)
+    (draw-lancet! ctx b x top w base alpha hot? dim? t)
+    (draw-plain! ctx b x top w base alpha hot? dim?)))
+
 (defn- draw! [t]
   (let [^js ctx (.-ctx st)
         w (.-w st) h (.-h st)
-        model (.-model st)]
+        model (.-model st)
+        evil (.-evil theme)
+        num (.-num theme)
+        label (.-label theme)]
     (when (and ctx model (pos? w))
       (.setTransform ctx (.-dpr st) 0 0 (.-dpr st) 0 0)
       (.clearRect ctx 0 0 w h)
@@ -209,21 +250,22 @@
             hover (.-hover st)
             bars ^js (.-bars st)]
         ;; grid and y axis
-        (set! (.-font ctx) "500 11px 'JetBrains Mono', ui-monospace, monospace")
+        (set! (.-font ctx) (str "500 11px " num))
         (set! (.-textAlign ctx) "right")
         (set! (.-textBaseline ctx) "middle")
         (doseq [tk (nice-ticks (.. st -ymax -to))
                 :when (<= tk (* ymax 1.0001))]
           (let [yy (js/Math.round (y tk))]
-            (set! (.-strokeStyle ctx) (if (zero? tk) "rgba(0,0,0,0)" "rgba(236,230,242,0.07)"))
+            (set! (.-strokeStyle ctx) (if (zero? tk) "rgba(0,0,0,0)" (.-grid theme)))
             (set! (.-lineWidth ctx) 1)
             (.beginPath ctx) (.moveTo ctx (.-l margin) (+ yy 0.5)) (.lineTo ctx (- w (.-r margin)) (+ yy 0.5)) (.stroke ctx)
-            (set! (.-fillStyle ctx) "rgba(179,169,191,0.85)")
+            (set! (.-fillStyle ctx) (.-ink2 theme))
             (.fillText ctx ((:axis m) tk) (- (.-l margin) 12) yy)))
         (set! (.-textAlign ctx) "left")
-        (set! (.-font ctx) "600 10px Cinzel, serif")
-        (set! (.-fillStyle ctx) "rgba(179,169,191,0.75)")
-        (.fillText ctx (str/upper-case (str (:label m) " · " (:unit m))) (.-l margin) (- top0 22))
+        (set! (.-font ctx) (str "600 10px " label))
+        (set! (.-fillStyle ctx) (.-ink2 theme))
+        (.fillText ctx (let [s (str (:label m) " · " (:unit m))] (if evil (str/upper-case s) s))
+                   (.-l margin) (- top0 22))
         ;; bars
         (doseq [[id ^js b] (es6-iterator-seq (.entries bars))]
           (let [a (tween-val (.-a b) t)
@@ -232,13 +274,16 @@
               (.delete bars id)
               (draw-bar! ctx (.-d b) (tween-val (.-x b) t) (y v) (tween-val (.-w b) t) base a
                          (= id hover) (and hover (not= id hover)) t))))
-        ;; baseline ledge
-        (let [g (.createLinearGradient ctx 0 base 0 (+ base 6))]
-          (.addColorStop g 0 "rgba(120,108,134,0.9)")
-          (.addColorStop g 1 "rgba(20,16,26,0)")
-          (set! (.-fillStyle ctx) g)
-          (.fillRect ctx (- (.-l margin) 6) base (- w (.-l margin) (.-r margin) -12) 6))
-        ;; cluster labels and the victor of each cluster
+        ;; baseline
+        (if evil
+          (let [g (.createLinearGradient ctx 0 base 0 (+ base 6))]
+            (.addColorStop g 0 (.-base theme))
+            (.addColorStop g 1 "rgba(20,16,26,0)")
+            (set! (.-fillStyle ctx) g)
+            (.fillRect ctx (- (.-l margin) 6) base (- w (.-l margin) (.-r margin) -12) 6))
+          (do (set! (.-fillStyle ctx) (.-base theme))
+              (.fillRect ctx (.-l margin) base (- w (.-l margin) (.-r margin)) 1)))
+        ;; cluster labels and the leanest bar of each cluster
         (let [pos (layout model w)]
           (doseq [c (:clusters model)
                   :let [cx (some #(:cx (pos (:id %))) (:bars c))]
@@ -246,11 +291,11 @@
             (let [[mdl eff] (str/split (:label c) #" · ")]
               (set! (.-textAlign ctx) "center")
               (set! (.-textBaseline ctx) "top")
-              (set! (.-fillStyle ctx) "rgba(222,214,206,0.9)")
-              (set! (.-font ctx) "600 11px Cinzel, serif")
-              (.fillText ctx (str/upper-case mdl) cx (+ base 16))
-              (set! (.-fillStyle ctx) "rgba(179,169,191,0.8)")
-              (set! (.-font ctx) "400 11px 'JetBrains Mono', monospace")
+              (set! (.-fillStyle ctx) (.-ink theme))
+              (set! (.-font ctx) (str "600 11px " label))
+              (.fillText ctx (if evil (str/upper-case mdl) mdl) cx (+ base 16))
+              (set! (.-fillStyle ctx) (.-ink2 theme))
+              (set! (.-font ctx) (str "400 11px " num))
               (.fillText ctx eff cx (+ base 33)))
             (when (> (count (:bars c)) 1)
               (let [best (apply min-key :value (:bars c))
@@ -259,20 +304,22 @@
                   (let [a (tween-val (.-a b) t)
                         bw (tween-val (.-w b) t)
                         x (+ (tween-val (.-x b) t) (/ bw 2))
-                        yy (y (tween-val (.-v b) t))]
+                        yy (y (tween-val (.-v b) t))
+                        mark (if evil "✠" "↓")]
                     (.save ctx)
                     (set! (.-globalAlpha ctx) (* a (ease (/ (- t (.. b -v -t0) (.. b -v -delay)) dur))))
                     (set! (.-textAlign ctx) "center")
                     (set! (.-textBaseline ctx) "bottom")
-                    (set! (.-fillStyle ctx) "#d9cfbf")
-                    (set! (.-shadowColor ctx) "rgba(0,0,0,0.9)")
-                    (set! (.-shadowBlur ctx) 6)
-                    (set! (.-font ctx) "700 13px 'JetBrains Mono', monospace")
-                    (.fillText ctx (if (< bw 28) "✠" (str "✠ " ((:fmt m) (:value best)))) x (- yy 8))
+                    (set! (.-fillStyle ctx) (.-mark theme))
+                    (when evil
+                      (set! (.-shadowColor ctx) "rgba(0,0,0,0.9)")
+                      (set! (.-shadowBlur ctx) 6))
+                    (set! (.-font ctx) (str "700 12px " num))
+                    (.fillText ctx (if (< bw 28) mark (str mark " " ((:fmt m) (:value best)))) x (- yy 8))
                     (.restore ctx)))))))))))
 
 (defn- busy? [t]
-  (or (not (.-reduced st))
+  (or (and (.-evil theme) (not (.-reduced st)))
       (not (settled? (.-ymax st) t))
       (some (fn [^js b] (not (and (settled? (.-v b) t) (settled? (.-a b) t)
                                   (settled? (.-x b) t))))
@@ -311,7 +358,7 @@
             y (- base (* (- base (.-t margin)) (/ (:value d) ymax)))
             kw (keyword (:key m))
             [have of] (:coverage d)]
-        (set! (.. sw -style -background) (:color d))
+        (set! (.. sw -style -background) (bar-color d))
         (.replaceChildren tip
                           (el "div" "tip-head" sw (el "b" nil (:stack d)))
                           (el "div" "tip-sub" (:config d))
@@ -320,6 +367,8 @@
                           (el "div" "tip-sub"
                               (str "mean of " (count (:runs d)) " complete run" (when (not= 1 (count (:runs d))) "s")
                                    (when (> of 1) (str " · " have "/" of " projects"))))
+                          (when-let [ag (seq (distinct (keep :agent (:runs d))))]
+                            (el "div" "tip-sub" (str "agent: " (str/join ", " (sort ag)))))
                           (let [ul (el "ul" "tip-runs")]
                             (doseq [r (take 6 (:runs d))]
                               (.append ul (el "li" nil (str "P" (:project r) " " (:run_id r) "  " ((:fmt m) (get r kw))))))
@@ -388,6 +437,28 @@
       (draw! (now))
       (kick!))))
 
+(defn- css-var [^js cs k fallback]
+  (let [v (str/trim (.getPropertyValue cs k))] (if (seq v) v fallback)))
+
+(defn restyle!
+  "Re-read colours and fonts from the active stylesheet (after a mode or
+   light/dark switch) and redraw."
+  []
+  (let [cs (js/getComputedStyle (.-documentElement js/document))]
+    (set! (.-evil theme) (= "evil" (.. js/document -documentElement -dataset -mode)))
+    (set! (.-st theme) (into-array (for [i (range 6)] (css-var cs (str "--st" i) "#8a8594"))))
+    (set! (.-ink theme) (css-var cs "--chart-ink" "#ddd"))
+    (set! (.-ink2 theme) (css-var cs "--chart-ink-2" "#aaa"))
+    (set! (.-grid theme) (css-var cs "--chart-grid" "rgba(128,128,128,0.15)"))
+    (set! (.-base theme) (css-var cs "--chart-base" "rgba(128,128,128,0.6)"))
+    (set! (.-frame theme) (css-var cs "--chart-frame" "rgba(44,40,50,0.95)"))
+    (set! (.-hot theme) (css-var cs "--chart-hot" "rgba(255,255,255,0.8)"))
+    (set! (.-mark theme) (css-var cs "--chart-mark" "#ddd"))
+    (set! (.-label theme) (css-var cs "--chart-label-font" "monospace"))
+    (set! (.-num theme) (css-var cs "--chart-num-font" "monospace"))
+    (draw! (now))
+    (kick!)))
+
 (defn update!
   "Show `model`. Before the chart first scrolls into view it is only stored,
    so the bars rise when the reader gets there."
@@ -429,7 +500,8 @@
                              #js {:threshold 0.25})
                         (.observe c)))
       (.addEventListener js/document "visibilitychange" kick!)
-      (.then (.-ready (.-fonts js/document)) #(do (draw! (now)) (kick!)))
+      (.then (.-ready (.-fonts js/document)) restyle!)
+      (restyle!)
       (resize!))
     (do (some-> ^js (.-ro st) .disconnect)
         (some-> ^js (.-io st) .disconnect)
