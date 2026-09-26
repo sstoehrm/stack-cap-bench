@@ -182,3 +182,47 @@ tbody tr:hover { background: rgba(255,255,255,0.03); }
   .hero h1 { animation: none; }
   .tile, .chip, tbody tr { transition: none; }
 }
+
+/* ---- disclaimer and the creed */
+.disclaimer {
+  max-width: 720px; margin: -12px auto 40px; padding: 16px 22px 14px; text-align: left;
+  border-left: 2px solid var(--blood);
+}
+.disclaimer p { margin: 0; color: var(--ink); font-size: 18px; }
+.disclaimer-label { display: block; font: 700 11px var(--caps); letter-spacing: 0.26em; text-transform: uppercase; color: var(--blood-ink); margin-bottom: 6px; }
+.disclaimer-links { margin-top: 10px !important; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.sep { color: var(--muted); }
+.linkish {
+  font: italic 400 18px var(--body); color: var(--bone); background: none; border: 0; padding: 0; cursor: pointer;
+  text-decoration: underline; text-decoration-color: var(--blood); text-underline-offset: 4px;
+}
+.linkish:hover { color: #fff; }
+.linkish:focus-visible, .creed-close:focus-visible { outline: 2px solid var(--bone); outline-offset: 3px; }
+
+.creed {
+  width: min(760px, calc(100vw - 32px)); max-height: min(86vh, 900px); padding: 0; overflow: hidden;
+  color: var(--ink); background: linear-gradient(180deg, rgba(22,18,26,0.92), rgba(10,9,12,0.95));
+  border: 1px solid var(--glass-edge); border-top: 2px solid var(--blood);
+  box-shadow: 0 60px 120px -30px rgba(0,0,0,0.95);
+}
+.creed[open] { animation: creed-in .45s cubic-bezier(.2,.7,.2,1); }
+.creed::backdrop { background: rgba(4,3,6,0.72); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+@keyframes creed-in { from { opacity: 0; transform: translateY(18px) scale(.985); } to { opacity: 1; transform: none; } }
+.creed-body { max-height: inherit; overflow-y: auto; padding: 24px 28px 28px; }
+.creed-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.creed-head h2 { font: 600 clamp(26px, 4vw, 36px)/1.1 var(--display); letter-spacing: 0.03em; margin: 0; color: var(--bone); }
+.creed-close { background: none; border: 1px solid rgba(220,210,200,0.14); color: var(--ink-2); width: 36px; height: 36px; cursor: pointer; font-size: 16px; }
+.creed-close:hover { color: var(--bone); border-color: var(--blood); }
+.creed-text h3 { font: 700 12px var(--caps); letter-spacing: 0.24em; text-transform: uppercase; color: var(--blood-ink); margin: 26px 0 6px; }
+.creed-text p, .creed-text li { color: var(--ink); font-size: 19px; }
+.creed-text p { margin: 0 0 10px; }
+.creed-text ul { margin: 0 0 12px; padding-left: 20px; }
+.creed-text li { margin-bottom: 4px; }
+.creed-text li::marker { content: "✠  "; color: var(--blood); font-size: 13px; }
+.creed-text em { color: var(--bone); }
+
+@media (max-width: 760px) {
+  .disclaimer { margin-top: -8px; padding: 14px 16px 12px; }
+  .creed-body { padding: 18px 16px 22px; }
+}
+@media (prefers-reduced-motion: reduce) { .creed[open] { animation: none; } }

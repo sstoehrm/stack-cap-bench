@@ -17,6 +17,13 @@
 (reg-event :metric (fn [db k] (with-chart (assoc db :metric k))))
 (reg-event :topic (fn [db t] (with-chart (assoc db :topic t :project "all" :hidden #{}))))
 (reg-event :project (fn [db p] (with-chart (assoc db :project p))))
+(reg-event :creed (fn [db tone] {:db (assoc db :tone tone) :show-creed true}))
+(reg-event :tone (fn [db tone] {:db (assoc db :tone tone)}))
+
+(defn- creed-el [] (.getElementById js/document "creed"))
+
+(reg-fx :show-creed (fn [_] (some-> (creed-el) (.showModal))))
+
 (reg-event :toggle-config
            (fn [db k]
              (let [h (:hidden db)]
@@ -51,6 +58,14 @@
    [:h1 "Stack Cap Bench"]
    [:p.lede "One headless agent builds the same projects, step by step, in every stack. "
     "Each token it burns is counted. Each dollar is on the ledger. No stack is absolved."]
+   [:aside.disclaimer.glass {:aria-label "Disclaimer"}
+    [:span.disclaimer-label "Disclaimer"]
+    [:p "This benchmark tries to measure the token cost and performance of technology stacks — "
+     "for now, on small projects. Treat the numbers as a direction, not a verdict."]
+    [:p.disclaimer-links
+     [:button.linkish {:on-click [:creed :semi]} "Read the vision"]
+     [:span.sep "·"]
+     [:button.linkish {:on-click [:creed :jest]} "or the version nobody should take seriously"]]]
    [:div.tiles.hero-tiles
     (tile "Runs" (str (count (filter :complete runs)) "/" (count runs)) "complete / recorded")
     (tile "Stacks" (count (distinct (map :stack runs))) "in the dock")
@@ -108,6 +123,69 @@
                    ((:fmt m) (:value v)) [:sup (count (:runs v))]]
                   [:span.none "—"])]))])]]]]))
 
+(def ^:private creed-text
+  {:semi
+   [[:h3 "Why this exists"]
+    [:p "Picking a framework for a greenfield project used to be a question about people: who knows it, "
+     "who can hire for it, how it feels to write every day. Now an agent writes a good part of the code. "
+     "I want to be aware of the trade-offs of that choice in the agentic age — and to find out whether "
+     "it even still matters."]
+    [:p "If every stack costs an agent about the same, pick whatever you enjoy. If not, the difference "
+     "should show up somewhere measurable: tokens, dollars, minutes and retries. This page collects that evidence."]
+    [:h3 "How it is measured"]
+    [:p "A headless coding agent (Claude Code, run as " [:code "claude -p"] ") builds the same small projects "
+     "step by step in every stack: " [:em "loga"] ", a log-analyzer CLI; " [:em "spendly"]
+     ", a full-stack expense tracker; and " [:em "kanbn"] ", a kanban single-page app. Five steps each. "
+     "After every step a harness checks the result — golden CLI cases, an HTTP contract, a headless browser — "
+     "and retries a failed step up to three times."]
+    [:p "Every attempt is recorded: input and output tokens, list-price cost, wall time, attempts and tool calls. "
+     "Only runs where every step passed count toward the means you see here."]
+    [:h3 "What it is not"]
+    [:ul
+     [:li "Not a verdict. The projects are small, and most configurations have one or two runs."]
+     [:li "Not the whole trade-off. Hiring, ecosystem, runtime performance and taste are not measured here."]
+     [:li "Not a bill. Cost is " [:code "claude -p"] "'s list price, not what anyone paid."]
+     [:li "Not vendor-neutral. One agent, a few models and effort levels; others may rank stacks differently."]
+     [:li "Not a clean stopwatch. Runs share a machine, so wall time grows with parallel load."]]
+    [:p "Bigger projects and more runs per configuration come next. Until then, read the rankings as a hint "
+     "about where the trade-offs are, not as the answer."]]
+   :jest
+   [[:h3 "Hear ye"]
+    [:p "Every tech stack swears it is lean. Every stack has a conference talk proving it. "
+     "We stopped listening and built a cathedral instead."]
+    [:p "Into the nave we send a scribe who never sleeps, never complains and bills by the token. "
+     "It must build the same three humble works in every stack: a scroll-reader for logs, "
+     "a ledger of one's shameful spending, and a board of cards to be moved about for no clear reason."]
+    [:h3 "The tithe"]
+    [:p "Each token the scribe burns is tithe, and the tithe is recorded in stained glass, forever, "
+     "in colours chosen by a committee of one. The stack that tithes least is crowned with the ✠. "
+     "The others are displayed beside it. Publicly. On canvas. There are no appeals."]
+    [:h3 "Articles of faith"]
+    [:ul
+     [:li "The scribe's retries are penance. Five attempts means none were needed."]
+     [:li "Wall time is measured in candles and depends on how many other scribes are praying at once."]
+     [:li "A stack that fails a step is not damned, merely left out of the means until it repents."]
+     [:li "Dollars shown are list-price indulgences. Nobody actually paid them. Probably."]]
+    [:p "Should your favourite stack come last: the projects are small, the runs are few, "
+     "and the cathedral is still under construction. Pray for bigger projects."]]})
+
+(defn- close-creed [] (some-> (creed-el) (.close)))
+
+(defc creed []
+  [tone [:tone]]
+  [:dialog#creed.creed {:aria-labelledby "creed-title"
+                        :on-click #(when (identical? (.-target %) (.-currentTarget %)) (close-creed))}
+   [:div.creed-body
+    [:header.creed-head
+     [:h2#creed-title "The Creed"]
+     [:button.creed-close {:on-click close-creed :aria-label "Close"} "✕"]]
+    [:div.chips {:role "tablist" :aria-label "Tone"}
+     (for [[k label] [[:semi "Semi-serious"] [:jest "Not serious at all"]]]
+       ^{:key k}
+       [:button.chip {:class (when (= tone k) "on") :role "tab" :aria-selected (str (= tone k))
+                      :on-click [:tone k]} label])]
+    (into [:div.creed-text {:role "tabpanel"}] (creed-text tone))]])
+
 (defc chart-canvas []
   []
   [:div.canvas-box
@@ -155,6 +233,7 @@
      :else
      (list
       ^{:key "hero"} [hero]
+      ^{:key "creed"} [creed]
       ^{:key "bar"} [metric-bar]
       ^{:key "main"}
       [:main
@@ -182,5 +261,5 @@
 (defn ^:export main []
   (nave/start!)
   (mount! [app] (.getElementById js/document "app")
-          {:data nil :error nil :metric "cost_usd" :topic nil :project "all" :hidden #{}})
+          {:data nil :error nil :metric "cost_usd" :topic nil :project "all" :hidden #{} :tone :semi})
   (load!))
