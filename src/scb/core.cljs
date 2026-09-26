@@ -38,6 +38,8 @@
       (.removeAttribute root "data-theme"))
     (.setAttribute (.getElementById js/document "css-evil") "media" (if evil? "all" "not all"))
     (.setAttribute (.getElementById js/document "css-serious") "media" (if evil? "not all" "all"))
+    (when (#{"#evil" "#serious"} (.-hash js/location))
+      (js/history.replaceState nil "" (str (.-pathname js/location) (.-search js/location))))
     (store! "scb-mode" mode)
     (store! "scb-theme" theme)
     (if evil? (nave/start!) (nave/stop!))
