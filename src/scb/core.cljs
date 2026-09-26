@@ -165,7 +165,11 @@
       [:footer.foot
        [:p "Data: " [:code "results.json"] " — hand-editable, or regenerate it with "
         [:code "bb import ../token-comparision"] ". Built with "
-        [:a {:href "https://github.com/sstoehrm/hammer"} "hammer"] "; the charts are drawn by hand on canvas."]]))])
+        [:a {:href "https://github.com/sstoehrm/hammer"} "hammer"] "; the charts are drawn by hand on canvas."]
+       [:div.foot-bar
+        [:span.foot-mark "Stack Cap Bench"]
+        [:span "© " (.getFullYear (js/Date.)) " Sören Stöhrmann"]
+        [:a.foot-link {:href "https://github.com/sstoehrm/stack-cap-bench"} "Source on GitHub"]]]))])
 
 ;; ---- start
 
