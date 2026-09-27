@@ -348,7 +348,7 @@
           [[:semi "Vision"] [:method "Method"]])
    shown (if (some #(= tone (first %)) tabs) tone :semi)]
   [:dialog#creed.creed {:aria-labelledby "creed-title"
-                        :on-click #(when (identical? (.-target %) (.-currentTarget %)) (close-creed))}
+                        :on-click #(when (identical? (.-target %) (creed-el)) (close-creed))}
    [:div.creed-body
     [:header.creed-head
      [:h2#creed-title (if (evil? mode) "The Creed" "About")]

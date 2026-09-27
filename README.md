@@ -56,7 +56,9 @@ reports. Change both together.
 
 ## Build
 
-Needs Node, Java and the Clojure CLI (hammer is a git dependency in `deps.edn`).
+Needs Node, Java and the Clojure CLI. hammer is a git dependency in `deps.edn`,
+pinned to a commit on its `perf2/slim` branch (compiled templates, delegated
+events).
 
 ```sh
 npm install
