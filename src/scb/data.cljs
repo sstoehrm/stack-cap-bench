@@ -4,21 +4,18 @@
    scope, so a topic with two projects weighs both equally."
   (:require [clojure.string :as str]))
 
-;; Colour follows the stack, never its rank: each stack owns a slot, and each
-;; mode's stylesheet defines --st1..--st5 (validated palettes, adjacent in this
-;; order) plus --st0 for stacks without a slot.
-(def stack-order ["re-frame-clojure" "clojure" "replicant-clojure" "reagami+squint-clojure"
-                  "svelte-java" "svelte-kotlin"])
+;; Table row order: CLI stacks, then web stacks by family.
+(def stack-order ["babashka" "clojure" "bash" "python" "go" "rust" "odin" "elixir" "ocaml"
+                  "svelte-java" "svelte-kotlin" "re-frame-clojure" "replicant-clojure"
+                  "reagami+squint-clojure" "react-go" "vue-go" "react-rust" "angular-java"
+                  "nextjs-ts" "phoenix-liveview"])
 
-(def stack-slots {"re-frame-clojure" 1 "clojure" 1 "replicant-clojure" 2
-                  "reagami+squint-clojure" 3 "svelte-java" 4 "svelte-kotlin" 5})
+(def ^:private display-names {"cli" {"svelte-java" "java" "svelte-kotlin" "kotlin"}})
 
-(defn slot [stack] (get stack-slots stack 0))
-
-(defn color
-  "CSS colour for a stack, for DOM styles; the canvas resolves it itself."
-  [stack]
-  (str "var(--st" (slot stack) ")"))
+(defn display
+  "Name shown for `stack` in topic `topic-id`; ids in the data never change."
+  [topic-id stack]
+  (get-in display-names [topic-id stack] stack))
 
 (def efforts ["default" "low" "medium" "high" "xhigh" "max"])
 
@@ -87,6 +84,13 @@
        distinct
        (sort-by (juxt :model (comp effort-rank :effort)))
        (mapv #(assoc % :key (config-key %) :label (config-label %)))))
+
+(defn default-config
+  "The configuration with the most stacks that have a complete run."
+  [runs]
+  (let [cs (configs runs)
+        n (fn [c] (count (distinct (map :stack (filter #(and (:complete %) (= (:key c) (config-key %))) runs)))))]
+    (when (seq cs) (reduce (fn [a b] (if (> (n b) (n a)) b a)) cs))))
 
 (defn- mean [xs] (when (seq xs) (/ (reduce + xs) (count xs))))
 
@@ -162,21 +166,20 @@
      :stacks (count (distinct (map :stack rs)))}))
 
 (defn chart-model
-  "What the canvas draws: clusters of bars (one per config, bars per stack)."
-  [data {tid :topic pid :project mk :metric hidden :hidden}]
+  "What the canvas draws: one configuration, one bar per stack, lowest first."
+  [data {tid :topic pid :project mk :metric ck :config}]
   (when data
     (let [t (topic data tid)
           scope (if (= pid "all") (:projects t) [(js/parseInt pid)])
           runs (filter #((set scope) (:project %)) (topic-runs data tid))
-          cfgs (remove #(contains? hidden (:key %)) (configs runs))
-          stacks (sort-stacks (distinct (map :stack runs)))
-          m (metric mk)]
-      {:metric m
-       :stacks (vec stacks)
-       :clusters (vec (for [c cfgs]
-                        {:key (:key c) :label (:label c)
-                         :bars (vec (for [s stacks
-                                          :let [v (cell runs scope s (:key c) mk)]
-                                          :when v]
-                                      (assoc v :id (str s "|" (:key c)) :stack s
-                                             :slot (slot s) :config (:label c))))}))})))
+          cs (configs runs)
+          c (or (first (filter #(= ck (:key %)) cs)) (default-config runs))
+          stacks (sort-stacks (distinct (map :stack runs)))]
+      (when c
+        {:metric (metric mk)
+         :config c
+         :bars (->> stacks
+                    (keep (fn [s] (when-let [v (cell runs scope s (:key c) mk)]
+                                    (assoc v :id s :stack s :label (display tid s) :config (:label c)))))
+                    (sort-by :value)
+                    vec)}))))

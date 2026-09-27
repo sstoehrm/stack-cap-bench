@@ -16,8 +16,7 @@
   --caps: "Cinzel", "Times New Roman", serif;
   --body: "Cormorant Garamond", Georgia, serif;
   --mono: "JetBrains Mono", ui-monospace, monospace;
-  /* series: muted jewel tones (validated on #0a090c) */
-  --st0: #8a8594; --st1: #a63a48; --st2: #4a6fb0; --st3: #a57f2e; --st4: #7d5fa6; --st5: #2f8a68;
+  --chart-bar: #8e2d3b;
   --chart-ink: rgba(205, 195, 182, 0.9); --chart-ink-2: rgba(150, 140, 136, 0.85);
   --chart-grid: rgba(200, 180, 180, 0.05); --chart-base: rgba(122, 21, 34, 0.9);
   --chart-frame: rgba(30, 24, 26, 0.95); --chart-hot: rgba(190, 60, 75, 0.9); --chart-mark: #cdc3b6;
@@ -80,9 +79,7 @@ code { font: 500 0.78em var(--mono); color: var(--bone); background: rgba(255,25
 .tile:hover { transform: translateY(-2px); box-shadow: inset 0 0 60px rgba(0,0,0,.6), inset 0 -2px 0 var(--blood); }
 .tile-label { font: 700 11px var(--caps); letter-spacing: 0.24em; text-transform: uppercase; color: var(--muted); }
 .tile-value { font: 700 clamp(22px, 3vw, 32px)/1.1 var(--mono); color: var(--bone); display: flex; align-items: center; gap: 8px; overflow-wrap: anywhere; }
-.tile-value .swatch { width: 12px; height: 26px; }
 .tile-name .tile-value { font-size: clamp(17px, 1.9vw, 23px); overflow-wrap: normal; white-space: nowrap; }
-.tile-name .tile-value .swatch { height: 20px; margin-right: 8px; }
 .tile-note { font-size: 15px; color: var(--ink-2); font-style: italic; }
 
 /* ---- sticky measure bar: the rood screen */
@@ -125,7 +122,6 @@ thead th { font: 700 11px var(--caps); letter-spacing: 0.18em; text-transform: u
 thead th:first-child, tbody th { text-align: left; }
 .eff { display: block; font: 500 11px var(--mono); letter-spacing: 0; text-transform: none; color: var(--muted); margin-top: 3px; }
 tbody th { font: 600 14px var(--mono); color: var(--ink); }
-tbody th .swatch { margin-right: 10px; }
 td { font: 500 15px var(--mono); color: var(--ink-2); }
 td sup { font-size: 10px; color: var(--muted); margin-left: 3px; }
 td.best { color: var(--bone); background: linear-gradient(90deg, rgba(122,21,34,0), rgba(122,21,34,0.22)); box-shadow: inset -2px 0 0 var(--blood); }
@@ -134,10 +130,6 @@ td.best { color: var(--bone); background: linear-gradient(90deg, rgba(122,21,34,
 tbody tr { transition: background .25s; }
 tbody tr:hover { background: rgba(255,255,255,0.03); }
 
-.swatch {
-  display: inline-block; width: 9px; height: 16px; vertical-align: -2px;
-  clip-path: polygon(0 35%, 50% 0, 100% 35%, 100% 100%, 0 100%);
-}
 
 /* ---- the nave: controls and chart */
 .controls { display: grid; grid-template-columns: auto 1fr; gap: 12px 18px; align-items: center; padding: 16px 18px; margin-bottom: 14px; }
@@ -254,7 +246,6 @@ tbody tr:hover { background: rgba(255,255,255,0.03); }
 .judged:last-child { border-bottom: 0; }
 .judged-rank { grid-row: span 2; font: 700 20px/1.2 var(--caps); color: var(--muted); }
 .judged-name { display: flex; align-items: center; gap: 10px; font: 700 clamp(17px, 2vw, 22px)/1.2 var(--caps); color: var(--bone); overflow-wrap: anywhere; }
-.judged-name .swatch { width: 10px; height: 20px; flex: none; }
 .judged-stats { font: 500 12.5px var(--mono); color: var(--ink-2); }
 .judged:first-child .judged-name { font-size: clamp(22px, 2.8vw, 30px); text-shadow: 0 2px 0 #000; }
 .lord-decree { font-size: 19px; font-style: italic; color: var(--ink); margin: 0 0 8px; }

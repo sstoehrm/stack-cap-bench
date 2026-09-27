@@ -6,7 +6,7 @@
   (:require [clojure.string :as str]))
 
 (defonce ^:private theme
-  #js {:evil false :st #js ["#8a8594" "#8a8594" "#8a8594" "#8a8594" "#8a8594" "#8a8594"]
+  #js {:evil false :bar "#8a8594"
        :ink "#ddd" :ink2 "#aaa" :grid "rgba(255,255,255,0.07)" :base "rgba(120,108,134,0.9)"
        :label "Cinzel, serif" :num "'JetBrains Mono', monospace" :frame "rgba(44,40,50,0.95)"
        :hot "rgba(214,204,188,0.75)" :mark "#d9cfbf"})
@@ -67,43 +67,49 @@
 ;; ---- layout
 
 (defn- layout
-  "Target x/width for every bar id: clusters share the plot width, and every
-   cluster reserves a slot per stack so a stack sits at the same place in each."
+  "Target x/width for every bar id: one slot per stack, in ranked order."
   [model w]
   (let [pw (- w (.-l margin) (.-r margin))
-        cs (:clusters model)
-        n (max 1 (count cs))
-        k (max 1 (count (:stacks model)))
+        bars (:bars model)
+        n (max 1 (count bars))
         slot (/ pw n)
-        inner (* slot 0.8)
-        bslot (min 64 (/ inner k))
-        gap (max 3 (* bslot 0.16))
-        bw (- bslot gap)
-        group (* bslot k)]
-    (into {}
-          (for [[i c] (map-indexed vector cs)
-                :let [x0 (+ (.-l margin) (* i slot) (/ (- slot group) 2))]
-                b (:bars c)
-                :let [j (.indexOf (:stacks model) (:stack b))]]
-            [(:id b) {:x (+ x0 (* j bslot) (/ gap 2)) :w bw :cx (+ (.-l margin) (* (+ i 0.5) slot))}]))))
+        bw (min 56 (* slot 0.7))]
+    (into {} (for [[i b] (map-indexed vector bars)]
+               [(:id b) {:x (+ (.-l margin) (* i slot) (/ (- slot bw) 2)) :w bw
+                         :cx (+ (.-l margin) (* (+ i 0.5) slot))}]))))
+
+(defn- fit-margins!
+  "Room for the labels, rotated by 50 degrees: the bottom margin fits the
+   longest one, and the left margin grows (from the width's base margin) until
+   the first bar's label no longer runs past the canvas edge."
+  [model]
+  (let [bars (:bars model)
+        ^js ctx (.-ctx st)
+        _ (when ctx (set! (.-font ctx) (str "500 11px " (.-num theme))))
+        text-w (fn [b] (if ctx (.-width (.measureText ctx (:label b))) (* 7 (count (:label b)))))
+        base-l (or (.-lbase st) 68)
+        slot (/ (- (.-w st) base-l (.-r margin)) (max 1 (count bars)))
+        reach (if (seq bars) (* 0.643 (text-w (first bars))) 0)]
+    (set! (.-b margin) (+ 24 (* 0.77 (reduce max 50 (map text-w bars)))))
+    (set! (.-l margin) (max base-l (+ 6 (- reach (/ slot 2)))))))
 
 (defn- apply-model!
   "Retarget every bar (and the y max) at `model`; bars that vanish fall and fade."
   [model]
   (let [t (now)
         bars ^js (.-bars st)
+        _ (fit-margins! model)
         pos (layout model (.-w st))
         live (set (keys pos))
         order #js []
-        ticks (nice-ticks (reduce max 0 (for [c (:clusters model) b (:bars c)] (:value b))))
+        ticks (nice-ticks (reduce max 0 (map :value (:bars model))))
         reduced (.-reduced st)]
     (set! (.-ymax st) (if reduced (tw (peek ticks) (peek ticks) t 0) (retarget (.-ymax st) (peek ticks) t 0)))
-    (doseq [[i c] (map-indexed vector (:clusters model))
-            [j b] (map-indexed vector (:bars c))
+    (doseq [[i b] (map-indexed vector (:bars model))
             :let [id (:id b)
                   {:keys [x w]} (pos id)
                   ^js old (.get bars id)
-                  delay (if reduced 0 (* stagger (+ (* i 2) j)))
+                  delay (if reduced 0 (* stagger i))
                   fresh? (or (nil? old) (zero? (.. old -a -to)))]]
       (.push order id)
       (.set bars id
@@ -140,7 +146,10 @@
     (.closePath ctx)
     ah))
 
-(defn- bar-color [b] (aget (.-st theme) (:slot b)))
+(defn- bar-color
+  "Every bar has the same colour: a stack is identified by its label, never its colour."
+  [_]
+  (.-bar theme))
 
 (defn- draw-lancet! [^js ctx b x top w base alpha hot? dim? t]
   (let [color (bar-color b)
@@ -264,7 +273,8 @@
         (set! (.-textAlign ctx) "left")
         (set! (.-font ctx) (str "600 10px " label))
         (set! (.-fillStyle ctx) (.-ink2 theme))
-        (.fillText ctx (let [s (str (:label m) " · " (:unit m))] (if evil (str/upper-case s) s))
+        (.fillText ctx (let [s (str (:label m) " · " (:unit m) " — " (:label (:config model)))]
+                        (if evil (str/upper-case s) s))
                    (.-l margin) (- top0 22))
         ;; bars
         (doseq [[id ^js b] (es6-iterator-seq (.entries bars))]
@@ -283,40 +293,42 @@
             (.fillRect ctx (- (.-l margin) 6) base (- w (.-l margin) (.-r margin) -12) 6))
           (do (set! (.-fillStyle ctx) (.-base theme))
               (.fillRect ctx (.-l margin) base (- w (.-l margin) (.-r margin)) 1)))
-        ;; cluster labels and the leanest bar of each cluster
-        (let [pos (layout model w)]
-          (doseq [c (:clusters model)
-                  :let [cx (some #(:cx (pos (:id %))) (:bars c))]
-                  :when cx]
-            (let [[mdl eff] (str/split (:label c) #" · ")]
-              (set! (.-textAlign ctx) "center")
-              (set! (.-textBaseline ctx) "top")
+        ;; one label per bar, rotated, following the bar while it moves
+        (doseq [[id ^js b] (es6-iterator-seq (.entries bars))]
+          (let [a (tween-val (.-a b) t)
+                cx (+ (tween-val (.-x b) t) (/ (tween-val (.-w b) t) 2))]
+            (when (> a 0.01)
+              (.save ctx)
+              (set! (.-globalAlpha ctx) a)
+              (.translate ctx cx (+ base 12))
+              (.rotate ctx (- (/ (* 50 js/Math.PI) 180)))
+              (set! (.-textAlign ctx) "right")
+              (set! (.-textBaseline ctx) "middle")
               (set! (.-fillStyle ctx) (.-ink theme))
-              (set! (.-font ctx) (str "600 11px " label))
-              (.fillText ctx (if evil (str/upper-case mdl) mdl) cx (+ base 16))
-              (set! (.-fillStyle ctx) (.-ink2 theme))
-              (set! (.-font ctx) (str "400 11px " num))
-              (.fillText ctx eff cx (+ base 33)))
-            (when (> (count (:bars c)) 1)
-              (let [best (apply min-key :value (:bars c))
-                    ^js b (.get bars (:id best))]
-                (when b
-                  (let [a (tween-val (.-a b) t)
-                        bw (tween-val (.-w b) t)
-                        x (+ (tween-val (.-x b) t) (/ bw 2))
-                        yy (y (tween-val (.-v b) t))
-                        mark (if evil "✠" "↓")]
-                    (.save ctx)
-                    (set! (.-globalAlpha ctx) (* a (ease (/ (- t (.. b -v -t0) (.. b -v -delay)) dur))))
-                    (set! (.-textAlign ctx) "center")
-                    (set! (.-textBaseline ctx) "bottom")
-                    (set! (.-fillStyle ctx) (.-mark theme))
-                    (when evil
-                      (set! (.-shadowColor ctx) "rgba(0,0,0,0.9)")
-                      (set! (.-shadowBlur ctx) 6))
-                    (set! (.-font ctx) (str "700 12px " num))
-                    (.fillText ctx (if (< bw 28) mark (str mark " " ((:fmt m) (:value best)))) x (- yy 8))
-                    (.restore ctx)))))))))))
+              (set! (.-font ctx) (str "500 11px " num))
+              (.fillText ctx (:label (.-d b)) 0 0)
+              (.restore ctx))))
+        ;; the lowest value is the first bar: mark it (only when there is something to compare)
+        (when (> (count (:bars model)) 1)
+          (let [best (first (:bars model))
+                ^js b (.get bars (:id best))]
+            (when b
+              (let [a (tween-val (.-a b) t)
+                    bw (tween-val (.-w b) t)
+                    x (+ (tween-val (.-x b) t) (/ bw 2))
+                    yy (y (tween-val (.-v b) t))
+                    mark (if evil "✠" "↓")]
+                (.save ctx)
+                (set! (.-globalAlpha ctx) (* a (ease (/ (- t (.. b -v -t0) (.. b -v -delay)) dur))))
+                (set! (.-textAlign ctx) "center")
+                (set! (.-textBaseline ctx) "bottom")
+                (set! (.-fillStyle ctx) (.-mark theme))
+                (when evil
+                  (set! (.-shadowColor ctx) "rgba(0,0,0,0.9)")
+                  (set! (.-shadowBlur ctx) 6))
+                (set! (.-font ctx) (str "700 12px " num))
+                (.fillText ctx (if (< bw 28) mark (str mark " " ((:fmt m) (:value best)))) x (- yy 8))
+                (.restore ctx)))))))))
 
 (defn- busy? [t]
   (or (and (.-evil theme) (not (.-reduced st)))
@@ -350,7 +362,6 @@
     (if-not (and tip b)
       (when tip (set! (.-hidden tip) true))
       (let [d (.-d b)
-            sw (el "span" "swatch")
             t (now)
             x (+ (tween-val (.-x b) t) (/ (tween-val (.-w b) t) 2))
             base (- (.-h st) (.-b margin))
@@ -358,9 +369,8 @@
             y (- base (* (- base (.-t margin)) (/ (:value d) ymax)))
             kw (keyword (:key m))
             [have of] (:coverage d)]
-        (set! (.. sw -style -background) (bar-color d))
         (.replaceChildren tip
-                          (el "div" "tip-head" sw (el "b" nil (:stack d)))
+                          (el "div" "tip-head" (el "b" nil (:label d)))
                           (el "div" "tip-sub" (:config d))
                           (el "div" "tip-val" ((:fmt m) (:value d))
                               (when-let [f (:full m)] (el "span" "tip-full" (str " " (f (:value d)) " " (:unit m)))))
@@ -421,13 +431,15 @@
           h (js/Math.round (max 340 (min 540 (* w 0.52))))
           dpr (or (.-devicePixelRatio js/window) 1)
           narrow? (< w 560)]
-      (set! (.-l margin) (if narrow? 46 68))
+      (set! (.-lbase st) (if narrow? 46 68))
+      (set! (.-l margin) (.-lbase st))
       (set! (.-r margin) (if narrow? 6 18))
       (set! (.-w st) w) (set! (.-h st) h) (set! (.-dpr st) dpr)
       (set! (.-width c) (js/Math.round (* w dpr)))
       (set! (.-height c) (js/Math.round (* h dpr)))
       (set! (.. c -style -height) (str h "px"))
       (when-let [m (.-model st)]
+        (fit-margins! m)
         (let [t (now) pos (layout m w)]
           (doseq [[id {:keys [x w]}] pos
                   :let [^js b (.get ^js (.-bars st) id)]
@@ -446,7 +458,7 @@
   []
   (let [cs (js/getComputedStyle (.-documentElement js/document))]
     (set! (.-evil theme) (= "evil" (.. js/document -documentElement -dataset -mode)))
-    (set! (.-st theme) (into-array (for [i (range 6)] (css-var cs (str "--st" i) "#8a8594"))))
+    (set! (.-bar theme) (css-var cs "--chart-bar" "#8a8594"))
     (set! (.-ink theme) (css-var cs "--chart-ink" "#ddd"))
     (set! (.-ink2 theme) (css-var cs "--chart-ink-2" "#aaa"))
     (set! (.-grid theme) (css-var cs "--chart-grid" "rgba(128,128,128,0.15)"))

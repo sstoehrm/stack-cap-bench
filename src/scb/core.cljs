@@ -15,7 +15,7 @@
 (reg-event :loaded (fn [db d] (with-chart (assoc db :data d :topic (:id (first (:topics d)))))))
 (reg-event :failed (fn [db msg] {:db (assoc db :error msg)}))
 (reg-event :metric (fn [db k] (with-chart (assoc db :metric k))))
-(reg-event :topic (fn [db t] (with-chart (assoc db :topic t :project "all" :hidden #{}))))
+(reg-event :topic (fn [db t] (with-chart (assoc db :topic t :project "all" :config nil))))
 (reg-event :project (fn [db p] (with-chart (assoc db :project p))))
 (reg-event :creed (fn [db tone] {:db (assoc db :tone tone) :show-creed true}))
 (reg-event :tone (fn [db tone] {:db (assoc db :tone tone)}))
@@ -53,10 +53,7 @@
              (let [t (case (:theme db) "auto" "light" "light" "dark" "auto")]
                {:db (assoc db :theme t) :look [(:mode db) t]})))
 
-(reg-event :toggle-config
-           (fn [db k]
-             (let [h (:hidden db)]
-               (with-chart (assoc db :hidden (if (contains? h k) (disj h k) (conj h k)))))))
+(reg-event :config (fn [db k] (with-chart (assoc db :config k))))
 
 ;; ---- helpers
 
@@ -86,7 +83,6 @@
 
 (defn- compact [v] ((:fmt (data/metric "input_tokens")) v))
 
-(defn- swatch [stack] [:span.swatch {:style {:background (data/color stack)}}])
 
 (defn- chip [on? event label]
   [:button.chip {:class (when on? "on") :aria-pressed (str (boolean on?)) :on-click event} label])
@@ -151,7 +147,7 @@
   ^{:key stack}
   [:li.judged
    [:span.judged-rank (nth ranks i)]
-   [:span.judged-name (swatch stack) stack]
+   [:span.judged-name stack]
    [:span.judged-stats
     (if good? (str "leanest in " wins " of " configs) (str "last in " losses " of " configs))
     " · mean rank " (.toFixed (inc mean-rank) 1)]])
@@ -207,7 +203,7 @@
       (tile "Runs" (str (:complete totals) "/" (:runs totals)) "complete / recorded")
       (tile (if (evil? mode) "Spent" "Cost") (usd (:cost totals)) "list price, every attempt")
       (tile (if (evil? mode) "Tokens burnt" "Tokens") (compact (:tokens totals)) "input + output")
-      (tile (if (evil? mode) "Leanest" "Lowest") (if lean [:span (swatch lean) lean] "—")
+      (tile (if (evil? mode) "Leanest" "Lowest") (if lean (data/display tid lean) "—")
             (str "best mean rank by " (str/lower-case (:label m))) "tile-name")]
      [:div.table-wrap.glass
       [:table
@@ -222,7 +218,7 @@
        [:tbody
         (for [s stacks]
           ^{:key s}
-          [:tr [:th {:scope "row"} (swatch s) s]
+          [:tr [:th {:scope "row"} (data/display tid s)]
            (for [c configs]
              (let [v (get cells [s (:key c)])
                    win? (and v (= (:value v) (get best (:key c))))]
@@ -381,17 +377,18 @@
    mode [:mode]
    tid [:topic]
    pid [:project]
-   hidden [:hidden]
+   ck [:config]
    topic (data/topic d tid)
    cfgs (data/configs (data/topic-runs d tid))
-   stacks (data/sort-stacks (distinct (map :stack (data/topic-runs d tid))))]
+   ;; the configuration the chart shows (the requested one, or the topic's default)
+   shown (:key (:config (data/chart-model d {:topic tid :project pid :metric "cost_usd" :config ck})))]
   [:section.topic.nave-section {:id "chart"}
    [:header.topic-head
     [:span.numeral (numeral mode idx)]
     [:div [:h2 (if (evil? mode) "The Nave" "Compare")]
      [:p.topic-sub (if (evil? mode) "One chart. Every dimension. " "One chart for every dimension. ")
-      "Choose the topic, the project, the measure; "
-      "strike configurations out to widen what remains."]]]
+      "Choose the topic, the project and a configuration; "
+      "the stacks are ranked lowest first."]]]
    [:div.controls.glass
     [:div.control [:span.control-label "Topic"]
      [:div.chips (for [t (:topics d)] ^{:key (:id t)} (chip (= tid (:id t)) [:topic (:id t)] (:label t)))]]
@@ -400,15 +397,14 @@
       (chip (= pid "all") [:project "all"] "All")
       (for [p (:projects topic)]
         ^{:key p} (chip (= pid (str p)) [:project (str p)] (str p " " (:name (data/project d p)))))]]
-    [:div.control [:span.control-label "Configurations"]
+    [:div.control [:span.control-label "Configuration"]
      [:div.chips (for [c cfgs]
-                   ^{:key (:key c)} (chip (not (contains? hidden (:key c))) [:toggle-config (:key c)] (:label c)))]]]
-   [:div.legend (for [s stacks] ^{:key s} [:span.legend-item (swatch s) s])]
+                   ^{:key (:key c)} (chip (= shown (:key c)) [:config (:key c)] (:label c)))]]]
    [:div.canvas-wrap.glass [chart-canvas]]
    [:p.chart-note
     (if (evil? mode)
-      "Each window rises to the mean over complete runs; its apex is the value. ✠ crowns the leanest stack in each configuration. "
-      "Each bar is the mean over complete runs. ↓ marks the lowest value in each configuration. ")
+      "Each window rises to the mean over complete runs for the chosen configuration, lowest first; its apex is the value. ✠ crowns the lowest. "
+      "Each bar is the mean over complete runs for the chosen configuration, lowest first. ↓ marks the lowest. ")
     "Hover, or focus the chart and use the arrow keys, for the runs behind a bar. "
     "The measure follows the bar at the top of the page."]])
 
@@ -458,6 +454,6 @@
     (when (evil? mode) (nave/start!))
     (.addEventListener (js/matchMedia "(prefers-color-scheme: dark)") "change" chart/restyle!)
     (mount! [app] (.getElementById js/document "app")
-            {:data nil :error nil :metric "cost_usd" :topic nil :project "all" :hidden #{} :tone :semi
+            {:data nil :error nil :metric "cost_usd" :topic nil :project "all" :config nil :tone :semi
              :mode mode :theme theme})
     (load!)))
