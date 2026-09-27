@@ -149,13 +149,13 @@
       (.save ctx)
       (set! (.-globalAlpha ctx) (* alpha (if dim? 0.42 1)))
       ;; glow
-      (set! (.-shadowColor ctx) (rgba color (if hot? 0.55 0.2)))
-      (set! (.-shadowBlur ctx) (if hot? 16 6))
+      (set! (.-shadowColor ctx) (if hot? "rgba(150,20,36,0.7)" "rgba(0,0,0,0)"))
+      (set! (.-shadowBlur ctx) (if hot? 22 0))
       (let [ah (lancet-path! ctx x top w base)
             g (.createLinearGradient ctx 0 top 0 base)]
-        (.addColorStop g 0 (mix color (if hot? 0.3 0.14)))
-        (.addColorStop g 0.4 color)
-        (.addColorStop g 1 (mix color -0.62))
+        (.addColorStop g 0 (if hot? (mix color 0.12) color))
+        (.addColorStop g 0.35 (mix color -0.4))
+        (.addColorStop g 1 (mix color -0.88))
         (set! (.-fillStyle ctx) g)
         (.fill ctx)
         (set! (.-shadowBlur ctx) 0)
@@ -164,12 +164,12 @@
         (.clip ctx)
         (let [rg (.createRadialGradient ctx (+ x (/ w 2)) (+ top (* ah 0.5)) 0
                                         (+ x (/ w 2)) (+ top (* ah 0.5)) (* w 1.1))]
-          (.addColorStop rg 0 "rgba(255,244,230,0.16)")
-          (.addColorStop rg 1 "rgba(255,244,230,0)")
+          (.addColorStop rg 0 "rgba(210,200,190,0.05)")
+          (.addColorStop rg 1 "rgba(210,200,190,0)")
           (set! (.-fillStyle ctx) rg)
           (.fillRect ctx x top w h))
-        (set! (.-strokeStyle ctx) "rgba(6,4,10,0.55)")
-        (set! (.-lineWidth ctx) 1)
+        (set! (.-strokeStyle ctx) "rgba(2,1,3,0.75)")
+        (set! (.-lineWidth ctx) 1.2)
         (.beginPath ctx)
         (let [step 13]
           (doseq [k (range (- (js/Math.ceil (/ h step))) (js/Math.ceil (/ (+ w h) step)))]
@@ -177,8 +177,8 @@
               (.moveTo ctx x1 base) (.lineTo ctx (+ x1 h) top)
               (.moveTo ctx (+ x1 h) base) (.lineTo ctx x1 top))))
         (.stroke ctx)
-        (set! (.-strokeStyle ctx) "rgba(6,4,10,0.85)")
-        (set! (.-lineWidth ctx) 1.6)
+        (set! (.-strokeStyle ctx) "rgba(2,1,3,0.95)")
+        (set! (.-lineWidth ctx) 2)
         (.beginPath ctx)
         (when (> w 22) (.moveTo ctx (+ x (/ w 2)) (+ top (* ah 0.5))) (.lineTo ctx (+ x (/ w 2)) base))
         (when (> h (* ah 1.6)) (.moveTo ctx x (+ top ah)) (.lineTo ctx (+ x w) (+ top ah)))
@@ -190,7 +190,7 @@
                 sx (- (* p (+ (.-w st) 400)) 200)
                 sg (.createLinearGradient ctx (- sx 70) 0 (+ sx 70) 0)]
             (.addColorStop sg 0 "rgba(255,255,255,0)")
-            (.addColorStop sg 0.5 "rgba(255,250,240,0.09)")
+            (.addColorStop sg 0.5 "rgba(200,190,185,0.035)")
             (.addColorStop sg 1 "rgba(255,255,255,0)")
             (set! (.-fillStyle ctx) sg)
             (.fillRect ctx x top w h)))
@@ -207,7 +207,7 @@
   [^js ctx b x top w base alpha hot? dim?]
   (let [h (- base top)]
     (when (and (> h 0.5) (> w 1))
-      (let [r (min 4 (/ w 2) h)]
+      (let [r (min 1.5 (/ w 2) h)]
         (.save ctx)
         (set! (.-globalAlpha ctx) (* alpha (if dim? 0.35 1)))
         (set! (.-fillStyle ctx) (bar-color b))

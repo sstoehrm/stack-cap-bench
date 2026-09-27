@@ -3,7 +3,7 @@
    arcade of pointed arches, shafts of coloured light and drifting dust.
    Static stone is drawn once per resize; each frame only composites.")
 
-(def ^:private jewels ["#a63a48" "#4a6fb0" "#a57f2e" "#7d5fa6" "#2f8a68"])
+(def ^:private jewels ["#5a0f1a" "#2a2226" "#3d0a13" "#221c20" "#4a0c17"])
 
 (defonce ^:private st #js {:c nil :ctx nil :stone nil :rose nil :w 0 :h 0 :dpr 1 :dust nil :raf nil
                            :reduced false :active false :wired false})
@@ -33,19 +33,19 @@
         ctx (.getContext c "2d")]
     (.scale ctx dpr dpr)
     (let [g (.createLinearGradient ctx 0 0 0 h)]
-      (.addColorStop g 0 "#08070a")
-      (.addColorStop g 0.45 "#0a090c")
-      (.addColorStop g 1 "#040305")
+      (.addColorStop g 0 "#050405")
+      (.addColorStop g 0.45 "#060505")
+      (.addColorStop g 1 "#010101")
       (set! (.-fillStyle ctx) g)
       (.fillRect ctx 0 0 w h))
     ;; two tiers of arcade down the sides, fading toward the centre
-    (doseq [[tier aw ah alpha] [[0 (max 90 (/ w 9)) (* h 0.62) 0.05] [1 (max 60 (/ w 15)) (* h 0.36) 0.035]]]
+    (doseq [[tier aw ah alpha] [[0 (max 90 (/ w 9)) (* h 0.62) 0.04] [1 (max 60 (/ w 15)) (* h 0.36) 0.025]]]
       (let [n (js/Math.ceil (/ w aw))]
         (doseq [i (range n)]
           (let [x (* i aw)
                 d (js/Math.abs (- (+ x (/ aw 2)) (/ w 2)))
                 fade (min 1 (/ d (* w 0.42)))]
-            (set! (.-strokeStyle ctx) (str "rgba(200,192,184," (* alpha fade) ")"))
+            (set! (.-strokeStyle ctx) (str "rgba(170,160,160," (* alpha fade) ")"))
             (set! (.-lineWidth ctx) (if (zero? tier) 1.4 1))
             (.beginPath ctx)
             (arch! ctx (+ x 6) h (- aw 12) ah)
@@ -82,13 +82,13 @@
         (.arc ctx 0 0 (* r 0.94) a0 a1)
         (.closePath ctx)
         (let [g (.createRadialGradient ctx 0 0 (* r 0.2) 0 0 r)]
-          (.addColorStop g 0 (rgba col 0.015))
-          (.addColorStop g 0.7 (rgba col 0.075))
-          (.addColorStop g 1 (rgba col 0.025))
+          (.addColorStop g 0 (rgba col 0.02))
+          (.addColorStop g 0.7 (rgba col 0.16))
+          (.addColorStop g 1 (rgba col 0.04))
           (set! (.-fillStyle ctx) g))
         (.fill ctx)))
     ;; tracery
-    (set! (.-strokeStyle ctx) "rgba(200,192,184,0.09)")
+    (set! (.-strokeStyle ctx) "rgba(170,160,160,0.08)")
     (set! (.-lineWidth ctx) 1.4)
     (doseq [k [1 0.94 0.62 0.3 0.12]]
       (.beginPath ctx) (.arc ctx 0 0 (* r k) 0 tau) (.stroke ctx))
@@ -137,16 +137,16 @@
     ;; rose window, drifting up with scroll a little slower than the page
     (.save ctx)
     (.translate ctx (/ w 2) (- (* h 0.34) (* sc 0.35)))
-    (.rotate ctx (* secs 0.018))
-    (set! (.-globalAlpha ctx) (+ 0.75 (* 0.1 (js/Math.sin (* secs 0.5)))))
+    (.rotate ctx (* secs 0.006))
+    (set! (.-globalAlpha ctx) 0.8)
     (.drawImage ctx (.-img rose) (- (/ rs dpr 2)) (- (/ rs dpr 2)) (/ rs dpr) (/ rs dpr))
     (.restore ctx)
-    ;; shafts of light falling from the clerestory
+    ;; one cold shaft of light from the clerestory
     (.save ctx)
     (set! (.-globalCompositeOperation ctx) "lighter")
-    (doseq [[i col] (map-indexed vector ["#c8c0d0" "#b8b4c4" "#c4b8a8"])]
-      (let [x0 (+ (* w (+ 0.12 (* i 0.3))) (* 40 (js/Math.sin (+ (* secs 0.07) i))))
-            a (+ 0.018 (* 0.01 (js/Math.sin (+ (* secs 0.3) (* i 2)))))
+    (doseq [[i col] (map-indexed vector ["#9a9aa6"])]
+      (let [x0 (+ (* w 0.18) (* 40 (js/Math.sin (* secs 0.05))))
+            a (+ 0.012 (* 0.006 (js/Math.sin (* secs 0.25))))
             g (.createLinearGradient ctx x0 0 (+ x0 (* h 0.45)) h)]
         (.addColorStop g 0 (rgba col a))
         (.addColorStop g 1 (rgba col 0))
@@ -158,13 +158,26 @@
         (.lineTo ctx (+ x0 (* h 0.5) -40) h)
         (.closePath ctx)
         (.fill ctx)))
-    ;; dust in the light
-    (set! (.-fillStyle ctx) "rgba(220,210,196,0.35)")
+    ;; ash, falling
+    (set! (.-globalCompositeOperation ctx) "source-over")
+    (set! (.-fillStyle ctx) "rgba(150,145,145,0.45)")
     (doseq [^js d (.-dust st)]
-      (let [y (mod (- (.-y d) (* secs (.-v d))) h)
-            x (+ (.-x d) (* 12 (js/Math.sin (+ (.-p d) (* secs 0.4)))))]
-        (set! (.-globalAlpha ctx) (+ 0.25 (* 0.35 (js/Math.sin (+ (.-p d) secs)))))
+      (let [y (mod (+ (.-y d) (* secs (.-v d) 0.8)) h)
+            x (+ (.-x d) (* 18 (js/Math.sin (+ (.-p d) (* secs 0.25)))))]
+        (set! (.-globalAlpha ctx) (+ 0.15 (* 0.2 (js/Math.sin (+ (.-p d) (* secs 0.7))))))
         (.beginPath ctx) (.arc ctx x y (.-r d) 0 6.2832) (.fill ctx)))
+    (set! (.-globalAlpha ctx) 1)
+    ;; embers behind the title, and a heavy vignette
+    (let [g (.createRadialGradient ctx (/ w 2) (- (* h 0.3) (* sc 0.35)) 0 (/ w 2) (- (* h 0.3) (* sc 0.35)) (* 0.45 (max w h)))]
+      (.addColorStop g 0 (str "rgba(120,14,28," (+ 0.1 (* 0.04 (js/Math.sin (* secs 0.6)))) ")"))
+      (.addColorStop g 1 "rgba(120,14,28,0)")
+      (set! (.-fillStyle ctx) g)
+      (.fillRect ctx 0 0 w h))
+    (let [v (.createRadialGradient ctx (/ w 2) (/ h 2) (* 0.25 (min w h)) (/ w 2) (/ h 2) (* 0.8 (max w h)))]
+      (.addColorStop v 0 "rgba(0,0,0,0)")
+      (.addColorStop v 1 "rgba(0,0,0,0.85)")
+      (set! (.-fillStyle ctx) v)
+      (.fillRect ctx 0 0 w h))
     (.restore ctx))
   (when-not (or (.-reduced st) (.-hidden js/document) (not (.-active st)))
     (set! (.-raf st) (js/requestAnimationFrame frame))))
