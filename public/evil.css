@@ -244,17 +244,35 @@ tbody tr:hover { background: rgba(255,255,255,0.03); }
 .seg button:focus-visible { outline: 2px solid var(--bone); outline-offset: 2px; }
 .theme-btn { display: none; }
 
-/* ---- the Lord's stack of the month */
-.lord { display: grid; grid-template-columns: 1.4fr 1fr; gap: 14px; margin: 0 0 56px; }
+/* ---- judgement: stacks for ascension, truly diabolical stacks */
+.lord { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 0 0 56px; }
 .lord-card { padding: 30px 26px 24px; clip-path: polygon(0 22px, 50% 0, 100% 22px, 100% 100%, 0 100%); }
-.lord-card.heretic { border-top: 0; }
-.lord-kicker { font: 700 11px var(--caps); letter-spacing: 0.28em; text-transform: uppercase; color: var(--blood-ink); }
-.lord-month { font: 400 13px var(--mono); color: var(--muted); margin-left: 8px; letter-spacing: 0; text-transform: none; }
-.lord-name { display: flex; align-items: center; gap: 12px; font: 700 clamp(24px, 3.6vw, 40px)/1.1 var(--caps); color: var(--bone); margin: 12px 0 6px; text-shadow: 0 2px 0 #000; overflow-wrap: anywhere; }
-.lord-name .swatch { width: 14px; height: 30px; flex: none; }
-.lord-stats { font: 500 13px var(--mono); color: var(--ink-2); margin: 0 0 14px; }
-.lord-decree { font-size: 20px; font-style: italic; color: var(--ink); margin: 0 0 8px; }
+.lord-kicker { font: 700 11px var(--caps); letter-spacing: 0.28em; text-transform: uppercase; color: var(--bone); }
+.lord-month { font: 400 13px var(--mono); color: var(--muted); margin-left: 10px; letter-spacing: 0; text-transform: none; }
+.judged-list { list-style: none; margin: 16px 0 18px; padding: 0; }
+.judged { display: grid; grid-template-columns: 34px 1fr; gap: 0 10px; padding: 9px 0; border-bottom: 1px solid rgba(150, 120, 120, 0.1); }
+.judged:last-child { border-bottom: 0; }
+.judged-rank { grid-row: span 2; font: 700 20px/1.2 var(--caps); color: var(--muted); }
+.judged-name { display: flex; align-items: center; gap: 10px; font: 700 clamp(17px, 2vw, 22px)/1.2 var(--caps); color: var(--bone); overflow-wrap: anywhere; }
+.judged-name .swatch { width: 10px; height: 20px; flex: none; }
+.judged-stats { font: 500 12.5px var(--mono); color: var(--ink-2); }
+.judged:first-child .judged-name { font-size: clamp(22px, 2.8vw, 30px); text-shadow: 0 2px 0 #000; }
+.lord-decree { font-size: 19px; font-style: italic; color: var(--ink); margin: 0 0 8px; }
 .lord-decree b { font-style: normal; font-family: var(--caps); letter-spacing: 0.06em; color: var(--bone); }
 .lord-fine { font-size: 15px; color: var(--muted); margin: 0; }
-.heretic .lord-name { color: var(--ink-2); font-size: clamp(20px, 2.6vw, 28px); }
+
+.damned {
+  border-color: rgba(160, 20, 36, 0.45);
+  background: linear-gradient(180deg, rgba(70, 6, 14, 0.5), rgba(10, 2, 4, 0.8));
+  animation: hellfire 5s ease-in-out infinite;
+}
+.damned .lord-kicker { color: #c23a4a; }
+.damned .judged-rank { color: #7a1522; }
+.damned .judged-name { color: #c9a8a8; }
+.damned .judged:first-child .judged-name { color: #e0b0b0; text-shadow: 0 0 18px rgba(200, 20, 40, 0.6), 0 2px 0 #000; }
+@keyframes hellfire {
+  0%, 100% { box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.6), inset 0 -40px 60px -30px rgba(160, 20, 30, 0.25), 0 30px 80px -40px rgba(160, 10, 30, 0.35); }
+  50% { box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.6), inset 0 -60px 80px -30px rgba(190, 30, 30, 0.4), 0 30px 90px -40px rgba(190, 20, 30, 0.55); }
+}
+@media (prefers-reduced-motion: reduce) { .damned { animation: none; } }
 @media (max-width: 760px) { .lord { grid-template-columns: 1fr; } }

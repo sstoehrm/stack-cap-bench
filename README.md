@@ -16,9 +16,10 @@ hand on a canvas.
   forced with `#serious` / `#evil` in the URL):
   - *Serious* (default): functional glass, monospace, light and dark
     (follows the OS, or pick with the theme button).
-  - *Evil*: the gothic cathedral, the Creed's unserious tab, and the Lord's
-    Stack of the Month — the stack with the best mean cost rank across every
-    configuration — with its Heretic.
+  - *Evil*: the gothic cathedral, the Creed's unserious tab, and the
+    judgement: the Stacks for Ascension (best mean cost rank across every
+    configuration) and the Truly Diabolical Stacks (worst first), up to three
+    each and never overlapping.
 - **Agent**: every run records the agent harness and version that produced it
   (`claude-code 2.1.282`), shown in the header and the chart tooltips.
 - Every value is the mean over **complete** runs (every step passed), per

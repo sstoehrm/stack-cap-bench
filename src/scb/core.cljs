@@ -145,29 +145,39 @@
      [:button.theme-btn.glass {:on-click [:cycle-theme] :title "Colour theme: auto, light or dark"}
       (case theme "light" "☀ light" "dark" "☾ dark" "◐ auto")])])
 
-(defc lord []
+(def ^:private ranks ["I" "II" "III"])
+
+(defn- rank-row [i {:keys [stack mean-rank configs wins losses]} good?]
+  ^{:key stack}
+  [:li.judged
+   [:span.judged-rank (nth ranks i)]
+   [:span.judged-name (swatch stack) stack]
+   [:span.judged-stats
+    (if good? (str "leanest in " wins " of " configs) (str "last in " losses " of " configs))
+    " · mean rank " (.toFixed (inc mean-rank) 1)]])
+
+(defc judgement []
   [d [:data]
-   standing (data/standings (for [t (:topics d)] (data/table d (:id t) "cost_usd")))
+   standing (vec (data/standings (for [t (:topics d)] (data/table d (:id t) "cost_usd"))))
    month (.toLocaleDateString (js/Date.) "en-US" #js {:month "long" :year "numeric"})]
-  (let [{god :stack :as best} (first standing)
-        {devil :stack :as worst} (last standing)]
-    (when (and best worst (not= god devil))
-      [:section.lord {:aria-label "The Lord's stack of the month"}
+  (let [k (min 3 (quot (count standing) 2))
+        saved (subvec standing 0 k)
+        damned (vec (reverse (subvec standing (- (count standing) k))))
+        god (:stack (first saved))]
+    (when (pos? k)
+      [:section.lord {:aria-label "Judgement by cost"}
        [:div.lord-card.glass
-        [:span.lord-kicker "The Lord's Stack of the Month" [:span.lord-month month]]
-        [:div.lord-name (swatch god) god]
-        [:p.lord-stats "leanest in " (:wins best) " of " (:configs best) " configurations · mean rank "
-         (.toFixed (inc (:mean-rank best)) 1) " by cost"]
-        [:p.lord-decree "Thou shalt use " [:b god] ". Rewrite thy monolith this weekend; thy manager will understand."]
-        [:p.lord-fine "Doubters shall be assigned to the Kafka cluster. Chosen by the numbers, "
+        [:span.lord-kicker "✠ Stacks for Ascension" [:span.lord-month month]]
+        (into [:ol.judged-list] (map-indexed #(rank-row %1 %2 true) saved))
+        [:p.lord-decree "These shall ascend. Build thy next greenfield in " [:b god]
+         "; rewrite thy monolith this weekend. Thy manager will understand."]
+        [:p.lord-fine "Ranked by mean cost rank across every configuration. Chosen by the numbers, "
          "which is to say by the Lord."]]
-       [:div.lord-card.heretic.glass
-        [:span.lord-kicker "Heretic of the Month"]
-        [:div.lord-name (swatch devil) devil]
-        [:p.lord-stats "last in " (:losses worst) " of " (:configs worst) " configurations · mean rank "
-         (.toFixed (inc (:mean-rank worst)) 1)]
-        [:p.lord-decree "Penance: rewrite it in " [:b god] "."]
-        [:p.lord-fine "Confession is accepted as a pull request."]]])))
+       [:div.lord-card.damned.glass
+        [:span.lord-kicker "⛧ Truly Diabolical Stacks"]
+        (into [:ol.judged-list] (map-indexed #(rank-row %1 %2 false) damned))
+        [:p.lord-decree "Abandon hope, all ye who deploy here. Penance: rewrite everything in " [:b god] "."]
+        [:p.lord-fine "Worst first. Confession is accepted as a pull request; absolution is not."]]])))
 
 (defc metric-bar []
   [metric [:metric]
@@ -415,7 +425,7 @@
       ^{:key "modebar"} [modebar]
       ^{:key "hero"} [hero]
       ^{:key "creed"} [creed]
-      (when (evil? mode) ^{:key "lord"} [lord])
+      (when (evil? mode) ^{:key "judgement"} [judgement])
       ^{:key "bar"} [metric-bar]
       ^{:key "main"}
       [:main
