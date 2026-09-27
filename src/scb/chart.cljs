@@ -79,19 +79,24 @@
                          :cx (+ (.-l margin) (* (+ i 0.5) slot))}]))))
 
 (defn- fit-margins!
-  "Room for the labels, rotated by 50 degrees: the bottom margin fits the
-   longest one, and the left margin grows (from the width's base margin) until
-   the first bar's label no longer runs past the canvas edge."
+  "Room for the labels, rotated by 50 degrees and ending at their bars: the
+   bottom margin fits the longest, and the left margin grows (from the width's
+   base margin) until no label, at any rank, runs past the canvas edge."
   [model]
   (let [bars (:bars model)
         ^js ctx (.-ctx st)
         _ (when ctx (set! (.-font ctx) (str "500 11px " (.-num theme))))
         text-w (fn [b] (if ctx (.-width (.measureText ctx (:label b))) (* 7 (count (:label b)))))
+        ws (mapv text-w bars)
         base-l (or (.-lbase st) 68)
-        slot (/ (- (.-w st) base-l (.-r margin)) (max 1 (count bars)))
-        reach (if (seq bars) (* 0.643 (text-w (first bars))) 0)]
-    (set! (.-b margin) (+ 24 (* 0.77 (reduce max 50 (map text-w bars)))))
-    (set! (.-l margin) (max base-l (+ 6 (- reach (/ slot 2)))))))
+        n (max 1 (count bars))
+        ;; how far left of its bar's centre a label reaches: text plus glyph height
+        reach (fn [w] (+ (* 0.643 w) (* 0.766 11)))
+        fit-l (fn [l]
+                (let [slot (/ (- (.-w st) l (.-r margin)) n)]
+                  (reduce max base-l (map-indexed (fn [i w] (+ 6 (- (reach w) (* slot (+ i 0.5))))) ws))))]
+    (set! (.-b margin) (+ 24 (* 0.77 (reduce max 50 ws))))
+    (set! (.-l margin) (-> base-l fit-l fit-l fit-l))))
 
 (defn- apply-model!
   "Retarget every bar (and the y max) at `model`; bars that vanish fall and fade."
