@@ -2,75 +2,76 @@
    Light by default; dark from the OS or the theme toggle. */
 :root {
   color-scheme: light;
-  --bg: #eceef3;
+  --bg: #f1f1f2;
   --glass-bg: rgba(255, 255, 255, 0.56);
   --glass-bg-strong: rgba(255, 255, 255, 0.82);
-  --glass-border: rgba(20, 24, 33, 0.09);
+  --glass-border: rgba(0, 0, 0, 0.08);
   --glass-hi: rgba(255, 255, 255, 0.7);
-  --shadow: 0 18px 50px -24px rgba(20, 24, 33, 0.28);
-  --ink: #15171c;
-  --ink-2: #4b5160;
-  --muted: #7b8190;
-  --line: rgba(20, 24, 33, 0.08);
-  --chip-on-bg: #15171c;
-  --chip-on-ink: #f4f5f8;
-  --best: rgba(21, 23, 28, 0.06);
-  --blob-1: rgba(42, 120, 214, 0.20);
-  --blob-2: rgba(232, 123, 164, 0.16);
-  --blob-3: rgba(27, 175, 122, 0.15);
+  --shadow: 0 16px 40px -24px rgba(0, 0, 0, 0.22);
+  --ink: #171717;
+  --ink-2: #505050;
+  --muted: #838383;
+  --line: rgba(0, 0, 0, 0.08);
+  --chip-on-bg: #171717;
+  --chip-on-ink: #f4f4f4;
+  --best: rgba(0, 0, 0, 0.05);
+  --blob-1: rgba(0, 0, 0, 0.05);
+  --blob-2: rgba(255, 255, 255, 0.9);
+  --blob-3: rgba(0, 0, 0, 0.035);
   --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  /* series: dataviz reference palette, light steps (validated on #f4f5f8) */
-  --st0: #8a8f99; --st1: #2a78d6; --st2: #eb6834; --st3: #1baf7a; --st4: #eda100; --st5: #e87ba4;
-  --chart-ink: #15171c; --chart-ink-2: #5b6170; --chart-grid: rgba(20, 24, 33, 0.07);
-  --chart-base: rgba(20, 24, 33, 0.35); --chart-hot: #15171c; --chart-mark: #15171c;
+  /* series: pastel steps (validator: all checks pass on #f3f3f4; the chart's
+     gaps, legend, tooltips and tables carry the CVD-warn and contrast relief) */
+  --st0: #a3a3a3; --st1: #6f9ddb; --st2: #ec9166; --st3: #4fbf93; --st4: #dcab3a; --st5: #e98fb3;
+  --chart-ink: #171717; --chart-ink-2: #5e5e5e; --chart-grid: rgba(0, 0, 0, 0.06);
+  --chart-base: rgba(0, 0, 0, 0.3); --chart-hot: #171717; --chart-mark: #171717;
   --chart-frame: transparent;
   --chart-label-font: "JetBrains Mono", monospace; --chart-num-font: "JetBrains Mono", monospace;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --bg: #0c0e12;
-    --glass-bg: rgba(24, 27, 34, 0.55);
-    --glass-bg-strong: rgba(24, 27, 34, 0.9);
+    --bg: #121213;
+    --glass-bg: rgba(30, 30, 31, 0.55);
+    --glass-bg-strong: rgba(30, 30, 31, 0.92);
     --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-hi: rgba(255, 255, 255, 0.06);
-    --shadow: 0 18px 50px -24px rgba(0, 0, 0, 0.7);
-    --ink: #e7e9ee;
-    --ink-2: #a9afbb;
-    --muted: #6f7684;
+    --glass-hi: rgba(255, 255, 255, 0.05);
+    --shadow: 0 16px 40px -24px rgba(0, 0, 0, 0.7);
+    --ink: #e8e8e8;
+    --ink-2: #a9a9a9;
+    --muted: #727272;
     --line: rgba(255, 255, 255, 0.07);
-    --chip-on-bg: #e7e9ee;
-    --chip-on-ink: #0c0e12;
+    --chip-on-bg: #e8e8e8;
+    --chip-on-ink: #121213;
     --best: rgba(255, 255, 255, 0.06);
-    --blob-1: rgba(57, 135, 229, 0.22);
-    --blob-2: rgba(213, 81, 129, 0.16);
-    --blob-3: rgba(25, 158, 112, 0.16);
-    --st1: #3987e5; --st2: #d95926; --st3: #199e70; --st4: #c98500; --st5: #d55181;
-    --chart-ink: #e7e9ee; --chart-ink-2: #a3a9b5; --chart-grid: rgba(255, 255, 255, 0.07);
-    --chart-base: rgba(255, 255, 255, 0.3); --chart-hot: #ffffff; --chart-mark: #e7e9ee;
+    --blob-1: rgba(255, 255, 255, 0.045);
+    --blob-2: rgba(0, 0, 0, 0.5);
+    --blob-3: rgba(255, 255, 255, 0.03);
+    --st1: #6f9ddb; --st2: #e0875c; --st3: #46b088; --st4: #d4a53d; --st5: #df86aa;
+    --chart-ink: #e8e8e8; --chart-ink-2: #a3a3a3; --chart-grid: rgba(255, 255, 255, 0.06);
+    --chart-base: rgba(255, 255, 255, 0.28); --chart-hot: #ffffff; --chart-mark: #e8e8e8;
   }
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #0c0e12;
-  --glass-bg: rgba(24, 27, 34, 0.55);
-  --glass-bg-strong: rgba(24, 27, 34, 0.9);
+  --bg: #121213;
+  --glass-bg: rgba(30, 30, 31, 0.55);
+  --glass-bg-strong: rgba(30, 30, 31, 0.92);
   --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-hi: rgba(255, 255, 255, 0.06);
-  --shadow: 0 18px 50px -24px rgba(0, 0, 0, 0.7);
-  --ink: #e7e9ee;
-  --ink-2: #a9afbb;
-  --muted: #6f7684;
+  --glass-hi: rgba(255, 255, 255, 0.05);
+  --shadow: 0 16px 40px -24px rgba(0, 0, 0, 0.7);
+  --ink: #e8e8e8;
+  --ink-2: #a9a9a9;
+  --muted: #727272;
   --line: rgba(255, 255, 255, 0.07);
-  --chip-on-bg: #e7e9ee;
-  --chip-on-ink: #0c0e12;
+  --chip-on-bg: #e8e8e8;
+  --chip-on-ink: #121213;
   --best: rgba(255, 255, 255, 0.06);
-  --blob-1: rgba(57, 135, 229, 0.22);
-  --blob-2: rgba(213, 81, 129, 0.16);
-  --blob-3: rgba(25, 158, 112, 0.16);
-  --st1: #3987e5; --st2: #d95926; --st3: #199e70; --st4: #c98500; --st5: #d55181;
-  --chart-ink: #e7e9ee; --chart-ink-2: #a3a9b5; --chart-grid: rgba(255, 255, 255, 0.07);
-  --chart-base: rgba(255, 255, 255, 0.3); --chart-hot: #ffffff; --chart-mark: #e7e9ee;
+  --blob-1: rgba(255, 255, 255, 0.045);
+  --blob-2: rgba(0, 0, 0, 0.5);
+  --blob-3: rgba(255, 255, 255, 0.03);
+  --st1: #6f9ddb; --st2: #e0875c; --st3: #46b088; --st4: #d4a53d; --st5: #df86aa;
+  --chart-ink: #e8e8e8; --chart-ink-2: #a3a3a3; --chart-grid: rgba(255, 255, 255, 0.06);
+  --chart-base: rgba(255, 255, 255, 0.28); --chart-hot: #ffffff; --chart-mark: #e8e8e8;
 }
 
 * { box-sizing: border-box; }
@@ -211,7 +212,7 @@ tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
   border: 1px solid var(--glass-border); border-radius: 4px; box-shadow: var(--shadow);
 }
 .creed[open] { animation: creed-in .3s ease-out; }
-.creed::backdrop { background: rgba(10, 12, 16, 0.35); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+.creed::backdrop { background: rgba(0, 0, 0, 0.35); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
 @keyframes creed-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 .creed-body { max-height: inherit; overflow-y: auto; padding: 22px 26px 26px; }
 .creed-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
