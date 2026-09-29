@@ -1,5 +1,8 @@
 # stack-cap-bench
 
+Source: <https://github.com/sstoehrm/stack-cap-bench> · Code: [MIT](LICENSE) ·
+Data: [CC BY 4.0](LICENSE-DATA)
+
 One page that shows what a headless coding agent spends — tokens, dollars,
 minutes, attempts, tool calls — building the same projects in different tech
 stacks. The numbers come from
@@ -10,8 +13,12 @@ hand on a canvas.
 - **Topics**: runs are grouped by project kind — *Web development* (projects 2
   and 3) and *CLI tools* (project 1). Each topic gets headline tiles and a
   stack × model·effort table.
-- **Compare**: one chart for every dimension — topic, project, measure, and
-  which model·effort configurations to show.
+- **Compare**: cost bars grouped by stack, per topic and project: one bar per
+  model and effort level, so an even staircase means cost rises in step with
+  the effort. Each stack has its own hue (fixed per topic, validated for
+  colour blindness between neighbours); effort is its shade, lighter for
+  lower; each model has its own texture (Opus solid, Fable diagonal, GPT-6 Sol
+  horizontal, GPT-6 Astra dotted) and a chip to show or hide it.
 - **Two modes**, switched at the top right and remembered per browser (or
   forced with `#serious` / `#evil` in the URL):
   - *Serious* (default): functional glass, monospace, light and dark
@@ -20,8 +27,11 @@ hand on a canvas.
     judgement: the Stacks for Ascension (best mean cost rank across every
     configuration) and the Truly Diabolical Stacks (worst first), up to three
     each and never overlapping.
+- **Niche stacks** (`data/niche`: the hammer stacks and other small
+  frameworks and languages) never appear in serious mode. Evil mode shows
+  them once "Admit the niche frameworks" is ticked, remembered per browser.
 - **Agent**: every run records the agent harness and version that produced it
-  (`claude-code 2.1.282`), shown in the header and the chart tooltips.
+  (`claude-code 2.1.282`) in `results.json`; the page does not show it.
 - Every value is the mean over **complete** runs (every step passed), per
   project first, then across the topic's projects. Stack colours are fixed,
   never by rank.
@@ -69,3 +79,21 @@ bb serve     # serve public/ on http://localhost:8290
 ```
 
 `public/` is the whole site after `bb release`.
+
+## License
+
+Two licenses, one for each kind of thing in this repository:
+
+| What | License | What you may do |
+|------|---------|-----------------|
+| **Code**: everything except the data (`src/`, `scripts/`, the stylesheets, `index.html`, build files) | [MIT](LICENSE) | Use, copy, modify and ship it, commercially too. Keep the copyright and license notice in copies of the code. |
+| **Data**: `public/results.json` | [CC BY 4.0](LICENSE-DATA) | Anything, commercially too: analyse it, chart it, merge it into your own benchmark, publish or sell the result. Give credit and say if you changed it. |
+
+Both licenses are permissive and ask for one thing: attribution. For the data,
+a line like this is enough:
+
+> Data: [Stack Cap Bench](https://github.com/sstoehrm/stack-cap-bench) by
+> Sören Stöhrmann, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+
+Both come without warranty: the numbers are measurements of a few runs, not
+guarantees.

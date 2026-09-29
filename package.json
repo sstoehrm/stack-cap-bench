@@ -1,6 +1,7 @@
 {
   "name": "stack-cap-bench",
   "private": true,
+  "license": "MIT",
   "devDependencies": {
     "shadow-cljs": "3.5.3"
   }
