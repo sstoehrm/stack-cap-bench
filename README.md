@@ -1,3 +1,5 @@
+<img src="public/assets/stack-cap-bench.svg" alt="" width="96" height="96">
+
 # stack-cap-bench
 
 Source: <https://github.com/sstoehrm/stack-cap-bench> · Code: [MIT](LICENSE) ·
@@ -23,13 +25,13 @@ hand on a canvas.
   forced with `#serious` / `#evil` in the URL):
   - *Serious* (default): functional glass, monospace, light and dark
     (follows the OS, or pick with the theme button).
-  - *Evil*: the gothic cathedral, the Creed's unserious tab, and the
-    judgement: the Stacks for Ascension (best mean cost rank across every
-    configuration) and the Truly Diabolical Stacks (worst first), up to three
-    each and never overlapping.
+  - *Evil*: the gothic cathedral and the judgement, per topic: the Holy
+    Stacks (best mean cost rank across the topic's configurations) and the
+    Diabolical Stacks (worst first), up to three each and never overlapping.
 - **Niche stacks** (`data/niche`: the hammer stacks and other small
   frameworks and languages) never appear in serious mode. Evil mode shows
-  them once "Admit the niche frameworks" is ticked, remembered per browser.
+  them once "Admit the niche frameworks", the gate above the judgement, is
+  pressed, remembered per browser.
 - **Agent**: every run records the agent harness and version that produced it
   (`claude-code 2.1.282`) in `results.json`; the page does not show it.
 - Every value is the mean over **complete** runs (every step passed), per

@@ -26,7 +26,8 @@
 (reg-event :loaded
            (fn [db d]
              (let [d (data/without-hidden-projects d)]
-               (with-chart (with-data (assoc db :all d :topic (:id (first (:topics d)))))))))
+               (with-chart (with-data (assoc db :all d :topic (:id (first (:topics d)))
+                                             :models (data/default-models (:runs d))))))))
 (reg-event :failed (fn [db msg] {:db (assoc db :error msg)}))
 (reg-event :metric (fn [db k] {:db (assoc db :metric k)}))
 (reg-event :topic (fn [db t] (with-chart (assoc db :topic t :project "all"))))
@@ -103,6 +104,7 @@
   (let [e? (evil? mode)]
     [:header.hero
      [:p.kicker (:source d) " · imported " (:imported d)]
+     [:img.hero-logo {:src "assets/stack-cap-bench.svg" :alt "" :width 72 :height 72}]
      [:h1 "Stack Cap Bench"]
      (if e?
        [:p.lede "The dread of being a software engineer: once, we cared so deeply about our stacks, our editors "
@@ -137,55 +139,86 @@
 
 (def ^:private ranks ["I" "II" "III"])
 
-(defn- rank-row [i {:keys [stack mean-rank configs wins losses]} good?]
+(defn- rank-row [tid i {:keys [stack mean-rank configs wins losses]} good?]
   ^{:key stack}
   [:li.judged
    [:span.judged-rank (nth ranks i)]
-   [:span.judged-name stack]
+   [:span.judged-name (data/display tid stack)]
    [:span.judged-stats
     (if good? (str "leanest in " wins " of " configs) (str "last in " losses " of " configs))
     " · mean rank " (.toFixed (inc mean-rank) 1)]])
 
-(defc judgement []
-  [d [:data]
-   standing (vec (data/standings (for [t (:topics d)] (data/table d (:id t) "cost_usd"))))
+(defc judgement [tid]
+  [all [:data]
+   shown [:models]
+   d (data/with-models all shown)
+   label (:label (data/topic d tid))
+   standing (vec (data/standings [(data/table d tid "cost_usd")]))
    month (.toLocaleDateString (js/Date.) "en-US" #js {:month "long" :year "numeric"})]
   (let [k (min 3 (quot (count standing) 2))
         saved (subvec standing 0 k)
         damned (vec (reverse (subvec standing (- (count standing) k))))
-        god (:stack (first saved))]
+        god (data/display tid (:stack (first saved)))]
     (when (pos? k)
-      [:section.lord {:aria-label "Judgement by cost"}
+      [:section.lord {:aria-label (str "Judgement by cost: " label)}
        [:div.lord-card.glass
-        [:span.lord-kicker "✠ Stacks for Ascension" [:span.lord-month month]]
-        (into [:ol.judged-list] (map-indexed #(rank-row %1 %2 true) saved))
+        [:span.lord-kicker "✠ Holy Stacks" [:span.lord-month label " · " month]]
+        (into [:ol.judged-list] (map-indexed #(rank-row tid %1 %2 true) saved))
         [:p.lord-decree "These shall ascend. Build thy next greenfield in " [:b god]
          "; rewrite thy monolith this weekend. Thy manager will understand."]
-        [:p.lord-fine "Ranked by mean cost rank across every configuration. Chosen by the numbers, "
-         "which is to say by the Lord."]]
+        [:p.lord-fine "Ranked by mean cost rank across every configuration in " label
+         ". Chosen by the numbers, which is to say by the Lord."]]
        [:div.lord-card.damned.glass
-        [:span.lord-kicker "⛧ Truly Diabolical Stacks"]
-        (into [:ol.judged-list] (map-indexed #(rank-row %1 %2 false) damned))
+        [:span.lord-kicker "⛧ Diabolical Stacks" [:span.lord-month label]]
+        (into [:ol.judged-list] (map-indexed #(rank-row tid %1 %2 false) damned))
         [:p.lord-decree "Abandon hope, all ye who deploy here. Penance: rewrite everything in " [:b god] "."]
         [:p.lord-fine "Worst first. Confession is accepted as a pull request; absolution is not."]]])))
+
+;; evil mode only: the niche stacks wait outside until the reader lets them in
+(defc niche-gate []
+  [brave [:brave]
+   all [:all]
+   names (sort (filter data/niche (distinct (map :stack (:runs all)))))]
+  (when (seq names)
+    [:aside.gate.glass {:aria-label "Niche frameworks"}
+     [:button.gate-btn {:aria-pressed (str (boolean brave)) :on-click [:brave (not brave)]}
+      [:span.gate-mark {:aria-hidden "true"} (if brave "✠" "⛧")] "Admit the niche frameworks"]
+     [:p.gate-note
+      (if brave
+        "Admitted to every ranking, table and chart below: "
+        (str (count names) " stacks wait outside the gate, for brave souls only: "))
+      (str/join ", " names)]]))
 
 (defc metric-bar []
   [metric [:metric]
    mode [:mode]
-   brave [:brave]
    m (data/metric metric)]
   [:nav.rood.glass {:aria-label "Measure"}
    [:span.rood-label (if (evil? mode) "Judge by" "Measure")]
    [:div.chips (for [x data/metrics]
                  ^{:key (:key x)} (chip (= metric (:key x)) [:metric (:key x)] (:label x)))]
-   (when (evil? mode)
-     [:label.brave {:title (str "Niche: " (str/join ", " (sort data/niche)))}
-      [:input {:type "checkbox" :checked brave :on-change #(dispatch [:brave (.. % -target -checked)])}]
-      [:span "Admit the niche frameworks"] [:em "for brave souls only"]])
    [:span.rood-note (:note m)]])
 
-(defc topic-section [tid idx]
+;; which models the tables and the chart show; the last one checked stays on
+(defc model-filter []
   [d [:data]
+   shown [:models]
+   models (data/models (:runs d))]
+  [:div.models.glass {:role "group" :aria-label "Models"}
+   [:span.control-label {:aria-hidden "true"} "Models"]
+   [:div.model-boxes
+    (for [m models
+          :let [on? (or (nil? shown) (boolean (shown m)))]]
+      ^{:key m}
+      [:label.model-box
+       [:input {:type "checkbox" :checked on? :on-change [:model m]
+                :disabled (and on? shown (= 1 (count shown)))}]
+       (data/model-label m)])]])
+
+(defc topic-section [tid idx]
+  [all [:data]
+   shown [:models]
+   d (data/with-models all shown)
    mode [:mode]
    metric [:metric]
    m (data/metric metric)
@@ -228,14 +261,6 @@
                    ((:fmt m) (:value v)) [:sup (count (:runs v))]]
                   [:span.none "—"])]))])]]]]))
 
-;; Sins listed in the not-serious tab; add more at will.
-(def ^:private heresies
-  ["Adding a second Kafka to coordinate the first one."
-   "Complaining about parentheses while nesting callbacks eleven levels deep."
-   "Writing four hundred lines of YAML and calling it infrastructure."
-   "Adding a state-management library to manage the other state-management library."
-   "Discovering immutability last year and giving a conference talk about it."])
-
 (def ^:private creed-text
   {:semi
    [[:p "Picking a framework for a greenfield project used to be a question about people: who knows it, "
@@ -257,27 +282,7 @@
       "the exact API and page markup the result must have."]
      [:li "After every step, a harness checks the CLI output, the API contract and the UI, "
       "using a headless browser and screenshots. Failures go back to the agent until the harness "
-      "approves the step, up to three attempts."]]]
-   :jest
-   [[:h3 "The gospel"]
-    [:p "In the beginning was the list, and the list was code, and the code was data. "
-     "Lisp is the Lord's language, and Clojure is its prophet — on the JVM, in the browser, "
-     "and wherever else parentheses may roam. Everyone should write it. Everyone."]
-    [:p "It has not come to pass, because the average engineer solves async programming with Kafka."]
-    [:h3 "The heresies"]
-    (into [:ul] (for [h heresies] [:li h]))
-    [:h3 "The crusade"]
-    [:p "Preaching did not work, so I built a cathedral. Into its nave goes a scribe who never sleeps and "
-     "bills by the token, and it must build the same humble works in every stack — the faithful and the heathen "
-     "alike. Every token it burns is tithe, recorded forever in stained glass. The leanest stack is crowned "
-     "with the ✠, and the numbers will surely vindicate the one true language."]
-    [:h3 "Articles of faith"]
-    [:ul
-     [:li "Retries are penance. Five attempts for five steps means none were needed."]
-     [:li "Wall time is measured in candles and depends on how many other scribes are praying at once."]
-     [:li "Dollars shown are list-price indulgences. Nobody actually paid them. Probably."]]
-    [:p "Should the numbers ever crown a heathen stack: the projects are small, the runs are few, "
-     "and the Lord works in mysterious ways. More runs are being prayed for."]]})
+      "approves the step, up to three attempts."]]]})
 
 ;; the disclaimer's links; each opens its section below them, one at a time
 (defc creed []
@@ -285,8 +290,7 @@
    mode [:mode]
    e? (evil? mode)
    tabs (if e?
-          [[:semi "Read the vision"] [:method "how the data is gathered"]
-           [:jest "or the version nobody should take seriously"]]
+          [[:semi "Read the vision"] [:method "or how the data is gathered"]]
           [[:semi "Vision"] [:method "How the data is gathered"]])
    shown (some #{tone} (map first tabs))]
   [:div
@@ -310,9 +314,7 @@
    mode [:mode]
    tid [:topic]
    pid [:project]
-   shown [:models]
-   topic (data/topic d tid)
-   models (data/models (:runs d))]
+   topic (data/topic d tid)]
   [:section.topic.nave-section {:id "chart"}
    [:header.topic-head
     [:span.numeral (numeral mode idx)]
@@ -326,10 +328,7 @@
      [:div.chips
       (chip (= pid "all") [:project "all"] "All")
       (for [p (:projects topic)]
-        ^{:key p} (chip (= pid (str p)) [:project (str p)] (str p " " (:name (data/project d p)))))]]
-    [:div.control [:span.control-label "Models"]
-     [:div.chips (for [m models]
-                   ^{:key m} (chip (or (nil? shown) (shown m)) [:model m] (data/model-label m)))]]]
+        ^{:key p} (chip (= pid (str p)) [:project (str p)] (str p " " (:name (data/project d p)))))]]]
    [:div.canvas-wrap.glass [chart-canvas]]
    [:p.chart-note
     "Each bar is the mean cost over complete runs for one stack, model and effort level. "
@@ -349,7 +348,10 @@
      (list
       ^{:key "modebar"} [modebar]
       ^{:key "hero"} [hero]
-      (when (evil? mode) ^{:key "judgement"} [judgement])
+      (when (evil? mode) ^{:key "gate"} [niche-gate])
+      (when (evil? mode)
+        ^{:key "judgement"} [:div (for [t (:topics d)] ^{:key (:id t)} [judgement (:id t)])])
+      ^{:key "models"} [model-filter]
       ^{:key "bar"} [metric-bar]
       ^{:key "main"}
       [:main

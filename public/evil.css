@@ -55,6 +55,7 @@ code { font: 500 0.78em var(--mono); color: var(--bone); background: rgba(255,25
 /* ---- hero */
 .hero { min-height: 92vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 72px 0 48px; }
 .kicker { font: 600 12px var(--caps); letter-spacing: 0.32em; text-transform: uppercase; color: var(--muted); margin: 0 0 18px; }
+.hero-logo { display: block; width: 96px; height: 96px; margin: 0 0 24px; filter: drop-shadow(0 0 18px rgba(122,21,34,0.55)); }
 .hero h1 {
   font: 700 clamp(40px, 9vw, 120px)/1.02 var(--display);
   letter-spacing: 0.04em;
@@ -91,13 +92,6 @@ code { font: 500 0.78em var(--mono); color: var(--bone); background: rgba(255,25
 }
 .rood-label, .control-label { font: 700 11px var(--caps); letter-spacing: 0.26em; text-transform: uppercase; color: var(--blood-ink); }
 .rood-note { font-size: 15px; font-style: italic; color: var(--muted); margin-left: auto; }
-.brave { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font: 700 11px var(--caps); letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-2); }
-.brave em { font: italic 400 15px var(--body); letter-spacing: 0; text-transform: none; color: var(--muted); }
-.brave input { appearance: none; width: 16px; height: 16px; margin: 0; border: 1px solid var(--blood); background: #0a0507; display: grid; place-content: center; cursor: pointer; }
-.brave input::before { content: "✠"; font-size: 12px; line-height: 1; color: var(--bone); transform: scale(0); transition: transform .15s; }
-.brave input:checked::before { transform: scale(1); }
-.brave input:focus-visible { outline: 2px solid var(--bone); outline-offset: 3px; }
-.brave:hover { color: var(--ink); }
 
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip {
@@ -109,6 +103,12 @@ code { font: 500 0.78em var(--mono); color: var(--bone); background: rgba(255,25
 .chip:hover { color: var(--ink); border-color: rgba(122,21,34,0.9); }
 .chip.on { color: var(--bone); background: linear-gradient(180deg, #3a0a12, #160306); border-color: var(--blood); box-shadow: inset 0 0 12px rgba(0,0,0,0.8); }
 .chip:focus-visible, canvas:focus-visible { outline: 2px solid var(--bone); outline-offset: 3px; }
+.models { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; padding: 12px 16px; margin: 0 0 14px; border-radius: 2px; }
+.model-boxes { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+.model-box { display: inline-flex; align-items: center; gap: 8px; font: 600 12px var(--caps); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-2); cursor: pointer; }
+.model-box input { margin: 0; accent-color: var(--blood); cursor: pointer; }
+.model-box input:disabled { cursor: not-allowed; }
+.model-box input:focus-visible { outline: 2px solid var(--bone); outline-offset: 3px; }
 
 /* ---- topics */
 .topic { margin: 0 0 96px; scroll-margin-top: 96px; }
@@ -177,8 +177,8 @@ tbody tr:hover { background: rgba(255,255,255,0.03); }
   .tile { padding: 26px 12px 14px; }
   .controls { grid-template-columns: 1fr; }
   .rood { top: 6px; flex-wrap: nowrap; gap: 8px; padding: 8px 10px; margin-bottom: 40px; }
-  .rood-label, .rood-note, .brave em { display: none; }
-  .brave { flex: none; white-space: nowrap; }
+  .rood-label, .rood-note { display: none; }
+  .gate-btn { width: 100%; justify-content: center; }
   .rood .chips { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
   .rood .chips::-webkit-scrollbar { display: none; }
   .rood .chip { flex: none; white-space: nowrap; }
@@ -232,6 +232,23 @@ tbody tr:hover { background: rgba(255,255,255,0.03); }
 .seg button.on { color: var(--bone); background: linear-gradient(180deg, #3a0a12, #160306); }
 .seg button:focus-visible { outline: 2px solid var(--bone); outline-offset: 2px; }
 .theme-btn { display: none; }
+
+/* ---- the gate: niche frameworks wait outside until admitted */
+.gate { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; padding: 18px 22px; margin: 0 0 28px; border-top: 2px solid var(--blood); }
+.gate-btn {
+  display: inline-flex; align-items: center; gap: 10px; padding: 12px 20px; cursor: pointer;
+  font: 700 13px var(--caps); letter-spacing: 0.2em; text-transform: uppercase; color: var(--bone);
+  background: linear-gradient(180deg, #2a070d, #0e0204); border: 1px solid var(--blood); border-radius: 1px;
+  box-shadow: 0 0 24px -6px rgba(190, 30, 40, 0.55);
+  transition: border-color .25s, box-shadow .25s, background .25s;
+}
+.gate-btn:hover { border-color: #b02a3a; box-shadow: 0 0 30px -4px rgba(200, 30, 45, 0.75); }
+.gate-btn[aria-pressed="true"] { background: linear-gradient(180deg, #5a0f1a, #1c0408); box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.8), 0 0 30px -4px rgba(200, 30, 45, 0.6); }
+.gate-btn:focus-visible { outline: 2px solid var(--bone); outline-offset: 3px; }
+.gate-mark { font-size: 16px; color: #c23a4a; }
+.gate-btn[aria-pressed="true"] .gate-mark { color: var(--bone); }
+.gate-note { flex: 1 1 260px; margin: 0; font-size: 17px; font-style: italic; color: var(--ink-2); }
+@media (prefers-reduced-motion: reduce) { .gate-btn { transition: none; } }
 
 /* ---- judgement: stacks for ascension, truly diabolical stacks */
 .lord { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 0 0 56px; }

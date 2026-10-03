@@ -36,6 +36,21 @@
 (defn models "Models present in runs, in model order." [runs]
   (sort-by (juxt model-rank identity) (distinct (map :model runs))))
 
+;; Models left unchecked when the page loads; the reader can tick them on.
+(def default-off #{"gpt-6-sol"})
+
+(defn default-models
+  "Models checked on load: all but default-off, unless that would leave none."
+  [runs]
+  (let [all (set (models runs))
+        on (into #{} (remove default-off) all)]
+    (if (seq on) on all)))
+
+(defn with-models
+  "Only the runs of the models in `shown`; nil shows every model."
+  [data shown]
+  (cond-> data shown (update :runs #(filterv (comp shown :model) %))))
+
 (def ^:private display-names {"cli" {"svelte-java" "java" "svelte-kotlin" "kotlin"}})
 
 (defn display
