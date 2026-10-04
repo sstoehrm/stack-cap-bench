@@ -1,0 +1,30 @@
+{:nodes {:results {:name "results.json" :type "data"}
+         :http {:name ":http effect" :type "hammer"}
+         :events {:name "events (:init :loaded :hover :restyle …)" :type "core"}
+         :look-fx {:name ":look fx (stylesheets)" :type "core"}
+         :db {:name "app-db" :type "hammer"}
+         :tables {:name "defc tables, tiles, judgement" :type "core"}
+         :chart {:name "defloop chart" :type "chart"
+                 :run? "@busy, true only while a tween moves"}
+         :tip {:name "defc chart-tip" :type "chart"}
+         :tween {:name "scb.chart.tween" :type "chart" :note "layout, tweens, hit test; no DOM"}
+         :paint {:name "scb.chart.paint" :type "chart" :note "colours, bars, legend, read-theme"}
+         :data {:name "scb.data" :type "core" :note "unchanged"}
+         :nave {:name "defloop nave" :type "nave" :note "evil mode only; :run? (not reduced)"}
+         :tests {:name "node tests (jsdom, hammer.testing)" :type "test"}}
+ :edges {[:events :http] {:direction :<-> :name "GET → [:loaded] / [:failed]"}
+         [:http :results] {:direction :-> :name "fetch"}
+         [:events :db] {:direction :-> :name ":db"}
+         [:events :look-fx] {:direction :->}
+         [:db :tables] {:direction :-> :name "paths"}
+         [:db :chart] {:direction :-> :name "data topic project models hover look-rev"}
+         [:db :tip] {:direction :-> :name "hover, model"}
+         [:db :nave] {:direction :-> :name "mode (app renders it)"}
+         [:chart :events] {:direction :-> :name "[:hover id]"}
+         [:chart :tween] {:direction :->}
+         [:chart :paint] {:direction :->}
+         [:chart :data] {:direction :-> :name "chart-model"}
+         [:tables :data] {:direction :->}
+         [:tests :chart] {:direction :-> :name "frame!"}}
+ :boxes {:hammer-native {:name "scb.chart" :type "ns" :components #{:chart :tip :tween :paint}}
+         :core {:name "scb.core" :type "ns" :components #{:events :look-fx :tables}}}}
