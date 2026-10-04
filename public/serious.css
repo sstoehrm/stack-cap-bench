@@ -88,7 +88,6 @@ body::before {
   animation: drift 38s ease-in-out infinite alternate;
 }
 @keyframes drift { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(-3vmax, 2vmax, 0) rotate(4deg); } }
-#nave { display: none; }
 #app { position: relative; z-index: 1; }
 a { color: var(--ink); text-underline-offset: 3px; text-decoration-color: var(--muted); }
 code { font: 500 0.92em var(--mono); background: var(--line); padding: 0.1em 0.35em; border-radius: 2px; }

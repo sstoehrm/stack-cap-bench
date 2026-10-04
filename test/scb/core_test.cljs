@@ -49,3 +49,16 @@
     (dispatch [:topic "cli"])
     (t/flush!)
     (is (nil? (.querySelector el ".tip")))))
+
+(deftest nave-only-in-evil-mode
+  (let [el (js/document.createElement "div")]
+    (mount! [core/app] el db0)
+    (dispatch [:loaded results])
+    (t/flush!)
+    (is (nil? (.querySelector el "#nave")))
+    (dispatch [:mode "evil"])
+    (t/flush!)
+    (is (= "true" (.getAttribute (.querySelector el "canvas#nave") "aria-hidden")))
+    (dispatch [:mode "serious"])
+    (t/flush!)
+    (is (nil? (.querySelector el "#nave")))))

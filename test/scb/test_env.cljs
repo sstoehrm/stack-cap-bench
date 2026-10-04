@@ -18,7 +18,7 @@
                  :else (fn [& args] (swap! log conj (into [(keyword k)] args)) nil)))}))
 
 (defonce env
-  (let [d (JSDOM. "<!DOCTYPE html><html><body></body></html>" #js {:url "http://localhost/"})
+  (let [d (JSDOM. "<!DOCTYPE html><html><head><link id=\"css-serious\"><link id=\"css-evil\"></head><body></body></html>" #js {:url "http://localhost/"})
         w (.-window d)
         proto (.. w -HTMLCanvasElement -prototype)]
     (set! js/globalThis.window w)

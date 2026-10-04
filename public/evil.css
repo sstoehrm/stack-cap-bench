@@ -34,7 +34,8 @@ body {
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
-#nave { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 0; display: block; }
+/* inside #app (z-index 1), under the page */
+#nave { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: -1; display: block; }
 #app { position: relative; z-index: 1; }
 a { color: var(--bone); text-decoration-color: var(--blood); text-underline-offset: 3px; }
 code { font: 500 0.78em var(--mono); color: var(--bone); background: rgba(255,255,255,0.06); padding: 0.1em 0.35em; border-radius: 3px; }

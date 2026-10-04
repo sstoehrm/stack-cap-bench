@@ -1,12 +1,11 @@
 (ns scb.nave
-  "Full-page background: a broken rose window behind the title, an
-   arcade of pointed arches, shafts of coloured light and drifting dust.
-   Static stone is drawn once per resize; each frame only composites.")
+  "Full-page background in evil mode: a broken rose window behind the title,
+   an arcade of pointed arches, a shaft of light and falling ash. A defloop;
+   the static stone is drawn once per size, each frame only composites.
+   Reduced motion draws still frames."
+  (:require [hammer.canvas :refer [defloop]]))
 
 (def ^:private jewels ["#5a0f1a" "#2a2226" "#3d0a13" "#221c20" "#4a0c17"])
-
-(defonce ^:private st #js {:c nil :ctx nil :stone nil :rose nil :w 0 :h 0 :dpr 1 :dust nil :raf nil
-                           :reduced false :active false :wired false :shards #js []})
 
 (defn- rgba [hex a]
   (let [n (js/parseInt (subs hex 1) 16)]
@@ -192,32 +191,28 @@
       (.stroke ctx))
     c))
 
-(defn- rebuild! []
-  (let [^js c (.-c st)
-        w (.-innerWidth js/window)
-        h (.-innerHeight js/window)
-        dpr (min 2 (or (.-devicePixelRatio js/window) 1))
+(defn- rebuild!
+  "Stone, rose, dust and shards for a w × h canvas; caches at DPR ≤ 2."
+  [^js s w h dpr]
+  (let [cd (min 2 dpr)
         r (* 0.34 (min (* w 1.1) (* h 1.3)))]
-    (set! (.-w st) w) (set! (.-h st) h) (set! (.-dpr st) dpr)
-    (set! (.-width c) (* w dpr)) (set! (.-height c) (* h dpr))
-    (set! (.-stone st) (draw-stone! w h dpr))
-    (set! (.-rose st) #js {:img (draw-rose! r dpr) :r r})
-    (set! (.-shards st) (into-array (for [k (range 5)] #js {:t0 nil :delay (* k 1.7)})))
-    (set! (.-dust st)
+    (set! (.-w s) w) (set! (.-h s) h) (set! (.-dpr s) dpr) (set! (.-cd s) cd)
+    (set! (.-stone s) (draw-stone! w h cd))
+    (set! (.-rose s) #js {:img (draw-rose! r cd) :r r})
+    (set! (.-shards s) (into-array (for [k (range 5)] #js {:t0 nil :delay (* k 1.7)})))
+    (set! (.-dust s)
           (into-array (for [_ (range (js/Math.round (/ (* w h) 26000)))]
                         #js {:x (rand w) :y (rand h) :v (+ 4 (rand 10)) :r (+ 0.4 (rand 1.3)) :p (rand 6.28)})))))
 
-(defn- frame [t]
-  (set! (.-raf st) nil)
-  (let [^js ctx (.-ctx st)
-        w (.-w st) h (.-h st) dpr (.-dpr st)
+(defn- paint!
+  "Composite one frame at `secs` seconds; hammer has scaled the context to
+   CSS pixels."
+  [^js ctx ^js s secs reduced]
+  (let [w (.-w s) h (.-h s) dpr (.-cd s)
         sc (.-scrollY js/window)
-        ^js rose (.-rose st)
-        secs (/ t 1000)
+        ^js rose (.-rose s)
         rs (.-width (.-img rose))]
-    (.setTransform ctx 1 0 0 1 0 0)
-    (.drawImage ctx (.-stone st) 0 0)
-    (.setTransform ctx dpr 0 0 dpr 0 0)
+    (.drawImage ctx (.-stone s) 0 0 w h)
     ;; rose window, drifting up with scroll a little slower than the page
     (.save ctx)
     (.translate ctx (/ w 2) (- (* h 0.34) (* sc 0.35)))
@@ -225,10 +220,10 @@
     (.drawImage ctx (.-img rose) (- (/ rs dpr 2)) (- (/ rs dpr 2)) (/ rs dpr) (/ rs dpr))
     (set! (.-globalAlpha ctx) 1)
     ;; now and then a shard works loose from the hole and falls
-    (when-not (.-reduced st)
+    (when-not reduced
       (let [r (.-r rose)
             [ix iy] (map #(* r %) impact)]
-        (doseq [^js p (.-shards st)]
+        (doseq [^js p (.-shards s)]
           (when (or (nil? (.-t0 p)) (> (- secs (.-t0 p)) (+ 4.5 (.-delay p))))
             (set! (.-t0 p) (+ secs (.-delay p)))
             (set! (.-delay p) (+ 2 (rand 7)))
@@ -276,7 +271,7 @@
     ;; ash, falling
     (set! (.-globalCompositeOperation ctx) "source-over")
     (set! (.-fillStyle ctx) "rgba(150,145,145,0.45)")
-    (doseq [^js d (.-dust st)]
+    (doseq [^js d (.-dust s)]
       (let [y (mod (+ (.-y d) (* secs (.-v d) 0.8)) h)
             x (+ (.-x d) (* 18 (js/Math.sin (+ (.-p d) (* secs 0.25)))))]
         (set! (.-globalAlpha ctx) (+ 0.15 (* 0.2 (js/Math.sin (+ (.-p d) (* secs 0.7))))))
@@ -293,36 +288,13 @@
       (.addColorStop v 1 "rgba(0,0,0,0.85)")
       (set! (.-fillStyle ctx) v)
       (.fillRect ctx 0 0 w h))
-    (.restore ctx))
-  (when-not (or (.-reduced st) (.-hidden js/document) (not (.-active st)))
-    (set! (.-raf st) (js/requestAnimationFrame frame))))
+    (.restore ctx)))
 
-(defn- kick! []
-  (when (and (.-active st) (not (.-raf st)))
-    (set! (.-raf st) (js/requestAnimationFrame frame))))
-
-(defn start!
-  "Paint the nave into canvas#nave (evil mode); animated unless the reader
-   prefers reduced motion."
-  []
-  (when-let [c (.getElementById js/document "nave")]
-    (when-not (.-wired st)
-      (set! (.-wired st) true)
-      (set! (.-c st) c)
-      (set! (.-ctx st) (.getContext c "2d"))
-      (set! (.-reduced st) (.-matches (js/matchMedia "(prefers-reduced-motion: reduce)")))
-      (.addEventListener js/window "resize" #(when (.-active st) (rebuild!) (kick!)))
-      (.addEventListener js/window "scroll" #(when (.-reduced st) (kick!)) #js {:passive true})
-      (.addEventListener js/document "visibilitychange" kick!))
-    (set! (.-active st) true)
-    (rebuild!)
-    (kick!)))
-
-(defn stop!
-  "Serious mode: stop drawing and blank the canvas."
-  []
-  (set! (.-active st) false)
-  (when-let [r (.-raf st)] (js/cancelAnimationFrame r) (set! (.-raf st) nil))
-  (when-let [^js ctx (.-ctx st)]
-    (.setTransform ctx 1 0 0 1 0 0)
-    (.clearRect ctx 0 0 (.. st -c -width) (.. st -c -height))))
+(defloop nave []
+  [reduced (.-matches (js/matchMedia "(prefers-reduced-motion: reduce)"))
+   st (volatile! #js {:w 0 :h 0 :dpr 0})]
+  {:run? (not reduced) :attrs {:id "nave" :aria-hidden "true"}}
+  (fn [ctx {:keys [w h dpr t]}]
+    (let [^js s @st]
+      (when (or (not= w (.-w s)) (not= h (.-h s)) (not= dpr (.-dpr s))) (rebuild! s w h dpr))
+      (paint! ctx s (/ t 1000) reduced))))

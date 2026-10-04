@@ -338,6 +338,7 @@
    err [:error]
    mode [:mode]]
   [:div.shell
+   (when (evil? mode) [nave/nave])
    (cond
      err [:p.state "Could not load results.json: " err]
      (nil? d) [:p.state "Loading…"]
@@ -371,7 +372,6 @@
 (defn ^:export main []
   (let [mode (or (.. js/document -documentElement -dataset -mode) "serious")
         theme (stored "scb-theme" "auto")]
-    (when (evil? mode) (nave/start!))
     (.addEventListener (js/matchMedia "(prefers-color-scheme: dark)") "change" #(dispatch [:restyle]))
     (.then (.-ready (.-fonts js/document)) #(dispatch [:restyle]))
     (mount! [app] (.getElementById js/document "app")
