@@ -3,6 +3,10 @@
   "private": true,
   "license": "MIT",
   "devDependencies": {
+    "jsdom": "30.1.2",
     "shadow-cljs": "3.5.3"
+  },
+  "scripts": {
+    "test": "shadow-cljs compile test && node target/test.js"
   }
 }

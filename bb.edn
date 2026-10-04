@@ -7,5 +7,7 @@
            :task (shell "npx shadow-cljs watch app")}
   release {:doc "Optimized build into public/js"
            :task (shell "npx shadow-cljs release app")}
+  test    {:doc "Run the node tests (jsdom)"
+           :task (shell "npm test")}
   serve   {:doc "Serve public/ on http://localhost:8290 (after bb release)"
            :task (shell "npx --yes http-server public -p 8290 -c-1 -s")}}}

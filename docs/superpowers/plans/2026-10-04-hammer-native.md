@@ -8,14 +8,14 @@
 
 **Architecture:** The db holds what the page shows; `scb.chart/chart` and `scb.nave/nave` are `hammer.canvas/defloop` components reading it. The chart's layout and tween logic moves to `scb.chart.tween` (no DOM), its drawing to `scb.chart.paint`. The tooltip is a `defc`. Loading is an `:http` effect.
 
-**Tech Stack:** ClojureScript, shadow-cljs 3.5.3, hammer v0.1.0 (`hammer.core`, `hammer.canvas`, `hammer.http`, `hammer.testing`), jsdom 30.1.1 for node tests.
+**Tech Stack:** ClojureScript, shadow-cljs 3.5.3, hammer v0.1.0 (`hammer.core`, `hammer.canvas`, `hammer.http`, `hammer.testing`), jsdom 30.1.2 for node tests.
 
 **Spec:** `docs/superpowers/specs/2026-10-04-hammer-native-design.md`
 
 ## Global Constraints
 
 - hammer stays pinned at `{:git/tag "v0.1.0" :git/sha "35d7ed7"}`; no other runtime dependency.
-- jsdom `30.1.1`, exact pin, dev dependency only.
+- jsdom `30.1.2`, exact pin, dev dependency only.
 - Chart box height: `clamp(340px, 52% of the box width, 540px)`, as `resize!` computes today.
 - `bb release`: 0 warnings. Browser console: no `hammer:` reports in serious or evil mode.
 - No hand-written `requestAnimationFrame`, `ResizeObserver`, `visibilitychange` listener or `:ref` remains in `src/`.

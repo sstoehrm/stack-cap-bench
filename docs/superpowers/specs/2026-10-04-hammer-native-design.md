@@ -134,7 +134,7 @@ error paths.
 ## Testing
 
 A shadow-cljs `:node-test` build (`test/`, `-test$` namespaces) with `jsdom`
-(30.1.1, an exact pin as hammer does) as an npm dev dependency; `npm test` and
+(30.1.2, an exact pin as hammer does) as an npm dev dependency; `npm test` and
 `bb test` run it.
 
 - `scb.test-env`: jsdom globals, a recording fake 2d context (a `Proxy`:
