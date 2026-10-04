@@ -34,8 +34,9 @@ Deliberate changes, all small:
 - The tooltip is a `defc`. It sits in the top corner away from the hovered
   stack as now, placed by CSS classes rather than measured, so its offset may
   differ by a few pixels.
-- The chart's height moves from JS to CSS: `aspect-ratio: 100 / 52` clamped to
-  340–540px, the numbers `resize!` uses today.
+- The chart's height moves from JS to CSS: `clamp(340px, 52cqi, 540px)` on
+  `.canvas-box`, with `.canvas-wrap` as the inline-size container: the numbers
+  `resize!` uses today.
 - With reduced motion, the rose window no longer follows scrolling (the nave
   loop is paused; it redraws on resize only).
 
@@ -120,8 +121,9 @@ variables into the state's theme.
 ```
 
 Rebuilds its cached layers when `w`, `h` or `dpr` change, then composites a
-frame at `t` as today. The `#nave` CSS stays as it is. `start!`, `stop!` and
-the listeners go.
+frame at `t` as today. It now sits inside `#app` (`z-index: 1`), so `#nave`
+gets `z-index: -1` to stay under the page; serious mode's `#nave` rule goes.
+`start!`, `stop!` and the listeners go.
 
 ## Error handling
 

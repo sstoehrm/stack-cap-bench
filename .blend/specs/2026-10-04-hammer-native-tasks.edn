@@ -1,0 +1,13 @@
+{:nodes {:t1 {:name "1. Node test harness and data tests" :state :new}
+         :t2 {:name "2. scb.chart.tween" :state :new}
+         :t3 {:name "3. Chart defloop, paint, tooltip defc" :state :new}
+         :t4 {:name "4. Load results.json with :http" :state :new}
+         :t5 {:name "5. Nave as a defloop" :state :new}
+         :t6 {:name "6. README, release build, browser check" :state :new}}
+ :edges {[:t1 :t2] {:direction :->}
+         [:t2 :t3] {:direction :->}
+         [:t3 :t4] {:direction :->}
+         [:t4 :t5] {:direction :->}
+         [:t5 :t6] {:direction :->}}
+ :boxes {:chart-box {:name "scb.chart" :ref "2026-10-04-hammer-native.edn" :components #{:t2 :t3}}
+         :core-box {:name "scb.core / scb.nave" :ref "2026-10-04-hammer-native.edn" :components #{:t4 :t5}}}}
