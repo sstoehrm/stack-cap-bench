@@ -1,6 +1,7 @@
 (ns scb.core
   (:require [clojure.string :as str]
             [hammer.core :refer [defc reg-event reg-fx dispatch mount!]]
+            [hammer.http]
             [scb.chart :as chart]
             [scb.data :as data]
             [scb.nave :as nave]))
@@ -23,7 +24,12 @@
              (let [d (data/without-hidden-projects d)]
                {:db (with-data (assoc db :all d :topic (:id (first (:topics d)))
                                       :models (data/default-models (:runs d))))})))
-(reg-event :failed (fn [db msg] {:db (assoc db :error msg)}))
+(reg-event :init
+           (fn [_] {:http {:uri "results.json" :fetch-options {:cache "no-cache"}
+                           :on-success [:loaded] :on-failure [:failed]}}))
+(reg-event :failed
+           (fn [db {:keys [status failure]}]
+             {:db (assoc db :error (if (pos? status) (str "HTTP " status) (name failure)))}))
 (reg-event :metric (fn [db k] {:db (assoc db :metric k)}))
 (reg-event :topic (fn [db t] {:db (assoc db :topic t :project "all" :hover nil)}))
 (reg-event :project (fn [db p] {:db (assoc db :project p :hover nil)}))
@@ -360,12 +366,6 @@
 
 ;; ---- start
 
-(defn- load! []
-  (-> (js/fetch "results.json" #js {:cache "no-cache"})
-      (.then (fn [^js r] (if (.-ok r) (.json r) (throw (js/Error. (str "results.json: HTTP " (.-status r)))))))
-      (.then #(dispatch [:loaded (js->clj % :keywordize-keys true)]))
-      (.catch #(dispatch [:failed (str (.-message %))]))))
-
 (defn- stored [k default] (or (try (.getItem js/localStorage k) (catch :default _ nil)) default))
 
 (defn ^:export main []
@@ -378,4 +378,4 @@
             {:data nil :error nil :metric "cost_usd" :topic nil :project "all" :tone nil
              :mode mode :theme theme :brave (= "true" (stored "scb-brave" "false")) :models nil
              :hover nil :look-rev 0})
-    (load!)))
+    (dispatch [:init])))
