@@ -192,9 +192,13 @@ tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
 .controls { display: grid; grid-template-columns: auto 1fr; gap: 12px 18px; align-items: center; padding: 14px 16px; margin-bottom: 12px; }
 .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0 4px 10px; font-size: 13px; color: var(--ink-2); }
 .legend-item { display: inline-flex; align-items: center; gap: 8px; }
-.canvas-wrap { padding: 10px 10px 0; }
-.canvas-box { position: relative; }
+.canvas-wrap { padding: 10px 10px 0; container-type: inline-size; }
+.canvas-box { position: relative; height: clamp(340px, 52cqi, 540px); }
 .canvas-box canvas { display: block; width: 100%; cursor: crosshair; }
+/* the tooltip sits in the top corner away from the hovered stack */
+.tip { top: 52px; }
+.tip.at-left { left: 76px; }
+.tip.at-right { right: 26px; }
 .chart-note { color: var(--muted); font-size: 12.5px; max-width: 80ch; }
 .tip { position: absolute; z-index: 3; pointer-events: none; min-width: 210px; max-width: 300px; padding: 12px 14px; font-size: 12.5px; color: var(--ink-2); background: var(--glass-bg-strong); }
 .tip-head { display: flex; align-items: center; gap: 8px; color: var(--ink); font-weight: 600; }

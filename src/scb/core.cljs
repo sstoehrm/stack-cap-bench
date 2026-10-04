@@ -7,11 +7,6 @@
 
 ;; ---- events
 
-(defn- with-chart [db]
-  {:db db :chart (data/chart-model (:data db) db)})
-
-(reg-fx :chart #(when % (chart/update! %)))
-
 (defn- with-data
   "Derive :data from everything loaded (:all): serious mode never shows the
    niche stacks, evil mode only once the reader is brave."
@@ -26,21 +21,21 @@
 (reg-event :loaded
            (fn [db d]
              (let [d (data/without-hidden-projects d)]
-               (with-chart (with-data (assoc db :all d :topic (:id (first (:topics d)))
-                                             :models (data/default-models (:runs d))))))))
+               {:db (with-data (assoc db :all d :topic (:id (first (:topics d)))
+                                      :models (data/default-models (:runs d))))})))
 (reg-event :failed (fn [db msg] {:db (assoc db :error msg)}))
 (reg-event :metric (fn [db k] {:db (assoc db :metric k)}))
-(reg-event :topic (fn [db t] (with-chart (assoc db :topic t :project "all"))))
-(reg-event :project (fn [db p] (with-chart (assoc db :project p))))
+(reg-event :topic (fn [db t] {:db (assoc db :topic t :project "all" :hover nil)}))
+(reg-event :project (fn [db p] {:db (assoc db :project p :hover nil)}))
 (reg-event :creed (fn [db tone] {:db (assoc db :tone (when (not= tone (:tone db)) tone))}))
 (reg-event :tone (fn [db tone] {:db (assoc db :tone tone)}))
-(reg-event :brave (fn [db on] (assoc (with-chart (with-data (assoc db :brave on))) :store ["scb-brave" (str on)])))
+(reg-event :brave (fn [db on] {:db (with-data (assoc db :brave on :hover nil)) :store ["scb-brave" (str on)]}))
 (reg-event :model
            (fn [db m]
              ;; toggle one model; the last one shown stays on
              (let [shown (or (:models db) (set (data/models (:runs (:data db)))))
                    next (if (shown m) (disj shown m) (conj shown m))]
-               (if (seq next) (with-chart (assoc db :models next)) {:db db}))))
+               (when (seq next) {:db (assoc db :models next :hover nil)}))))
 
 (defn- apply-look!
   "Switch stylesheet, <html> attributes, background and chart to `mode`
@@ -57,13 +52,12 @@
     (when (#{"#evil" "#serious"} (.-hash js/location))
       (js/history.replaceState nil "" (str (.-pathname js/location) (.-search js/location))))
     (store! "scb-mode" mode)
-    (store! "scb-theme" theme)
-    (if evil? (nave/start!) (nave/stop!))
-    (chart/restyle!)))
+    (store! "scb-theme" theme)))
 
 (reg-fx :look apply-look!)
 
-(reg-event :mode (fn [db m] (assoc (with-chart (with-data (assoc db :mode m))) :look [m (:theme db)])))
+(reg-event :mode (fn [db m] {:db (with-data (assoc db :mode m :hover nil)) :look [m (:theme db)]}))
+(reg-event :restyle (fn [db] {:db (update db :look-rev inc)}))
 (reg-event :cycle-theme
            (fn [db]
              (let [t (case (:theme db) "auto" "light" "light" "dark" "auto")]
@@ -303,18 +297,15 @@
      (into [:div#creed-text.creed-text {:role "region" :aria-label (some #(when (= shown (first %)) (second %)) tabs)}]
            (creed-text shown)))])
 
-(defc chart-canvas []
-  []
-  [:div.canvas-box
-   [:canvas {:ref chart/attach! :tabindex "0"
-             :aria-label "Bar chart of cost per stack: one bar per model and effort level, grouped by stack. The tables above hold the same aggregates. Arrow keys step through the stacks."}]])
-
 (defc nave-chart [idx]
   [d [:data]
    mode [:mode]
    tid [:topic]
    pid [:project]
-   topic (data/topic d tid)]
+   shown [:models]
+   all [:all]
+   topic (data/topic d tid)
+   model (data/chart-model d {:topic tid :project pid :models shown :all all})]
   [:section.topic.nave-section {:id "chart"}
    [:header.topic-head
     [:span.numeral (numeral mode idx)]
@@ -329,7 +320,7 @@
       (chip (= pid "all") [:project "all"] "All")
       (for [p (:projects topic)]
         ^{:key p} (chip (= pid (str p)) [:project (str p)] (str p " " (:name (data/project d p)))))]]]
-   [:div.canvas-wrap.glass [chart-canvas]]
+   [:div.canvas-wrap.glass [:div.canvas-box [chart/chart model] [chart/chart-tip model]]]
    [:p.chart-note
     "Each bar is the mean cost over complete runs for one stack, model and effort level. "
     "Each stack has its own colour; within a group the bars run from the lowest effort (lightest) "
@@ -381,8 +372,10 @@
   (let [mode (or (.. js/document -documentElement -dataset -mode) "serious")
         theme (stored "scb-theme" "auto")]
     (when (evil? mode) (nave/start!))
-    (.addEventListener (js/matchMedia "(prefers-color-scheme: dark)") "change" chart/restyle!)
+    (.addEventListener (js/matchMedia "(prefers-color-scheme: dark)") "change" #(dispatch [:restyle]))
+    (.then (.-ready (.-fonts js/document)) #(dispatch [:restyle]))
     (mount! [app] (.getElementById js/document "app")
             {:data nil :error nil :metric "cost_usd" :topic nil :project "all" :tone nil
-             :mode mode :theme theme :brave (= "true" (stored "scb-brave" "false")) :models nil})
+             :mode mode :theme theme :brave (= "true" (stored "scb-brave" "false")) :models nil
+             :hover nil :look-rev 0})
     (load!)))

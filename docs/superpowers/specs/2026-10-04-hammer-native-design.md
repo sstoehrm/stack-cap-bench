@@ -55,8 +55,8 @@ are components that read it. Nothing pushes into them.
   in `apply-look!`. `:look` keeps switching stylesheets and `<html>`
   attributes and storing the choice.
 - New db keys: `:hover` (stack id or nil) and `:look-rev` (a counter).
-  `[:hover id]` sets the hovered stack; events that change what the chart
-  shows (`:topic`, `:project`, `:model`, `:brave`, `:mode`) clear it.
+  `[:hover id]` (registered by `scb.chart`, which dispatches it) sets the
+  hovered stack; events that change what the chart shows (`:topic`, `:project`, `:model`, `:brave`, `:mode`) clear it.
   `[:restyle]` bumps `:look-rev`; `main` dispatches it when the OS colour
   scheme changes and when `document.fonts.ready` resolves.
 - `app` renders `[nave]` only in evil mode; `index.html` loses `canvas#nave`.
