@@ -9,8 +9,8 @@ One page that shows what a headless coding agent spends — tokens, dollars,
 minutes, attempts, tool calls — building the same projects in different tech
 stacks. The numbers come from
 [token-comparision](https://github.com/sstoehrm/token-comparision); the page is
-built with [hammer](https://github.com/sstoehrm/hammer) and draws its chart by
-hand on a canvas.
+built with [hammer](https://github.com/sstoehrm/hammer) and draws its chart and
+the evil-mode nave by hand on canvases, as `hammer.canvas` loops.
 
 - **Topics**: runs are grouped by project kind — *Web development* (projects 2
   and 3) and *CLI tools* (project 1). Each topic gets headline tiles and a
@@ -77,6 +77,7 @@ release.
 npm install
 bb dev       # watch build on http://localhost:8290
 bb release   # optimized build into public/js
+bb test      # node tests (jsdom)
 bb serve     # serve public/ on http://localhost:8290
 ```
 
