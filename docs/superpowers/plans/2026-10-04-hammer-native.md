@@ -40,7 +40,7 @@
 **Interfaces:**
 - Produces: `scb.test-env` (require first; installs jsdom globals, `matchMedia`, `getComputedStyle`, canvas `clientWidth` 800 / `clientHeight` 400, and a recording fake 2d context); `scb.test-env/ops` → vector of `[op & args]` recorded since `(reset! scb.test-env/log [])`; `scb.fixture/results` → a results.json map.
 
-- [ ] **Step 1: Wire the test build**
+- [x] **Step 1: Wire the test build**
 
 `package.json` devDependencies gain `"jsdom": "30.1.1"`, and scripts gain `"test": "shadow-cljs compile test && node target/test.js"`. Run `npm install --save-exact --save-dev jsdom@30.1.1`.
 
@@ -63,7 +63,7 @@ test    {:doc "Run the node tests (jsdom)"
 
 `.gitignore` gains `target/`.
 
-- [ ] **Step 2: Test environment**
+- [x] **Step 2: Test environment**
 
 `test/scb/test_env.cljs`:
 
@@ -105,7 +105,7 @@ test    {:doc "Run the node tests (jsdom)"
     d))
 ```
 
-- [ ] **Step 3: Fixture**
+- [x] **Step 3: Fixture**
 
 `test/scb/fixture.cljs`:
 
@@ -136,7 +136,7 @@ test    {:doc "Run the node tests (jsdom)"
           (run 1 "rust" "claude-opus-5-5" "low" 0.5)]})
 ```
 
-- [ ] **Step 4: Data tests**
+- [x] **Step 4: Data tests**
 
 `test/scb/data_test.cljs`:
 
@@ -187,12 +187,12 @@ test    {:doc "Run the node tests (jsdom)"
     (is (= 2 (-> m :stacks first :series first :bars first :value)))))
 ```
 
-- [ ] **Step 5: Run the tests**
+- [x] **Step 5: Run the tests**
 
 Run: `npm test`
 Expected: `Ran 5 tests containing 19 assertions. 0 failures, 0 errors.` (pure functions that already exist; if one fails, the fixture arithmetic in the test is wrong, not `scb.data`: recheck by hand before changing anything).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add package.json package-lock.json shadow-cljs.edn deps.edn bb.edn .gitignore test/
@@ -215,7 +215,7 @@ git commit -m "Node tests with jsdom; data aggregation tests"
   - `(place! s model move? t text-w)` where `text-w` is `(fn [label] px)`
   - `(busy? s t)` → truthy while a tween moves; `(hit s x y)` → stack id or nil; `(stack s id)` → the model's stack map
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `test/scb/chart/tween_test.cljs`:
 
@@ -288,12 +288,12 @@ git commit -m "Node tests with jsdom; data aggregation tests"
     (is (= "b" (:id (tw/stack s "b"))))))
 ```
 
-- [ ] **Step 2: Run to see them fail**
+- [x] **Step 2: Run to see them fail**
 
 Run: `npm test`
 Expected: compile warning/error `No such namespace: scb.chart.tween`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `src/scb/chart/tween.cljs`: move from `src/scb/chart.cljs`, unchanged in logic, `ease`, `tween-val`, `settled?`, `tw`, `retarget`, `nice-ticks`, `series-gap`, `group-units`, `layout`, `fit-margins!`, `place!`, `busy?`, `hit`, `stack`, with these mechanical changes:
 
@@ -331,12 +331,12 @@ Expected: compile warning/error `No such namespace: scb.chart.tween`.
 
 Namespace docstring: "Where the chart's bars and labels are heading and where they are now: layout and tweens, no DOM. One mutable state object per chart; times are the chart loop's :t in ms."
 
-- [ ] **Step 4: Run the tests**
+- [x] **Step 4: Run the tests**
 
 Run: `npm test`
 Expected: all pass (5 data + 8 tween tests).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/scb/chart/tween.cljs test/scb/chart/tween_test.cljs
@@ -359,7 +359,7 @@ git commit -m "scb.chart.tween: layout and tweens on a per-chart state"
   - `scb.chart`: `(chart model)` defloop, `(chart-tip model)` defc, event `:hover` `[:hover id-or-nil]`.
   - `scb.core`: events `:restyle` (bumps `:look-rev`), db keys `:hover`, `:look-rev`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `test/scb/chart_test.cljs`:
 
@@ -486,12 +486,12 @@ git commit -m "scb.chart.tween: layout and tweens on a per-chart state"
     (is (not-any? #(= [:fillText "$4"] (take 2 %)) (env/ops)) "m2's axis (to $3), never m1's (to $4)")))
 ```
 
-- [ ] **Step 2: Run to see them fail**
+- [x] **Step 2: Run to see them fail**
 
 Run: `npm test`
 Expected: compile error — `scb.chart` has no `chart`/`chart-tip`.
 
-- [ ] **Step 3: `scb.chart.paint`**
+- [x] **Step 3: `scb.chart.paint`**
 
 `src/scb/chart/paint.cljs`: move from `src/scb/chart.cljs`, logic unchanged, `fmt-axis`, `mix`, `oklch`, `hues`, `high-rank`, `shade`, `bar-color`, `texture!`, `lancet-path!`, `draw-lancet!`, `plain-path!`, `draw-plain!`, `text!`, `swatch!`, `draw-legend!`, `draw!` (renamed `frame!`), `css-var`, with these changes:
 
@@ -526,7 +526,7 @@ Expected: compile error — `scb.chart` has no `chart`/`chart-tip`.
 
 Namespace docstring: the first two paragraphs of today's `scb.chart` docstring about colour, shade, texture and lancets, ending "Draws one frame from a chart state; colours and fonts come from the stylesheet."
 
-- [ ] **Step 4: `scb.chart`**
+- [x] **Step 4: `scb.chart`**
 
 Replace `src/scb/chart.cljs` with:
 
@@ -639,7 +639,7 @@ Replace `src/scb/chart.cljs` with:
                       (when (< have of) (str " · " have "/" of " projects")))])]])]]))
 ```
 
-- [ ] **Step 5: Wire `scb.core`**
+- [x] **Step 5: Wire `scb.core`**
 
 In `src/scb/core.cljs`:
 
@@ -675,7 +675,7 @@ In `src/scb/core.cljs`:
            :hover nil :look-rev 0})
   ```
 
-- [ ] **Step 6: CSS**
+- [x] **Step 6: CSS**
 
 In both `public/serious.css` and `public/evil.css`, after the `.canvas-box` rules:
 
@@ -689,12 +689,12 @@ In both `public/serious.css` and `public/evil.css`, after the `.canvas-box` rule
 
 (merge `container-type` into the existing `.canvas-wrap` rule and `height` into `.canvas-box`; drop `cursor`/`display`/`width` duplicates hammer already sets inline only if they conflict — they do not, keep them).
 
-- [ ] **Step 7: Run the tests and the build**
+- [x] **Step 7: Run the tests and the build**
 
 Run: `npm test` → all pass. Run: `npx shadow-cljs compile app` → 0 warnings.
 `grep -rn "requestAnimationFrame\|ResizeObserver\|visibilitychange\|:ref" src/scb/chart* src/scb/core.cljs` → no output.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/scb/chart.cljs src/scb/chart/paint.cljs src/scb/core.cljs public/serious.css public/evil.css test/scb/chart_test.cljs
@@ -713,7 +713,7 @@ git commit -m "Chart as a hammer defloop with a defc tooltip; hover and restyle 
 - Consumes: `scb.fixture/results`, `scb.test-env`.
 - Produces: event `[:init]` that loads `results.json`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `test/scb/core_test.cljs`:
 
@@ -771,12 +771,12 @@ git commit -m "Chart as a hammer defloop with a defc tooltip; hover and restyle 
     (is (nil? (.querySelector el ".tip")))))
 ```
 
-- [ ] **Step 2: Run to see them fail**
+- [x] **Step 2: Run to see them fail**
 
 Run: `npm test`
 Expected: FAIL — `no event handler for :init` reported, so `flush!` throws.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 In `src/scb/core.cljs`: require `[hammer.http]`; delete `load!`; add
 
@@ -791,11 +791,11 @@ In `src/scb/core.cljs`: require `[hammer.http]`; delete `load!`; add
 
 (replacing the old `:failed`), and in `main` replace `(load!)` with `(dispatch [:init])`.
 
-- [ ] **Step 4: Run the tests**
+- [x] **Step 4: Run the tests**
 
 Run: `npm test` → all pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/scb/core.cljs test/scb/core_test.cljs
@@ -813,7 +813,7 @@ git commit -m "Load results.json with hammer's :http effect"
 **Interfaces:**
 - Produces: `scb.nave/nave`, a `defloop` with no props, rendering `canvas#nave`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Append to `test/scb/core_test.cljs`:
 
@@ -834,11 +834,11 @@ Append to `test/scb/core_test.cljs`:
 
 The `:look` fx touches `#css-evil`/`#css-serious`; add them to the jsdom page in `scb.test-env` (the `JSDOM.` HTML): `<link id=\"css-serious\"><link id=\"css-evil\">` in the head.
 
-- [ ] **Step 2: Run to see it fail**
+- [x] **Step 2: Run to see it fail**
 
 Run: `npm test` → FAIL: no `canvas#nave` in evil mode.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `src/scb/nave.cljs`:
 - Keep `jewels`, `rgba`, `canvas`, `arch!`, `draw-stone!`, `seeded`, `impact`, `draw-rose!` unchanged.
@@ -878,11 +878,11 @@ Run: `npm test` → FAIL: no `canvas#nave` in evil mode.
 `public/evil.css`: `#nave` gets `z-index: -1` (it now sits inside `#app`'s stacking context, under the page).
 `public/serious.css`: delete `#nave { display: none; }`.
 
-- [ ] **Step 4: Run tests and build**
+- [x] **Step 4: Run tests and build**
 
 Run: `npm test` → all pass. `npx shadow-cljs compile app` → 0 warnings.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/scb/nave.cljs src/scb/core.cljs public/index.html public/evil.css public/serious.css test/scb/
@@ -896,20 +896,20 @@ git commit -m "Nave as a hammer defloop, rendered in evil mode"
 **Files:**
 - Modify: `README.md`
 
-- [ ] **Step 1: README**
+- [x] **Step 1: README**
 
 - Intro: "draws its chart by hand on a canvas" → "draws its chart and the evil-mode nave by hand on canvases, as `hammer.canvas` loops".
 - Build section: add `bb test     # node tests (jsdom)` to the command block; "Needs Node, Java and the Clojure CLI" unchanged.
 
-- [ ] **Step 2: Release build**
+- [x] **Step 2: Release build**
 
 Stop any running `bb dev` first (its JVM keeps the classpath it started with). Run: `bb release` → 0 warnings.
 
-- [ ] **Step 3: Browser check** (serve with `bb serve` on 8290 or `npx http-server public -p 8299`)
+- [x] **Step 3: Browser check** (serve with `bb serve` on 8290 or `npx http-server public -p 8299`)
 
 In Chrome, both modes, light and dark: the bars rise on scroll; topic, project and model changes tween; hover and arrow keys show the tooltip on the far side; a narrow window (< 560px) keeps the labels inside; evil mode shows the nave, the rose drifts with scroll, ash falls; serious mode removes it; the console has no `hammer:` reports. With DevTools' "prefers-reduced-motion: reduce" emulation, bars snap and the nave stands still.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add README.md
