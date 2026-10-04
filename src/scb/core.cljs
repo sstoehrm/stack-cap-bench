@@ -357,7 +357,7 @@
       [:main
        (for [[i t] (map-indexed vector (:topics d))]
          ^{:key (:id t)} [topic-section (:id t) i])
-       [nave-chart (count (:topics d))]]
+       ^{:key "chart"} [nave-chart (count (:topics d))]]
       ^{:key "foot"}
       [:footer.foot
        [:p "Data: " [:code "results.json"] " — hand-editable, or regenerate it with "
