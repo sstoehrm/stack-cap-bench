@@ -62,5 +62,9 @@
 (deftest hit-finds-the-stack-under-the-pointer
   (let [s (placed m1 0)]
     (testing "slots left to right" (is (= ["a" "b"] [(tw/hit s 100 200) (tw/hit s 500 200)])))
-    (testing "outside the plot" (is (= [nil nil] [(tw/hit s 50 200) (tw/hit s 500 5)])))
-    (is (= "b" (:id (tw/stack s "b"))))))
+    (testing "outside the plot" (is (= [nil nil] [(tw/hit s 50 200) (tw/hit s 500 5)])))))
+
+(deftest idle-until-something-moves
+  (is (not (tw/busy? (tw/state) 0)) "a fresh chart has nothing to animate")
+  (let [s (doto (tw/state) (tw/size! 800 400) (tw/place! m1 false 0 text-w))]
+    (is (not (tw/busy? s 0)) "a snap is settled at once")))

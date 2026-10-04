@@ -6,7 +6,8 @@
             [scb.chart :as chart]))
 
 (use-fixtures :each {:before (fn [] (t/reset-app!) (t/use-fake-frames!) (reset! env/log [])
-                               (js-delete js/globalThis "IntersectionObserver"))})
+                               (js-delete js/globalThis "IntersectionObserver"))
+                     :after (fn [] (env/match-media false))})
 
 (reg-event ::set (fn [db k v] {:db (assoc db k v)}))
 
@@ -94,7 +95,7 @@
   (let [el (mount)
         c (.querySelector el "canvas")]
     (frames! 1500)
-    (.dispatchEvent c (js/window.MouseEvent. "pointermove" #js {:clientX 500 :clientY 200}))
+    (.dispatchEvent c (js/window.MouseEvent. "mousemove" #js {:clientX 500 :clientY 200}))
     (t/flush!)
     (is (= "b" (.-textContent (.querySelector el ".tip-head b"))))
     (.dispatchEvent c (js/window.KeyboardEvent. "keydown" #js {:key "ArrowRight"}))
@@ -118,3 +119,12 @@
     (is (seq (ops-of :fill)))
     (is (some #(= [:fillText "$3"] (take 2 %)) (env/ops)))
     (is (not-any? #(= [:fillText "$4"] (take 2 %)) (env/ops)) "m2's axis (to $3), never m1's (to $4)")))
+
+(deftest reduced-motion-snaps-without-a-loop
+  (env/match-media true)
+  (mount)
+  (frames! 32)
+  (is (seq (ops-of :fill)) "bars at full height at once")
+  (reset! env/log [])
+  (frames! 200)
+  (is (not (drawn?)) "nothing moves, so nothing runs"))

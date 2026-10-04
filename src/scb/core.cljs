@@ -21,15 +21,20 @@
 
 (reg-event :loaded
            (fn [db d]
-             (let [d (data/without-hidden-projects d)]
-               {:db (with-data (assoc db :all d :topic (:id (first (:topics d)))
-                                      :models (data/default-models (:runs d))))})))
+             (if-not (map? d)
+               {:db (assoc db :error "no data")}
+               (let [d (data/without-hidden-projects d)]
+                 {:db (with-data (assoc db :all d :topic (:id (first (:topics d)))
+                                        :models (data/default-models (:runs d))))}))))
 (reg-event :init
            (fn [_] {:http {:uri "results.json" :fetch-options {:cache "no-cache"}
                            :on-success [:loaded] :on-failure [:failed]}}))
 (reg-event :failed
            (fn [db {:keys [status failure]}]
-             {:db (assoc db :error (if (pos? status) (str "HTTP " status) (name failure)))}))
+             {:db (assoc db :error (case failure
+                                     :error (str "HTTP " status)
+                                     :parse "not JSON"
+                                     (name failure)))}))
 (reg-event :metric (fn [db k] {:db (assoc db :metric k)}))
 (reg-event :topic (fn [db t] {:db (assoc db :topic t :project "all" :hover nil)}))
 (reg-event :project (fn [db p] {:db (assoc db :project p :hover nil)}))

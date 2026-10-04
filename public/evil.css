@@ -145,7 +145,7 @@ tbody tr:hover { background: rgba(255,255,255,0.03); }
 .legend { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 0 4px 12px; font: 500 14px var(--mono); color: var(--ink-2); }
 .legend-item { display: inline-flex; align-items: center; gap: 8px; }
 .canvas-wrap { padding: 8px 8px 0; border-top: 2px solid var(--blood); container-type: inline-size; }
-.canvas-box { position: relative; height: clamp(340px, 52cqi, 540px); }
+.canvas-box { position: relative; height: clamp(340px, 52cqi, 540px); height: round(clamp(340px, 52cqi, 540px), 1px); }
 .canvas-box canvas { display: block; width: 100%; cursor: crosshair; }
 /* the tooltip sits in the top corner away from the hovered stack */
 .tip { top: 52px; }

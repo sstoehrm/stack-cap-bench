@@ -192,7 +192,7 @@ tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
 .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0 4px 10px; font-size: 13px; color: var(--ink-2); }
 .legend-item { display: inline-flex; align-items: center; gap: 8px; }
 .canvas-wrap { padding: 10px 10px 0; container-type: inline-size; }
-.canvas-box { position: relative; height: clamp(340px, 52cqi, 540px); }
+.canvas-box { position: relative; height: clamp(340px, 52cqi, 540px); height: round(clamp(340px, 52cqi, 540px), 1px); }
 .canvas-box canvas { display: block; width: 100%; cursor: crosshair; }
 /* the tooltip sits in the top corner away from the hovered stack */
 .tip { top: 52px; }

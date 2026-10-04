@@ -1,6 +1,6 @@
 (ns scb.core-test
   (:require [cljs.test :refer [deftest is async use-fixtures]]
-            [scb.test-env]
+            [scb.test-env :as env]
             [hammer.core :refer [dispatch mount!]]
             [hammer.http :as http]
             [hammer.testing :as t]
@@ -38,6 +38,14 @@
   (load! #(js/Promise.reject (js/TypeError. "Failed to fetch"))
          (fn [el _] (is (= "Could not load results.json: network" (.-textContent (.querySelector el ".state")))))))
 
+(deftest non-json-shows-error
+  (load! #(js/Promise.resolve (js/Response. "<html>" #js {:status 200}))
+         (fn [el _] (is (= "Could not load results.json: not JSON" (.-textContent (.querySelector el ".state")))))))
+
+(deftest empty-body-shows-error
+  (load! #(js/Promise.resolve (js/Response. "" #js {:status 200}))
+         (fn [el _] (is (= "Could not load results.json: no data" (.-textContent (.querySelector el ".state")))))))
+
 (deftest topic-change-clears-hover
   (let [el (js/document.createElement "div")]
     (mount! [core/app] el db0)
@@ -59,6 +67,9 @@
     (dispatch [:mode "evil"])
     (t/flush!)
     (is (= "true" (.getAttribute (.querySelector el "canvas#nave") "aria-hidden")))
+    (reset! env/log [])
+    (t/frame! 16)
+    (is (some #(= :drawImage (first %)) (env/ops)) "stone and rose composited")
     (dispatch [:mode "serious"])
     (t/flush!)
     (is (nil? (.querySelector el "#nave")))))

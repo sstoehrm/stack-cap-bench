@@ -38,7 +38,8 @@
     (do (reset! revealed true) nil)))
 
 (defn- hooks
-  "The canvas's handlers and lifecycle, built once per chart so its opts stay =."
+  "The canvas's handlers and lifecycle, built once per chart (and again when
+   `revealed` flips, since hammer re-derives bindings that name an atom)."
   [^js s revealed]
   {:init (fn [ctx _] (reveal revealed ctx))
    :dispose (fn [^js io] (when io (.disconnect io)))
@@ -59,7 +60,9 @@
    on (hooks @st revealed)]
   {:run? @busy
    :init (:init on) :dispose (:dispose on)
-   :on-pointermove (:move on) :on-pointerleave (:leave on)
+   ;; mouse, not pointer, events: a tap fires no pointermove, but the
+   ;; compatibility mousemove after it shows the tooltip on touch screens
+   :on-mousemove (:move on) :on-mouseleave (:leave on)
    :on-keydown (:key on) :on-blur (:leave on)
    :attrs {:tabindex "0"
            :aria-label (str "Bar chart of cost per stack: one bar per model and effort level, grouped by stack. "

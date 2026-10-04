@@ -34,7 +34,10 @@
   (let [p (ease (/ (- t (.-t0 tw) (or (.-delay tw) 0)) dur))]
     (+ (.-from tw) (* p (- (.-to tw) (.-from tw))))))
 
-(defn settled? [^js tw t] (>= (- t (.-t0 tw) (or (.-delay tw) 0)) dur))
+(defn settled?
+  "Done at `t`; a tween that goes nowhere (a snap) is done at once."
+  [^js tw t]
+  (or (== (.-from tw) (.-to tw)) (>= (- t (.-t0 tw) (or (.-delay tw) 0)) dur)))
 
 (defn- tw [from to t0 delay] #js {:from from :to to :t0 t0 :delay delay})
 
@@ -172,5 +175,3 @@
         i (js/Math.floor (/ (- mx (.-l m)) (.-slot s)))]
     (when (and (<= (- (.-t m) 30) my) (< -1 i (.-length order)))
       (aget order i))))
-
-(defn stack [^js s id] (first (filter #(= id (:id %)) (:stacks (.-model s)))))

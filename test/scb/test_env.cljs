@@ -17,6 +17,11 @@
                  (#{"createLinearGradient" "createRadialGradient"} k) (fn [& _] #js {:addColorStop (fn [& _])})
                  :else (fn [& args] (swap! log conj (into [(keyword k)] args)) nil)))}))
 
+(defn match-media
+  "Every matchMedia query answers `matches?` (prefers-reduced-motion, colour scheme)."
+  [matches?]
+  (set! js/globalThis.matchMedia (fn [_] #js {:matches matches? :addEventListener (fn [& _])})))
+
 (defonce env
   (let [d (JSDOM. "<!DOCTYPE html><html><head><link id=\"css-serious\"><link id=\"css-evil\"></head><body></body></html>" #js {:url "http://localhost/"})
         w (.-window d)
@@ -26,7 +31,7 @@
     (set! js/globalThis.localStorage (.-localStorage w))
     (set! js/globalThis.location (.-location w))
     (set! js/globalThis.getComputedStyle (.bind (.-getComputedStyle w) w))
-    (set! js/globalThis.matchMedia (fn [_] #js {:matches false :addEventListener (fn [& _])}))
+    (match-media false)
     (set! js/globalThis.requestAnimationFrame (fn [f] (js/setTimeout f 16)))
     (set! (.-getContext proto)
           (fn [kind] (this-as ^js c (when (= kind "2d") (or (.-__fake c) (set! (.-__fake c) (fake-2d c)))))))
