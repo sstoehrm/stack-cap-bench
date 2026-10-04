@@ -2,6 +2,7 @@
 
 # stack-cap-bench
 
+Live: <https://sstoehrm.github.io/stack-cap-bench/> ·
 Source: <https://github.com/sstoehrm/stack-cap-bench> · Code: [MIT](LICENSE) ·
 Data: [CC BY 4.0](LICENSE-DATA)
 
@@ -81,7 +82,9 @@ bb test      # node tests (jsdom)
 bb serve     # serve public/ on http://localhost:8290
 ```
 
-`public/` is the whole site after `bb release`.
+`public/` is the whole site after `bb release`. Every push to `main` runs the
+tests, builds it and publishes it to GitHub Pages
+(`.github/workflows/pages.yml`).
 
 ## License
 
