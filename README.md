@@ -64,6 +64,10 @@ or edit it by hand:
 }
 ```
 
+The import keeps only the current hammer stacks (`clojure+hammer`,
+`babashka+hammer`) and drops their versioned experiment variants
+(`*+hammer-0.1.0*`).
+
 `scripts/import.clj` copies the per-run summary rules from token-comparision's
 `harness/src/harness/report.clj` (`run-summaries`), so the numbers match its
 reports. Change both together.

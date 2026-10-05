@@ -10,6 +10,10 @@
 
 (def topic-labels {:web "Web development" :cli "CLI tools"})
 
+;; Only the current hammer stacks (clojure+hammer, babashka+hammer) are shown;
+;; versioned or skill variants such as clojure+hammer-0.1.0-v4 are experiments.
+(defn- hammer-variant? [line] (boolean (re-find #"\+hammer-" (str (:stack line)))))
+
 ;; ---- copied from token-comparision harness/src/harness/report.clj
 
 (defn- usage-input [u]
@@ -68,7 +72,7 @@
     (binding [*out* *err*] (println "usage: bb import <path to a token-comparision checkout>"))
     (System/exit 1))
   (let [ps (projects root)
-        lines (read-lines (fs/path root "results" "tokens.jsonl"))
+        lines (remove hammer-variant? (read-lines (fs/path root "results" "tokens.jsonl")))
         sha (str/trim (:out (sh {:dir (str root)} "git" "rev-parse" "--short" "HEAD")))
         topics (vec (for [[kind label] [[:web (topic-labels :web)] [:cli (topic-labels :cli)]]
                           :let [ids (mapv :id (filter #(= kind (:kind %)) ps))]
