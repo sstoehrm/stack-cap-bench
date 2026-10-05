@@ -14,6 +14,8 @@
 ;; Hidden in evil mode unless the reader is brave: the author's own hammer stacks
 ;; and other small or niche frameworks and languages.
 (def niche #{"clojure+hammer" "babashka+hammer" "clojure+hammer-app" "babashka+hammer-app"
+             "clojure+hammer-0.1.0" "clojure+hammer-0.1.0-v2" "clojure+hammer-0.1.0-v3"
+             "clojure+hammer-0.1.0-v4" "babashka+hammer-0.1.0" "babashka+hammer-0.1.0-v5"
              "replicant-clojure" "reagami+squint-clojure" "phoenix-liveview" "odin" "ocaml"})
 
 (defn without-niche [data] (update data :runs #(filterv (comp not niche :stack) %)))
