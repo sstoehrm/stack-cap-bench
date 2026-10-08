@@ -1,5 +1,5 @@
 {
-  "source" : "token-comparision@d8f13a85",
+  "source" : "token-comparision@c4970699",
   "imported" : "2026-10-08",
   "topics" : [ {
     "id" : "web",
@@ -6452,6 +6452,21 @@
     "output_tokens" : 33339,
     "model" : "gpt-6-astra"
   }, {
+    "effort" : "high",
+    "run_id" : "20261008-180838",
+    "attempts" : 5,
+    "steps_passed" : 5,
+    "input_tokens" : 4829258,
+    "agent" : "codex 0.160.1",
+    "tool_calls" : 118,
+    "project" : 3,
+    "wall_min" : 28.575766666666667,
+    "stack" : "htmx-thymeleaf-java",
+    "cost_usd" : 9.266796,
+    "complete" : true,
+    "output_tokens" : 39524,
+    "model" : "gpt-6-astra"
+  }, {
     "effort" : "xhigh",
     "run_id" : "20260929-220428",
     "attempts" : 5,
@@ -8389,17 +8404,17 @@
   }, {
     "effort" : "high",
     "run_id" : "20261008-174333",
-    "attempts" : 3,
-    "steps_passed" : 3,
-    "input_tokens" : 1313336,
+    "attempts" : 6,
+    "steps_passed" : 5,
+    "input_tokens" : 3315891,
     "agent" : "codex 0.160.1",
-    "tool_calls" : 46,
+    "tool_calls" : 106,
     "project" : 3,
-    "wall_min" : 10.874433333333334,
+    "wall_min" : 23.109,
     "stack" : "thymeleaf-java",
-    "cost_usd" : 3.089914,
-    "complete" : false,
-    "output_tokens" : 16813,
+    "cost_usd" : 7.14142,
+    "complete" : true,
+    "output_tokens" : 35951,
     "model" : "gpt-6-astra"
   }, {
     "effort" : "medium",
