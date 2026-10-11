@@ -42,3 +42,7 @@
     (is (= ["svelte-java"] (mapv :id (:stacks m))) "react-go has no complete run in project 3")
     (is (= ["Opus 5.5"] (mapv :model (-> m :stacks first :series))))
     (is (= 2 (-> m :stacks first :series first :bars first :value)))))
+
+(deftest model-labels
+  (is (= ["Opus 5.5" "Fable 5.1" "GPT-6 Sol" "GPT-6.1 Sol" "Grok 4.7" "Grok 4.6"]
+         (mapv data/model-label ["claude-opus-5-5" "claude-fable-5-1" "gpt-6-sol" "gpt-6.1-sol" "grok-4.7" "grok-4.6"]))))

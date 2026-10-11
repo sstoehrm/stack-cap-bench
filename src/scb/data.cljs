@@ -85,11 +85,12 @@
 ;; ---- labels
 
 (defn model-label
-  "claude-opus-5-5 → Opus 5.5, gpt-6-sol → GPT-6 Sol"
+  "claude-opus-5-5 → Opus 5.5, gpt-6-sol → GPT-6 Sol, grok-4.7 → Grok 4.7"
   [m]
   (let [[vendor & parts] (str/split (or m "unknown") #"-")
         [fam & ver] parts]
     (cond
+      (and (= vendor "grok") fam) (str "Grok " (str/join " " parts))
       (and (= vendor "gpt") fam)
       (str "GPT-" fam (when (seq ver) (str " " (str/join " " (map str/capitalize ver)))))
       fam (str (str/capitalize fam) (when (seq ver) (str " " (str/join "." ver))))
