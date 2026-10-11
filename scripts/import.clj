@@ -8,7 +8,13 @@
             [clojure.edn :as edn]
             [clojure.string :as str]))
 
-(def topic-labels {:web "Web development" :cli "CLI tools"})
+(def topic-labels {:web "Web development" :cli "CLI tools" :long "Long run"})
+
+;; Projects shown under their own topic instead of their kind's: bookit costs
+;; about 10x a small project per run and would dominate the web averages.
+(def project-topics {5 :long})
+
+(defn- topic-of [project] (get project-topics (:id project) (keyword (:kind project))))
 
 ;; Only the current hammer stacks (clojure+hammer, babashka+hammer) are shown;
 ;; versioned or skill variants such as clojure+hammer-0.1.0-v4 are experiments.
@@ -74,10 +80,10 @@
   (let [ps (projects root)
         lines (remove hammer-variant? (read-lines (fs/path root "results" "tokens.jsonl")))
         sha (str/trim (:out (sh {:dir (str root)} "git" "rev-parse" "--short" "HEAD")))
-        topics (vec (for [[kind label] [[:web (topic-labels :web)] [:cli (topic-labels :cli)]]
-                          :let [ids (mapv :id (filter #(= kind (:kind %)) ps))]
+        topics (vec (for [t [:web :cli :long]
+                          :let [ids (mapv :id (filter #(= t (topic-of %)) ps))]
                           :when (seq ids)]
-                      {:id (name kind) :label label :projects ids}))
+                      {:id (name t) :label (topic-labels t) :projects ids}))
         out {:source (str "token-comparision@" sha)
              :imported (str (java.time.LocalDate/now))
              :topics topics

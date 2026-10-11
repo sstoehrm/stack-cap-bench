@@ -23,9 +23,8 @@
            (fn [db d]
              (if-not (map? d)
                {:db (assoc db :error "no data")}
-               (let [d (data/without-hidden-projects d)]
-                 {:db (with-data (assoc db :all d :topic (:id (first (:topics d)))
-                                        :models (data/default-models (:runs d))))}))))
+               {:db (with-data (assoc db :all d :topic (:id (first (:topics d)))
+                                      :models (data/default-models (:runs d))))})))
 (reg-event :init
            (fn [_] {:http {:uri "results.json" :fetch-options {:cache "no-cache"}
                            :on-success [:loaded] :on-failure [:failed]}}))
@@ -279,6 +278,8 @@
    [[:ul
      [:li "Three simple projects: a log-analyzer CLI, an expense tracker and a kanban board. "
       "Each is built in five steps, and every step has an exact target."]
+     [:li "One long project: a booking system built in twenty steps, whose later steps cut across "
+      "everything built before. It shows how the cost grows with the codebase the agent has to carry."]
      [:li "A headless coding agent builds them in every stack, each run in a fresh workspace, "
       "with nobody around to answer its questions."]
      [:li "For every step, the agent gets the feature to build and how the program has to run: "

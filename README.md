@@ -14,8 +14,10 @@ built with [hammer](https://github.com/sstoehrm/hammer) and draws its chart and
 the evil-mode nave by hand on canvases, as `hammer.canvas` loops.
 
 - **Topics**: runs are grouped by project kind — *Web development* (projects 2
-  and 3) and *CLI tools* (project 1). Each topic gets headline tiles and a
-  stack × model·effort table.
+  and 3) and *CLI tools* (project 1) — plus *Long run* (project 5, `bookit`,
+  20 steps), kept apart because a run costs about 10× a small project's and
+  would dominate the web averages (`project-topics` in `scripts/import.clj`).
+  Each topic gets headline tiles and a stack × model·effort table.
 - **Compare**: cost bars grouped by stack, per topic and project: one bar per
   model and effort level, so an even staircase means cost rises in step with
   the effort. Each stack has its own hue (fixed per topic, validated for

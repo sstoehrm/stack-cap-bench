@@ -1,4 +1,4 @@
-(ns scb.fixture "A small results.json: two topics, four stacks, two models.")
+(ns scb.fixture "A small results.json: three topics, four stacks, two models.")
 
 (defn- run [project stack model effort cost & [complete]]
   {:project project :stack stack :run_id (str stack "-" cost) :model model :effort effort
@@ -8,10 +8,12 @@
 (def results
   {:source "fixture" :imported "2026-10-04"
    :topics [{:id "web" :label "Web development" :projects [2 3]}
-            {:id "cli" :label "CLI tools" :projects [1]}]
+            {:id "cli" :label "CLI tools" :projects [1]}
+            {:id "long" :label "Long run" :projects [5]}]
    :projects [{:id 1 :name "logan" :kind "cli" :steps 5}
               {:id 2 :name "spendly" :kind "web" :steps 5}
-              {:id 3 :name "kanban" :kind "web" :steps 5}]
+              {:id 3 :name "kanban" :kind "web" :steps 5}
+              {:id 5 :name "bookit" :kind "web" :steps 20}]
    :runs [(run 2 "svelte-java" "claude-opus-5-5" "high" 3.0)
           (run 2 "svelte-java" "claude-opus-5-5" "high" 5.0)
           (run 3 "svelte-java" "claude-opus-5-5" "high" 2.0)
@@ -21,4 +23,6 @@
           (run 2 "react-go" "claude-fable-5-1" "high" 2.0)
           (run 1 "go" "claude-opus-5-5" "high" 1.0)
           (run 1 "rust" "claude-opus-5-5" "high" 2.0)
-          (run 1 "rust" "claude-opus-5-5" "low" 0.5)]})
+          (run 1 "rust" "claude-opus-5-5" "low" 0.5)
+          (run 5 "react-go" "claude-opus-5-5" "medium" 19.0)
+          (run 5 "svelte-java" "claude-opus-5-5" "medium" 20.0)]})

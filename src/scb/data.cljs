@@ -5,27 +5,21 @@
   (:require [clojure.string :as str]))
 
 ;; Table row order: CLI stacks, then web stacks by family.
-(def stack-order ["babashka" "clojure" "bash" "python" "go" "rust" "odin" "elixir" "ocaml"
+(def stack-order ["babashka" "clojure" "bash" "python" "perl" "go" "rust" "odin" "elixir" "ocaml"
                   "svelte-java" "svelte-kotlin" "re-frame-clojure" "replicant-clojure"
                   "reagami+squint-clojure" "clojure+hammer" "babashka+hammer" "clojure+hammer-app"
-                  "babashka+hammer-app" "react-go" "vue-go"
-                  "react-rust" "angular-java" "nextjs-ts" "phoenix-liveview"])
+                  "babashka+hammer-app" "react-go" "vue-go" "solid-go"
+                  "react-rust" "angular-java" "nextjs-ts" "sveltekit-ts" "phoenix-liveview"
+                  "lustre-gleam" "vanillajs-go" "htmx-go" "htmx-python" "thymeleaf-java"
+                  "htmx-thymeleaf-java" "django-python" "hotwire-rails"])
 
 ;; Hidden in evil mode unless the reader is brave: the author's own hammer stacks
 ;; and other small or niche frameworks and languages.
 (def niche #{"clojure+hammer" "babashka+hammer" "clojure+hammer-app" "babashka+hammer-app"
-             "replicant-clojure" "reagami+squint-clojure" "phoenix-liveview" "odin" "ocaml"})
+             "replicant-clojure" "reagami+squint-clojure" "phoenix-liveview" "odin" "ocaml"
+             "lustre-gleam"})
 
 (defn without-niche [data] (update data :runs #(filterv (comp not niche :stack) %)))
-
-;; Projects left off the page for now (bookit has no runs yet).
-(def hidden-projects #{5})
-
-(defn without-hidden-projects [data]
-  (-> data
-      (update :projects #(filterv (comp not hidden-projects :id) %))
-      (update :topics #(mapv (fn [t] (update t :projects (fn [ps] (filterv (comp not hidden-projects) ps)))) %))
-      (update :runs #(filterv (comp not hidden-projects :project) %))))
 
 ;; Model order in tables and the chart: each model keeps its place (and its
 ;; texture in the chart) whatever else is shown. Unknown models come after.
@@ -79,7 +73,7 @@
     :axis compact :fmt compact :full full}
    {:key "wall_min" :label "Wall time" :unit "min" :note "grows with parallel load"
     :axis #(str (js/Math.round %)) :fmt #(str (.toFixed % 1) " min")}
-   {:key "attempts" :label "Attempts" :unit "attempts" :note "5 means no step was retried"
+   {:key "attempts" :label "Attempts" :unit "attempts" :note "the step count means no step was retried"
     :axis #(str (js/Math.round %)) :fmt #(.toFixed % 1)}
    {:key "tool_calls" :label "Tool calls" :unit "calls" :note "runs that recorded activity"
     :axis #(str (js/Math.round %)) :fmt #(str (js/Math.round %))}])

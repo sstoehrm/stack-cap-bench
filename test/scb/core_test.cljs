@@ -27,7 +27,7 @@
   (load! #(js/Promise.resolve (js/Response. (js/JSON.stringify (clj->js results)) #js {:status 200}))
          (fn [el urls]
            (is (= ["results.json"] urls))
-           (is (= ["Web development" "CLI tools" "Compare"]
+           (is (= ["Web development" "CLI tools" "Long run" "Compare"]
                   (mapv #(.-textContent %) (.querySelectorAll el "section.topic h2")))))))
 
 (deftest http-error-shows-error
@@ -73,3 +73,11 @@
     (dispatch [:mode "serious"])
     (t/flush!)
     (is (nil? (.querySelector el "#nave")))))
+
+(deftest long-run-topic-shows-project-5
+  (let [el (js/document.createElement "div")]
+    (mount! [core/app] el db0)
+    (dispatch [:loaded results])
+    (t/flush!)
+    (is (= ["react-go" "svelte-java"]
+           (sort (mapv #(.-textContent %) (.querySelectorAll el "#topic-long tbody th")))))))
