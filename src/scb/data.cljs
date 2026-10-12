@@ -5,7 +5,7 @@
   (:require [clojure.string :as str]))
 
 ;; Table row order: CLI stacks, then web stacks by family.
-(def stack-order ["babashka" "clojure" "bash" "python" "perl" "go" "rust" "odin" "elixir" "ocaml"
+(def stack-order ["babashka" "clojure" "bash" "python" "perl" "go" "rust" "c" "cpp" "zig" "odin" "elixir" "ocaml"
                   "svelte-java" "svelte-kotlin" "re-frame-clojure" "replicant-clojure"
                   "reagami+squint-clojure" "clojure+hammer" "babashka+hammer" "clojure+hammer-app"
                   "babashka+hammer-app" "react-go" "vue-go" "solid-go"
@@ -17,7 +17,7 @@
 ;; and other small or niche frameworks and languages.
 (def niche #{"clojure+hammer" "babashka+hammer" "clojure+hammer-app" "babashka+hammer-app"
              "replicant-clojure" "reagami+squint-clojure" "phoenix-liveview" "odin" "ocaml"
-             "lustre-gleam"})
+             "lustre-gleam" "zig"})
 
 (defn without-niche [data] (update data :runs #(filterv (comp not niche :stack) %)))
 
