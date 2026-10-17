@@ -1,6 +1,6 @@
 {
-  "source" : "token-comparision@41c28eed",
-  "imported" : "2026-10-17",
+  "source" : "token-comparision@313d942c",
+  "imported" : "2026-10-18",
   "topics" : [ {
     "id" : "web",
     "label" : "Web development",
@@ -13343,17 +13343,17 @@
   }, {
     "effort" : "medium",
     "run_id" : "20261017-195750",
-    "attempts" : 11,
-    "steps_passed" : 10,
-    "input_tokens" : 7852308,
+    "attempts" : 21,
+    "steps_passed" : 16,
+    "input_tokens" : 18639329,
     "agent" : "codex 0.160.1",
-    "tool_calls" : 214,
+    "tool_calls" : 404,
     "project" : 5,
-    "wall_min" : 29.21035,
+    "wall_min" : 56.414,
     "stack" : "angular-java",
-    "cost_usd" : 2.5886,
+    "cost_usd" : 5.3339316,
     "complete" : false,
-    "output_tokens" : 90568,
+    "output_tokens" : 173288,
     "model" : "gpt-6.1-sol"
   }, {
     "effort" : "medium",
