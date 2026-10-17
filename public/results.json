@@ -1,5 +1,5 @@
 {
-  "source" : "token-comparision@89434709",
+  "source" : "token-comparision@d4a63db4",
   "imported" : "2026-10-17",
   "topics" : [ {
     "id" : "web",
@@ -13326,6 +13326,21 @@
     "output_tokens" : 364259,
     "model" : "claude-opus-5-5"
   }, {
+    "effort" : "high",
+    "run_id" : "20261017-010606",
+    "attempts" : 21,
+    "steps_passed" : 20,
+    "input_tokens" : 31081155,
+    "agent" : "claude-code 2.1.302",
+    "tool_calls" : 499,
+    "project" : 5,
+    "wall_min" : 86.3943,
+    "stack" : "angular-java",
+    "cost_usd" : 26.224338799999998,
+    "complete" : true,
+    "output_tokens" : 450988,
+    "model" : "claude-opus-5-5"
+  }, {
     "effort" : "medium",
     "run_id" : "20261016-101057",
     "attempts" : 21,
@@ -13339,6 +13354,21 @@
     "cost_usd" : 19.710082800000002,
     "complete" : true,
     "output_tokens" : 313789,
+    "model" : "claude-opus-5-5"
+  }, {
+    "effort" : "high",
+    "run_id" : "20261017-025539",
+    "attempts" : 17,
+    "steps_passed" : 17,
+    "input_tokens" : 23368609,
+    "agent" : "claude-code 2.1.302",
+    "tool_calls" : 357,
+    "project" : 5,
+    "wall_min" : 73.18808333333334,
+    "stack" : "babashka+hammer",
+    "cost_usd" : 20.488749999999996,
+    "complete" : false,
+    "output_tokens" : 325311,
     "model" : "claude-opus-5-5"
   }, {
     "effort" : "medium",
@@ -13369,6 +13399,21 @@
     "cost_usd" : 18.6510844,
     "complete" : true,
     "output_tokens" : 328324,
+    "model" : "claude-opus-5-5"
+  }, {
+    "effort" : "high",
+    "run_id" : "20261017-042742",
+    "attempts" : 4,
+    "steps_passed" : 3,
+    "input_tokens" : 2712682,
+    "agent" : "claude-code 2.1.302",
+    "tool_calls" : 67,
+    "project" : 5,
+    "wall_min" : 9.726866666666666,
+    "stack" : "django-python",
+    "cost_usd" : 2.5673974,
+    "complete" : false,
+    "output_tokens" : 54542,
     "model" : "claude-opus-5-5"
   }, {
     "effort" : "medium",
@@ -13521,6 +13566,21 @@
     "output_tokens" : 294810,
     "model" : "claude-opus-5-5"
   }, {
+    "effort" : "high",
+    "run_id" : "20261017-011014",
+    "attempts" : 20,
+    "steps_passed" : 20,
+    "input_tokens" : 24591920,
+    "agent" : "claude-code 2.1.302",
+    "tool_calls" : 443,
+    "project" : 5,
+    "wall_min" : 72.43156666666667,
+    "stack" : "nextjs-ts",
+    "cost_usd" : 21.570712,
+    "complete" : true,
+    "output_tokens" : 379764,
+    "model" : "claude-opus-5-5"
+  }, {
     "effort" : "medium",
     "run_id" : "20261016-100052",
     "attempts" : 28,
@@ -13534,6 +13594,21 @@
     "cost_usd" : 32.890389400000004,
     "complete" : true,
     "output_tokens" : 566828,
+    "model" : "claude-opus-5-5"
+  }, {
+    "effort" : "high",
+    "run_id" : "20261017-021354",
+    "attempts" : 22,
+    "steps_passed" : 20,
+    "input_tokens" : 34031364,
+    "agent" : "claude-code 2.1.302",
+    "tool_calls" : 532,
+    "project" : 5,
+    "wall_min" : 95.10816666666666,
+    "stack" : "phoenix-liveview",
+    "cost_usd" : 27.0864526,
+    "complete" : true,
+    "output_tokens" : 477217,
     "model" : "claude-opus-5-5"
   }, {
     "effort" : "medium",
@@ -13598,17 +13673,17 @@
   }, {
     "effort" : "high",
     "run_id" : "20261017-002705",
-    "attempts" : 5,
-    "steps_passed" : 5,
-    "input_tokens" : 3965080,
+    "attempts" : 20,
+    "steps_passed" : 20,
+    "input_tokens" : 27203184,
     "agent" : "claude-code 2.1.302",
-    "tool_calls" : 90,
+    "tool_calls" : 452,
     "project" : 5,
-    "wall_min" : 14.510616666666667,
+    "wall_min" : 74.73171666666667,
     "stack" : "react-rust",
-    "cost_usd" : 4.3333368,
-    "complete" : false,
-    "output_tokens" : 88827,
+    "cost_usd" : 23.6250892,
+    "complete" : true,
+    "output_tokens" : 400167,
     "model" : "claude-opus-5-5"
   }, {
     "effort" : "medium",
@@ -13718,17 +13793,17 @@
   }, {
     "effort" : "high",
     "run_id" : "20261016-230801",
-    "attempts" : 16,
-    "steps_passed" : 16,
-    "input_tokens" : 16982261,
+    "attempts" : 20,
+    "steps_passed" : 20,
+    "input_tokens" : 23959509,
     "agent" : "claude-code 2.1.301, claude-code 2.1.302",
-    "tool_calls" : 316,
+    "tool_calls" : 422,
     "project" : 5,
-    "wall_min" : 69.48786666666666,
+    "wall_min" : 84.23426666666667,
     "stack" : "svelte-kotlin",
-    "cost_usd" : 15.891531999999998,
-    "complete" : false,
-    "output_tokens" : 278464,
+    "cost_usd" : 21.394133999999998,
+    "complete" : true,
+    "output_tokens" : 363595,
     "model" : "claude-opus-5-5"
   }, {
     "effort" : "medium",
@@ -13806,6 +13881,21 @@
     "output_tokens" : 331924,
     "model" : "claude-opus-5-5"
   }, {
+    "effort" : "high",
+    "run_id" : "20261017-031214",
+    "attempts" : 17,
+    "steps_passed" : 17,
+    "input_tokens" : 23029404,
+    "agent" : "claude-code 2.1.302",
+    "tool_calls" : 377,
+    "project" : 5,
+    "wall_min" : 60.647866666666665,
+    "stack" : "vanillajs-go",
+    "cost_usd" : 19.620689600000002,
+    "complete" : false,
+    "output_tokens" : 329264,
+    "model" : "claude-opus-5-5"
+  }, {
     "effort" : "medium",
     "run_id" : "20261013-204037",
     "attempts" : 20,
@@ -13823,17 +13913,17 @@
   }, {
     "effort" : "high",
     "run_id" : "20261016-231746",
-    "attempts" : 17,
-    "steps_passed" : 17,
-    "input_tokens" : 20418482,
+    "attempts" : 20,
+    "steps_passed" : 20,
+    "input_tokens" : 26329755,
     "agent" : "claude-code 2.1.302",
-    "tool_calls" : 349,
+    "tool_calls" : 442,
     "project" : 5,
-    "wall_min" : 59.352983333333334,
+    "wall_min" : 76.38338333333333,
     "stack" : "vue-go",
-    "cost_usd" : 18.325340800000003,
-    "complete" : false,
-    "output_tokens" : 320998,
+    "cost_usd" : 22.872713000000005,
+    "complete" : true,
+    "output_tokens" : 397868,
     "model" : "claude-opus-5-5"
   } ]
 }
