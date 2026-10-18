@@ -1,5 +1,5 @@
 {
-  "source" : "token-comparision@313d942c",
+  "source" : "token-comparision@6d4007a9",
   "imported" : "2026-10-18",
   "topics" : [ {
     "id" : "web",
@@ -10387,6 +10387,21 @@
     "model" : "grok-4.6"
   }, {
     "effort" : "medium",
+    "run_id" : "20261018-081716",
+    "attempts" : 1,
+    "steps_passed" : 1,
+    "input_tokens" : 4646664,
+    "agent" : "grok 1.0.50",
+    "tool_calls" : 70,
+    "project" : 3,
+    "wall_min" : 25.403083333333335,
+    "stack" : "htmx-thymeleaf-java",
+    "cost_usd" : 1.0727748,
+    "complete" : false,
+    "output_tokens" : 102166,
+    "model" : "grok-4.7"
+  }, {
+    "effort" : "medium",
     "run_id" : "20261011-105214",
     "attempts" : 5,
     "steps_passed" : 5,
@@ -10580,6 +10595,21 @@
     "complete" : true,
     "output_tokens" : 44446,
     "model" : "gpt-6-astra"
+  }, {
+    "effort" : "medium",
+    "run_id" : "20261018-081711",
+    "attempts" : 2,
+    "steps_passed" : 2,
+    "input_tokens" : 8954129,
+    "agent" : "grok 1.0.50",
+    "tool_calls" : 140,
+    "project" : 3,
+    "wall_min" : 22.585,
+    "stack" : "lustre-gleam",
+    "cost_usd" : 2.25542716,
+    "complete" : false,
+    "output_tokens" : 99029,
+    "model" : "grok-4.7"
   }, {
     "effort" : "xhigh",
     "run_id" : "20260929-220428",
@@ -13342,18 +13372,18 @@
     "model" : "claude-opus-5-5"
   }, {
     "effort" : "medium",
-    "run_id" : "20261017-195750",
-    "attempts" : 21,
-    "steps_passed" : 16,
-    "input_tokens" : 18639329,
-    "agent" : "codex 0.160.1",
-    "tool_calls" : 404,
+    "run_id" : "20261018-065411",
+    "attempts" : 22,
+    "steps_passed" : 20,
+    "input_tokens" : 20003438,
+    "agent" : "codex 0.163.0",
+    "tool_calls" : 481,
     "project" : 5,
-    "wall_min" : 56.414,
+    "wall_min" : 66.67645,
     "stack" : "angular-java",
-    "cost_usd" : 5.3339316,
-    "complete" : false,
-    "output_tokens" : 173288,
+    "cost_usd" : 5.954840000000001,
+    "complete" : true,
+    "output_tokens" : 191846,
     "model" : "gpt-6.1-sol"
   }, {
     "effort" : "medium",
