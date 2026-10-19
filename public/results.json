@@ -1,5 +1,5 @@
 {
-  "source" : "token-comparision@59cbdbad",
+  "source" : "token-comparision@cd51106f",
   "imported" : "2026-10-19",
   "topics" : [ {
     "id" : "web",
@@ -13897,6 +13897,21 @@
     "model" : "claude-opus-5-5"
   }, {
     "effort" : "medium",
+    "run_id" : "20261019-054907",
+    "attempts" : 21,
+    "steps_passed" : 20,
+    "input_tokens" : 27233060,
+    "agent" : "codex 0.163.0",
+    "tool_calls" : 609,
+    "project" : 5,
+    "wall_min" : 72.43858333333333,
+    "stack" : "clojure+hammer",
+    "cost_usd" : 7.2180528,
+    "complete" : true,
+    "output_tokens" : 211448,
+    "model" : "gpt-6.1-sol"
+  }, {
+    "effort" : "medium",
     "run_id" : "20261016-114617",
     "attempts" : 23,
     "steps_passed" : 20,
@@ -14333,17 +14348,17 @@
   }, {
     "effort" : "medium",
     "run_id" : "20261019-040647",
-    "attempts" : 9,
-    "steps_passed" : 9,
-    "input_tokens" : 6586404,
+    "attempts" : 20,
+    "steps_passed" : 20,
+    "input_tokens" : 20051915,
     "agent" : "codex 0.163.0",
-    "tool_calls" : 200,
+    "tool_calls" : 499,
     "project" : 5,
-    "wall_min" : 29.10155,
+    "wall_min" : 70.03765,
     "stack" : "react-go",
-    "cost_usd" : 2.4287684,
-    "complete" : false,
-    "output_tokens" : 91205,
+    "cost_usd" : 6.285722399999999,
+    "complete" : true,
+    "output_tokens" : 211299,
     "model" : "gpt-6.1-sol"
   }, {
     "effort" : "medium",
@@ -14555,6 +14570,21 @@
     "complete" : true,
     "output_tokens" : 407196,
     "model" : "claude-opus-5-5"
+  }, {
+    "effort" : "medium",
+    "run_id" : "20261019-074208",
+    "attempts" : 13,
+    "steps_passed" : 13,
+    "input_tokens" : 11130584,
+    "agent" : "codex 0.163.0",
+    "tool_calls" : 289,
+    "project" : 5,
+    "wall_min" : 44.13698333333333,
+    "stack" : "svelte-java",
+    "cost_usd" : 3.6253108000000003,
+    "complete" : false,
+    "output_tokens" : 118397,
+    "model" : "gpt-6.1-sol"
   }, {
     "effort" : "medium",
     "run_id" : "20261013-204034",
