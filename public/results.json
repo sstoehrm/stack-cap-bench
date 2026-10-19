@@ -1,5 +1,5 @@
 {
-  "source" : "token-comparision@c04c6c3c",
+  "source" : "token-comparision@59cbdbad",
   "imported" : "2026-10-19",
   "topics" : [ {
     "id" : "web",
@@ -13973,17 +13973,17 @@
   }, {
     "effort" : "medium",
     "run_id" : "20261018-234632",
-    "attempts" : 15,
-    "steps_passed" : 12,
-    "input_tokens" : 9155066,
+    "attempts" : 23,
+    "steps_passed" : 20,
+    "input_tokens" : 17843341,
     "agent" : "codex 0.163.0",
-    "tool_calls" : 266,
+    "tool_calls" : 466,
     "project" : 5,
-    "wall_min" : 36.93428333333333,
+    "wall_min" : 62.70438333333333,
     "stack" : "hotwire-rails",
-    "cost_usd" : 3.0484332000000003,
-    "complete" : false,
-    "output_tokens" : 115041,
+    "cost_usd" : 5.77847,
+    "complete" : true,
+    "output_tokens" : 202638,
     "model" : "gpt-6.1-sol"
   }, {
     "effort" : "medium",
@@ -14152,6 +14152,21 @@
     "model" : "claude-opus-5-5"
   }, {
     "effort" : "medium",
+    "run_id" : "20261019-012616",
+    "attempts" : 30,
+    "steps_passed" : 20,
+    "input_tokens" : 40146098,
+    "agent" : "codex 0.163.0",
+    "tool_calls" : 710,
+    "project" : 5,
+    "wall_min" : 106.47426666666667,
+    "stack" : "lustre-gleam",
+    "cost_usd" : 9.909854400000002,
+    "complete" : true,
+    "output_tokens" : 278754,
+    "model" : "gpt-6.1-sol"
+  }, {
+    "effort" : "medium",
     "run_id" : "20261016-082342",
     "attempts" : 20,
     "steps_passed" : 20,
@@ -14315,6 +14330,21 @@
     "complete" : true,
     "output_tokens" : 410453,
     "model" : "claude-opus-5-5"
+  }, {
+    "effort" : "medium",
+    "run_id" : "20261019-040647",
+    "attempts" : 9,
+    "steps_passed" : 9,
+    "input_tokens" : 6586404,
+    "agent" : "codex 0.163.0",
+    "tool_calls" : 200,
+    "project" : 5,
+    "wall_min" : 29.10155,
+    "stack" : "react-go",
+    "cost_usd" : 2.4287684,
+    "complete" : false,
+    "output_tokens" : 91205,
+    "model" : "gpt-6.1-sol"
   }, {
     "effort" : "medium",
     "run_id" : "20261016-082336",
