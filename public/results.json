@@ -1,5 +1,5 @@
 {
-  "source" : "token-comparision@cd51106f",
+  "source" : "token-comparision@98194d6a",
   "imported" : "2026-10-19",
   "topics" : [ {
     "id" : "web",
@@ -14573,17 +14573,17 @@
   }, {
     "effort" : "medium",
     "run_id" : "20261019-074208",
-    "attempts" : 13,
-    "steps_passed" : 13,
-    "input_tokens" : 11130584,
+    "attempts" : 22,
+    "steps_passed" : 19,
+    "input_tokens" : 20486287,
     "agent" : "codex 0.163.0",
-    "tool_calls" : 289,
+    "tool_calls" : 459,
     "project" : 5,
-    "wall_min" : 44.13698333333333,
+    "wall_min" : 75.28186666666667,
     "stack" : "svelte-java",
-    "cost_usd" : 3.6253108000000003,
+    "cost_usd" : 6.239011600000001,
     "complete" : false,
-    "output_tokens" : 118397,
+    "output_tokens" : 197918,
     "model" : "gpt-6.1-sol"
   }, {
     "effort" : "medium",
