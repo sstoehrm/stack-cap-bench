@@ -1,0 +1,93 @@
+name: CI
+
+# Tests and lint on every pull request and push to main.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # renovate: datasource=java-version depName=java-jdk extractVersion=^(?<version>\d+\.\d+\.\d+)
+  JAVA_VERSION: 25.0.4
+  # renovate: datasource=node-version depName=node versioning=node
+  NODE_VERSION: 24.21.0
+  # renovate: datasource=github-tags depName=clojure/brew-install versioning=loose
+  CLOJURE_CLI_VERSION: 1.12.6.1673
+  # renovate: datasource=github-releases depName=babashka/babashka extractVersion=^v(?<version>.*)$
+  BB_VERSION: 1.13.225
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install Clojure CLI and babashka
+        uses: DeLaGuardo/setup-clojure@6d46099eae24853c33c0482f2bb54edf4f1a4c74 # 13.7.0
+        with:
+          cli: ${{ env.CLOJURE_CLI_VERSION }}
+          bb: ${{ env.BB_VERSION }}
+
+      # same key as pages.yml, so the workflows share the resolved deps
+      - name: Cache Maven and git deps
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.m2/repository
+            ~/.gitlibs
+          key: deps-${{ hashFiles('deps.edn', 'shadow-cljs.edn', 'bb.edn') }}
+
+      - run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Vulnerability gate tests
+        run: bb .github/actions/vuln-gate/gate_test.clj
+
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install clj-kondo
+        env:
+          # Renovate bumps CLJ_KONDO_VERSION only (clj-kondo's .sha256 files hold no file
+          # name); update CLJ_KONDO_SHA256 by hand when sha256sum fails on its PR
+          CLJ_KONDO_SHA256: cfc093e177d0e4619ae7bf9d5acd8f0ea43e7bb18dae9d64c1fa9fbcd3832681
+          # renovate: datasource=github-releases depName=clj-kondo/clj-kondo extractVersion=^v(?<version>.*)$
+          CLJ_KONDO_VERSION: 2026.10.20
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          curl -fsSLo clj-kondo.zip "https://github.com/clj-kondo/clj-kondo/releases/download/v${CLJ_KONDO_VERSION}/clj-kondo-${CLJ_KONDO_VERSION}-linux-amd64.zip"
+          echo "$CLJ_KONDO_SHA256  clj-kondo.zip" | sha256sum -c -
+          unzip -q clj-kondo.zip clj-kondo
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+
+      # warnings are shown, errors fail; CodeQL has no Clojure support, this is the floor
+      - name: clj-kondo
+        run: clj-kondo --lint src test scripts .github/actions/vuln-gate .clj-kondo/hooks --fail-level error

@@ -9,8 +9,6 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 # one deployment at a time; a newer push waits rather than cancelling a live one
 concurrency:
@@ -18,9 +16,13 @@ concurrency:
   cancel-in-progress: false
 
 env:
+  # renovate: datasource=java-version depName=java-jdk extractVersion=^(?<version>\d+\.\d+\.\d+)
   JAVA_VERSION: 25.0.4
+  # renovate: datasource=node-version depName=node versioning=node
   NODE_VERSION: 24.21.0
+  # renovate: datasource=github-tags depName=clojure/brew-install versioning=loose
   CLOJURE_CLI_VERSION: 1.12.6.1673
+  # renovate: datasource=github-releases depName=babashka/babashka extractVersion=^v(?<version>.*)$
   BB_VERSION: 1.13.225
 
 jobs:
@@ -28,6 +30,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
@@ -70,6 +74,10 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-24.04
+    # only the deploy job may publish; the build job runs npm and shadow-cljs code
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

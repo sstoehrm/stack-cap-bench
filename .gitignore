@@ -3,3 +3,5 @@ node_modules/
 .cpcache/
 public/js/
 target/
+sbom/
+.clj-kondo/.cache/

@@ -1,0 +1,94 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "schedule:weekly",
+    ":pinAllExceptPeerDependencies",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "labels": [
+    "dependencies"
+  ],
+  "ignorePaths": [
+    "**/node_modules/**",
+    "**/target/**"
+  ],
+  "packageRules": [
+    {
+      "description": "One PR for all GitHub Actions bumps",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "groupName": "GitHub Actions"
+    },
+    {
+      "description": "One PR for minor and patch npm dev dependencies (shadow-cljs, jsdom)",
+      "matchManagers": [
+        "npm"
+      ],
+      "matchDepTypes": [
+        "devDependencies"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "npm dev dependencies"
+    },
+    {
+      "description": "One PR for the Clojure deps (hammer, shadow-cljs)",
+      "matchManagers": [
+        "deps-edn"
+      ],
+      "groupName": "Clojure dependencies"
+    },
+    {
+      "description": "shadow-cljs.edn uses :deps true: the npm package and the jar must move together",
+      "matchPackageNames": [
+        "shadow-cljs",
+        "thheller/shadow-cljs"
+      ],
+      "groupName": "shadow-cljs"
+    },
+    {
+      "description": "One PR for the CI toolchain and the tools CI downloads (Java, Node, Clojure CLI, babashka, OSV-Scanner, slsa-verifier, Syft, clj-kondo, cyclonedx-npm)",
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "groupName": "CI toolchain"
+    },
+    {
+      "description": "setup-node/setup-java read their version from the workflow env, which the custom manager updates; skip the placeholders",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchCurrentValue": "/^\\$\\{\\{/",
+      "enabled": false
+    }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Versions in workflow and action env: a '# renovate:' comment above NAME_VERSION: x.y.z, and the release asset's checksum in NAME_SHA256 below it, if any (github-release-attachments: keep the tag's v in NAME_VERSION, Renovate looks the digest up by tag)",
+      "managerFilePatterns": [
+        "/^\\.github/workflows/[^/]+\\.ya?ml$/",
+        "/^\\.github/actions/[^/]+/action\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>[a-z-]+) depName=(?<depName>[^\\s]+)(?: versioning=(?<versioning>[^\\s]+))?(?: extractVersion=(?<extractVersion>[^\\s]+))?\\s+[A-Z_]+_VERSION:\\s*(?<currentValue>[^\\s]+)(?:\\s+[A-Z_]+_SHA256:\\s*(?<currentDigest>[0-9a-f]{64}))?"
+      ]
+    },
+    {
+      "customType": "regex",
+      "description": "npm tools run with npx at a pinned version",
+      "managerFilePatterns": [
+        "/^\\.github/workflows/[^/]+\\.ya?ml$/",
+        "/^\\.github/actions/vuln-gate/README\\.md$/"
+      ],
+      "matchStrings": [
+        "npx --yes (?<depName>(?:@[\\w.-]+/)?[\\w.-]+)@(?<currentValue>\\d[^\\s]*)"
+      ],
+      "datasourceTemplate": "npm"
+    }
+  ]
+}

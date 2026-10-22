@@ -1,0 +1,5 @@
+;; hammer ships no clj-kondo config: lint its definition macros as defn + let
+{:hooks {:macroexpand {hammer.core/defc hooks.hammer/defc
+                       hammer.canvas/defloop hooks.hammer/defloop}}
+ ;; #js inside an expanded macro body comes back as a read-string call
+ :linters {:unresolved-var {:exclude [clojure.core/read-string cljs.core/read-string]}}}
