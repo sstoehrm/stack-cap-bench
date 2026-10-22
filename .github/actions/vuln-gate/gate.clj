@@ -1,6 +1,6 @@
 #!/usr/bin/env bb
 (ns gate
-  "Vulnerability gate over Trivy JSON reports (trivy sbom / trivy image --format json).
+  "Vulnerability gate over OSV-Scanner JSON reports (osv-scanner scan source / scan image --format json).
 
    bb gate.clj [--ignore .vuln-ignore.yaml] [--summary FILE] [--out FILE] REPORT.json...
 
@@ -26,31 +26,44 @@
 
 (defn- cve? [id] (boolean (re-matches #"CVE-\d{4}-\d+" (str id))))
 
-(defn- max-cvss
-  "Highest base score any source reports, CVSS v3.x or v4.0."
-  [v]
-  (let [scores (for [[_ source] (get v "CVSS")
-                     k ["V3Score" "V40Score"]
-                     :let [s (get source k)]
-                     :when (number? s)]
-                 (double s))]
-    (when (seq scores) (apply max scores))))
+(def ^:private severity-rank {"LOW" 1 "MODERATE" 2 "MEDIUM" 2 "HIGH" 3 "CRITICAL" 4})
+
+(defn- fixed-versions
+  "Fixed versions the advisories list for this package, in their order."
+  [vulns pkg]
+  (->> (for [v vulns
+             a (get v "affected")
+             :when (= (get-in a ["package" "name"]) (get pkg "name"))
+             r (get a "ranges")
+             e (get r "events")
+             :let [fixed (get e "fixed")]
+             :when fixed]
+         fixed)
+       distinct
+       seq))
 
 (defn findings
-  "Vulnerabilities from parsed Trivy reports, one per vulnerability, package and version."
+  "Vulnerabilities from parsed `osv-scanner --format json` reports, one per
+   alias group (as OSV-Scanner groups them), package and version. :cvss is the
+   group's max_severity, which OSV-Scanner computes from the CVSS v3/v4 vectors."
   [reports]
   (->> (for [report reports
-             result (get report "Results")
-             v (get result "Vulnerabilities")]
-         {:id (get v "VulnerabilityID")
-          :aliases (vec (get v "VendorIDs"))
-          :pkg (get v "PkgName")
-          :version (get v "InstalledVersion")
-          :fixed (get v "FixedVersion")
-          :severity (get v "Severity")
-          :cvss (max-cvss v)
-          :title (get v "Title")
-          :targets [(get result "Target")]})
+             result (get report "results")
+             p (get result "packages")
+             :let [pkg (get p "package")
+                   by-id (into {} (map (juxt #(get % "id") identity)) (get p "vulnerabilities"))]
+             g (get p "groups")
+             :let [[id :as ids] (get g "ids")
+                   vulns (keep by-id ids)]]
+         {:id id
+          :aliases (vec (remove #{id} (distinct (concat ids (get g "aliases")))))
+          :pkg (get pkg "name")
+          :version (get pkg "version")
+          :fixed (some->> (fixed-versions vulns pkg) (str/join ", "))
+          :severity (->> vulns (keep #(get-in % ["database_specific" "severity"])) (sort-by severity-rank) last)
+          :cvss (parse-double (str (get g "max_severity")))
+          :title (some #(get % "summary") vulns)
+          :targets [(some-> (get-in result ["source" "path"]) fs/file-name str)]})
        (group-by (juxt :id :pkg :version))
        (map (fn [[_ [f & more]]] (update f :targets #(vec (distinct (concat % (mapcat :targets more)))))))
        (sort-by (juxt :id :pkg :version))
@@ -67,7 +80,7 @@
 ;; ---- policy
 
 (defn- high?
-  "CVSS >= 7.0; without any CVSS score, Trivy's HIGH/CRITICAL severity stands in."
+  "CVSS >= 7.0; without any CVSS score, the advisory's HIGH/CRITICAL severity stands in."
   [f]
   (if (:cvss f)
     (>= (:cvss f) cvss-threshold)
@@ -246,7 +259,7 @@
                :today {:desc "YYYY-MM-DD, defaults to today (UTC)"}})
 
 (defn- run [{:keys [opts args]}]
-  (when (empty? args) (throw (ex-info "no Trivy JSON reports given" {:exit 2})))
+  (when (empty? args) (throw (ex-info "no OSV-Scanner JSON reports given" {:exit 2})))
   (let [today (if (:today opts) (LocalDate/parse (:today opts)) (LocalDate/now ZoneOffset/UTC))
         {:keys [entries errors]} (if (fs/exists? (:ignore opts))
                                    (parse-allowlist (slurp (:ignore opts)))

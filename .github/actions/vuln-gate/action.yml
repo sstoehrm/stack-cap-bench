@@ -1,12 +1,12 @@
 name: Vulnerability gate
 description: >
-  Scans CycloneDX SBOMs (and optionally a container image) with Trivy and fails
-  on findings in CISA KEV, or with EPSS >= 0.1 and CVSS >= 7.0. Everything else
-  is reported in the job summary and the artifact. See README.md.
+  Scans CycloneDX SBOMs (and optionally a container image) with OSV-Scanner and
+  fails on findings in CISA KEV, or with EPSS >= 0.1 and CVSS >= 7.0. Everything
+  else is reported in the job summary and the artifact. See README.md.
 
 inputs:
   sboms:
-    description: CycloneDX JSON SBOM paths, one per line; globs allowed.
+    description: CycloneDX JSON SBOM paths (*.cdx.json), one per line; globs allowed.
     required: true
   image:
     description: Container image to scan as well (a local or registry reference).
@@ -15,29 +15,41 @@ inputs:
     description: Allowlist of suppressed findings.
     default: .vuln-ignore.yaml
   artifact-name:
-    description: Name of the uploaded artifact (SBOMs, Trivy reports, gate-report.json).
+    description: Name of the uploaded artifact (SBOMs, OSV-Scanner reports, gate-report.json).
     default: vuln-gate
 
 runs:
   using: composite
   steps:
-    - name: Install Trivy and babashka
+    - name: Install OSV-Scanner and babashka
       shell: bash
       env:
-        TRIVY_VERSION: 0.75.0
-        TRIVY_SHA256: c6e65abddb348e25f10549df887045629cf28cc72453cd1c63acb717316b3f3f
+        OSV_SCANNER_VERSION: 2.7.0
+        OSV_SCANNER_SHA256: 160c6253e2922e9e0a6a9771c5c4c40a4b3c6090b34a3cdd5e80c96cc2e4218b
+        SLSA_VERIFIER_VERSION: 2.7.1
+        SLSA_VERIFIER_SHA256: 946dbec729094195e88ef78e1734324a27869f03e2c6bd2f61cbc06bd5350339
         BB_VERSION: 1.13.225
         BB_SHA256: ab0e98307405ba19e7c5ba0c3c7cd17a6f90aa90577a72709055f120796d6bfe
       run: |
-        # Release binaries pinned by checksum, not trivy-action/setup-trivy:
-        # their tags were force-pushed with a credential stealer in March 2026.
+        # Release binaries pinned by checksum, no setup actions; OSV-Scanner's
+        # SLSA provenance is verified as well. Not Trivy: its actions and
+        # v0.69.4 were compromised to steal CI secrets (CVE-2026-33634).
         set -euo pipefail
         [[ "$RUNNER_OS-$RUNNER_ARCH" == Linux-X64 ]] || { echo "::error::vuln-gate supports Linux X64 runners only"; exit 1; }
         bin="$RUNNER_TEMP/vuln-gate/bin"; mkdir -p "$bin"; cd "$RUNNER_TEMP/vuln-gate"
-        curl -fsSLo trivy.tgz "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
+        osv="https://github.com/google/osv-scanner/releases/download/v${OSV_SCANNER_VERSION}"
+        curl -fsSLo osv-scanner "$osv/osv-scanner_linux_amd64"
+        curl -fsSLo osv-scanner_SHA256SUMS "$osv/osv-scanner_SHA256SUMS"
+        curl -fsSLo multiple.intoto.jsonl "$osv/multiple.intoto.jsonl"
+        curl -fsSLo slsa-verifier "https://github.com/slsa-framework/slsa-verifier/releases/download/v${SLSA_VERIFIER_VERSION}/slsa-verifier-linux-amd64"
         curl -fsSLo bb.tgz "https://github.com/babashka/babashka/releases/download/v${BB_VERSION}/babashka-${BB_VERSION}-linux-amd64-static.tar.gz"
-        printf '%s  trivy.tgz\n%s  bb.tgz\n' "$TRIVY_SHA256" "$BB_SHA256" | sha256sum -c -
-        tar -xzf trivy.tgz -C "$bin" trivy
+        printf '%s  osv-scanner\n%s  slsa-verifier\n%s  bb.tgz\n' "$OSV_SCANNER_SHA256" "$SLSA_VERIFIER_SHA256" "$BB_SHA256" | sha256sum -c -
+        # the release's own checksum list must agree with the pin
+        grep -qx "$OSV_SCANNER_SHA256  osv-scanner_linux_amd64" osv-scanner_SHA256SUMS
+        chmod +x osv-scanner slsa-verifier
+        ./slsa-verifier verify-artifact osv-scanner --provenance-path multiple.intoto.jsonl \
+          --source-uri github.com/google/osv-scanner --source-tag "v${OSV_SCANNER_VERSION}"
+        mv osv-scanner "$bin/"
         tar -xzf bb.tgz -C "$bin" bb
         echo "$bin" >> "$GITHUB_PATH"
 
@@ -45,12 +57,12 @@ runs:
       shell: bash
       run: echo "date=$(date -u +%F)" >> "$GITHUB_OUTPUT"
 
-    # Trivy refreshes a stale DB itself; the cache saves the download on most runs.
+    # --download-offline-databases refreshes the DBs itself; the cache saves the download on most runs.
     - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
-        path: ~/.cache/trivy
-        key: trivy-db-${{ runner.os }}-${{ steps.today.outputs.date }}
-        restore-keys: trivy-db-${{ runner.os }}-
+        path: ~/.cache/osv-scanner
+        key: osv-scanner-db-${{ runner.os }}-${{ steps.today.outputs.date }}
+        restore-keys: osv-scanner-db-${{ runner.os }}-
 
     - name: Scan
       shell: bash
@@ -61,11 +73,20 @@ runs:
       run: |
         set -euo pipefail
         shopt -s nullglob globstar
-        # .vuln-ignore.yaml is the only suppression: no .trivyignore, trivy.yaml or TRIVY_* from the repo or job
-        for v in "${!TRIVY_@}"; do unset "$v"; done
-        export TRIVY_CACHE_DIR="$HOME/.cache/trivy"
-        trivy() { (cd "$RUNNER_TEMP/vuln-gate/empty" && command trivy "$@" --scanners vuln --format json --no-progress); }
-        rm -rf "$OUT"; mkdir -p "$OUT" "$RUNNER_TEMP/vuln-gate/empty"
+        # .vuln-ignore.yaml is the only suppression: no osv-scanner.toml or OSV_* from the repo or job
+        for v in "${!OSV_@}"; do unset "$v"; done
+        export OSV_SCANNER_LOCAL_DB_CACHE_DIRECTORY="$HOME/.cache/osv-scanner"
+        empty="$RUNNER_TEMP/vuln-gate/empty.toml"; : > "$empty"
+        # offline: the dependency list stays in CI instead of going to osv.dev.
+        # Exit 0: no findings, 1: findings; anything else (128: no packages) is an error.
+        osv() {
+          local out="$1"; shift
+          local rc=0
+          command osv-scanner "$@" --config "$empty" --format json --all-vulns \
+            --offline-vulnerabilities --download-offline-databases > "$out" || rc=$?
+          (( rc <= 1 )) || { echo "::error::osv-scanner exited $rc: $*"; exit 1; }
+        }
+        rm -rf "$OUT"; mkdir -p "$OUT"
         found=0
         while IFS= read -r pattern; do
           [[ -z "${pattern// }" ]] && continue
@@ -73,15 +94,16 @@ runs:
           matches=($pattern)
           (( ${#matches[@]} > 0 )) || { echo "::error::no SBOM matched '$pattern'"; exit 1; }
           for sbom in "${matches[@]}"; do
-            sbom="${sbom#./}"; name="${sbom//\//_}"; name="${name%.json}"
-            cp "$sbom" "$OUT/$name.json"
-            trivy sbom --output "$OUT/$name.trivy.json" "$OUT/$name.json"
+            [[ "$sbom" == *.cdx.json ]] || { echo "::error::$sbom: OSV-Scanner only recognises SBOMs named *.cdx.json"; exit 1; }
+            sbom="${sbom#./}"; name="${sbom//\//_}"; name="${name%.cdx.json}"
+            cp "$sbom" "$OUT/$name.cdx.json"
+            osv "$OUT/$name.osv.json" scan source -L "$OUT/$name.cdx.json"
             found=$((found + 1))
           done
         done <<< "$SBOMS"
         (( found > 0 )) || { echo "::error::no SBOMs given"; exit 1; }
         if [[ -n "$IMAGE" ]]; then
-          trivy image --output "$OUT/image.trivy.json" "$IMAGE"
+          osv "$OUT/image.osv.json" scan image "$IMAGE"
         fi
 
     - name: Gate
@@ -91,7 +113,7 @@ runs:
         GATE: ${{ github.action_path }}/gate.clj
         OUT: ${{ runner.temp }}/vuln-gate/out/${{ inputs.artifact-name }}
       run: |
-        bb "$GATE" --ignore "$IGNORE_FILE" --summary "$GITHUB_STEP_SUMMARY" --out "$OUT/gate-report.json" "$OUT"/*.trivy.json
+        bb "$GATE" --ignore "$IGNORE_FILE" --summary "$GITHUB_STEP_SUMMARY" --out "$OUT/gate-report.json" "$OUT"/*.osv.json
 
     - if: always()
       uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

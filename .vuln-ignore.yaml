@@ -3,7 +3,7 @@
 # Every entry needs all three fields. An entry suppresses the finding through
 # its expiry date; after that the finding is evaluated (and fails) again.
 #
-#   - id: CVE-2025-52999          # CVE or GHSA ID as Trivy reports it
+#   - id: CVE-2025-52999          # CVE or GHSA ID, as in the gate summary
 #     reason: >-                  # why it is not exploitable here, or what is blocking the fix
 #       jackson-core is only used by the shadow-cljs build tool on trusted
 #       input; bump once shadow-cljs ships jackson-core >= 2.15.0.
