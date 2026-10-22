@@ -101,12 +101,13 @@ suppress a finding:
 
 ## License
 
-Two licenses, one for each kind of thing in this repository:
+Two licenses, one for each kind of thing in this repository, plus the fonts' own:
 
 | What | License | What you may do |
 |------|---------|-----------------|
-| **Code**: everything except the data (`src/`, `scripts/`, the stylesheets, `index.html`, build files) | [MIT](LICENSE) | Use, copy, modify and ship it, commercially too. Keep the copyright and license notice in copies of the code. |
+| **Code**: everything except the data and the fonts (`src/`, `scripts/`, the stylesheets, `index.html`, build files) | [MIT](LICENSE) | Use, copy, modify and ship it, commercially too. Keep the copyright and license notice in copies of the code. |
 | **Data**: `public/results.json` | [CC BY 4.0](LICENSE-DATA) | Anything, commercially too: analyse it, chart it, merge it into your own benchmark, publish or sell the result. Give credit and say if you changed it. |
+| **Fonts**: `public/fonts/` (Cinzel, Cormorant Garamond, JetBrains Mono) | [SIL OFL 1.1](public/fonts/) | Third-party fonts under their own license, text next to each font. |
 
 Both licenses are permissive and ask for one thing: attribution. For the data,
 a line like this is enough:
@@ -116,3 +117,20 @@ a line like this is enough:
 
 Both come without warranty: the numbers are measurements of a few runs, not
 guarantees.
+
+The compiled page bundles ClojureScript, the Google Closure Library and
+hammer; their licenses are listed in
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
+## Privacy
+
+The page collects no personal data: no cookies, no analytics, and no requests
+to anyone but its own host (the fonts are served from `public/fonts/`, not
+Google Fonts). It keeps the chosen mode, theme and niche setting in your
+browser's `localStorage`, which never leaves your browser. The site is hosted
+on GitHub Pages, which logs visitors' IP addresses; see the
+[GitHub Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement).
+
+## Security
+
+Report vulnerabilities privately, see [SECURITY.md](SECURITY.md).
