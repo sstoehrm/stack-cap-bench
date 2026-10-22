@@ -3,6 +3,9 @@
  {import  {:doc "Regenerate public/results.json: bb import ../token-comparision"
            :task (apply import/-main *command-line-args*)
            :requires ([import])}
+  data-pr {:doc "Import into a PR with auto-merge: bb data-pr ../token-comparision"
+           :task (apply data-pr/-main *command-line-args*)
+           :requires ([data-pr])}
   dev     {:doc "Watch build, served on http://localhost:8290"
            :task (shell "npx shadow-cljs watch app")}
   release {:doc "Optimized build into public/js"
