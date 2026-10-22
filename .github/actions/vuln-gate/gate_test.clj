@@ -1,5 +1,6 @@
 (ns gate-test
   "bb .github/actions/vuln-gate/gate_test.clj"
+  {:clj-kondo/config '{:linters {:unresolved-namespace {:exclude [gate]}}}}
   (:require [babashka.fs :as fs]
             [clojure.test :refer [deftest is testing run-tests]]))
 
@@ -83,7 +84,7 @@
     (is (= #{"GHSA-xxxx-yyyy-zzzz"}
            (ids (:blocking (classify [(vuln "GHSA-xxxx-yyyy-zzzz" :aliases ["CVE-2026-0001"])] :kev #{"CVE-2026-0001"})))))))
 
-(deftest dedupe
+(deftest dedupe-across-reports
   (testing "the same vulnerability in the same package from two reports counts once"
     (is (= 1 (count (gate/findings [(report (vuln "CVE-2026-0001")) (report (vuln "CVE-2026-0001"))]))))))
 
