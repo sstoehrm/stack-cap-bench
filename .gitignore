@@ -3,3 +3,4 @@ node_modules/
 .cpcache/
 public/js/
 target/
+sbom/

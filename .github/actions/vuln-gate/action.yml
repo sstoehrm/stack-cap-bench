@@ -1,0 +1,101 @@
+name: Vulnerability gate
+description: >
+  Scans CycloneDX SBOMs (and optionally a container image) with Trivy and fails
+  on findings in CISA KEV, or with EPSS >= 0.1 and CVSS >= 7.0. Everything else
+  is reported in the job summary and the artifact. See README.md.
+
+inputs:
+  sboms:
+    description: CycloneDX JSON SBOM paths, one per line; globs allowed.
+    required: true
+  image:
+    description: Container image to scan as well (a local or registry reference).
+    default: ""
+  ignore-file:
+    description: Allowlist of suppressed findings.
+    default: .vuln-ignore.yaml
+  artifact-name:
+    description: Name of the uploaded artifact (SBOMs, Trivy reports, gate-report.json).
+    default: vuln-gate
+
+runs:
+  using: composite
+  steps:
+    - name: Install Trivy and babashka
+      shell: bash
+      env:
+        TRIVY_VERSION: 0.75.0
+        TRIVY_SHA256: c6e65abddb348e25f10549df887045629cf28cc72453cd1c63acb717316b3f3f
+        BB_VERSION: 1.13.225
+        BB_SHA256: ab0e98307405ba19e7c5ba0c3c7cd17a6f90aa90577a72709055f120796d6bfe
+      run: |
+        # Release binaries pinned by checksum, not trivy-action/setup-trivy:
+        # their tags were force-pushed with a credential stealer in March 2026.
+        set -euo pipefail
+        [[ "$RUNNER_OS-$RUNNER_ARCH" == Linux-X64 ]] || { echo "::error::vuln-gate supports Linux X64 runners only"; exit 1; }
+        bin="$RUNNER_TEMP/vuln-gate/bin"; mkdir -p "$bin"; cd "$RUNNER_TEMP/vuln-gate"
+        curl -fsSLo trivy.tgz "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
+        curl -fsSLo bb.tgz "https://github.com/babashka/babashka/releases/download/v${BB_VERSION}/babashka-${BB_VERSION}-linux-amd64-static.tar.gz"
+        printf '%s  trivy.tgz\n%s  bb.tgz\n' "$TRIVY_SHA256" "$BB_SHA256" | sha256sum -c -
+        tar -xzf trivy.tgz -C "$bin" trivy
+        tar -xzf bb.tgz -C "$bin" bb
+        echo "$bin" >> "$GITHUB_PATH"
+
+    - id: today
+      shell: bash
+      run: echo "date=$(date -u +%F)" >> "$GITHUB_OUTPUT"
+
+    # Trivy refreshes a stale DB itself; the cache saves the download on most runs.
+    - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ~/.cache/trivy
+        key: trivy-db-${{ runner.os }}-${{ steps.today.outputs.date }}
+        restore-keys: trivy-db-${{ runner.os }}-
+
+    - name: Scan
+      shell: bash
+      env:
+        SBOMS: ${{ inputs.sboms }}
+        IMAGE: ${{ inputs.image }}
+        OUT: ${{ runner.temp }}/vuln-gate/out/${{ inputs.artifact-name }}
+      run: |
+        set -euo pipefail
+        shopt -s nullglob globstar
+        # .vuln-ignore.yaml is the only suppression: no .trivyignore, trivy.yaml or TRIVY_* from the repo or job
+        for v in "${!TRIVY_@}"; do unset "$v"; done
+        export TRIVY_CACHE_DIR="$HOME/.cache/trivy"
+        trivy() { (cd "$RUNNER_TEMP/vuln-gate/empty" && command trivy "$@" --scanners vuln --format json --no-progress); }
+        rm -rf "$OUT"; mkdir -p "$OUT" "$RUNNER_TEMP/vuln-gate/empty"
+        found=0
+        while IFS= read -r pattern; do
+          [[ -z "${pattern// }" ]] && continue
+          # shellcheck disable=SC2206 # the glob is meant to expand
+          matches=($pattern)
+          (( ${#matches[@]} > 0 )) || { echo "::error::no SBOM matched '$pattern'"; exit 1; }
+          for sbom in "${matches[@]}"; do
+            sbom="${sbom#./}"; name="${sbom//\//_}"; name="${name%.json}"
+            cp "$sbom" "$OUT/$name.json"
+            trivy sbom --output "$OUT/$name.trivy.json" "$OUT/$name.json"
+            found=$((found + 1))
+          done
+        done <<< "$SBOMS"
+        (( found > 0 )) || { echo "::error::no SBOMs given"; exit 1; }
+        if [[ -n "$IMAGE" ]]; then
+          trivy image --output "$OUT/image.trivy.json" "$IMAGE"
+        fi
+
+    - name: Gate
+      shell: bash
+      env:
+        IGNORE_FILE: ${{ inputs.ignore-file }}
+        GATE: ${{ github.action_path }}/gate.clj
+        OUT: ${{ runner.temp }}/vuln-gate/out/${{ inputs.artifact-name }}
+      run: |
+        bb "$GATE" --ignore "$IGNORE_FILE" --summary "$GITHUB_STEP_SUMMARY" --out "$OUT/gate-report.json" "$OUT"/*.trivy.json
+
+    - if: always()
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: ${{ runner.temp }}/vuln-gate/out/${{ inputs.artifact-name }}
+        if-no-files-found: ignore

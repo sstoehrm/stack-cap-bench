@@ -92,6 +92,12 @@ bb serve     # serve public/ on http://localhost:8290
 tests, builds it and publishes it to GitHub Pages
 (`.github/workflows/pages.yml`).
 
+A separate workflow, `.github/workflows/vuln-gate.yml`, runs the
+vulnerability gate on pushes, pull requests and daily: SBOMs of the npm and
+deps.edn dependencies, scanned with Trivy, failing on CISA KEV or EPSS ≥ 0.1
+with CVSS ≥ 7.0. It does not block the Pages deploy. Policy and how to suppress a finding:
+[.github/actions/vuln-gate/README.md](.github/actions/vuln-gate/README.md).
+
 ## License
 
 Two licenses, one for each kind of thing in this repository:

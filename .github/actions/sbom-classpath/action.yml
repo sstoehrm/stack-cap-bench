@@ -1,0 +1,68 @@
+name: SBOM from a JVM classpath
+description: >
+  For stacks without a lockfile or SBOM plugin (deps.edn, bb.edn, project.clj):
+  resolves the classpath, collects its JARs (transitives included) and builds a
+  CycloneDX JSON SBOM with Syft. Resolve with the same JDK/CLI setup as the build.
+
+inputs:
+  classpath:
+    description: >
+      Command printing the classpath, e.g. `clojure -Spath -A:build`,
+      `bb -e '(println (babashka.classpath/get-classpath))'`, `lein with-profile -dev classpath`.
+    default: clojure -Spath
+  output:
+    description: SBOM path to write.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Install Syft
+      shell: bash
+      env:
+        SYFT_VERSION: 1.54.1
+        SYFT_SHA256: c069905b391cc4c20a5ba65ad5c10be2a7ba074f8ea6ad203e24d14e303dad47
+      run: |
+        set -euo pipefail
+        [[ "$RUNNER_OS-$RUNNER_ARCH" == Linux-X64 ]] || { echo "::error::sbom-classpath supports Linux X64 runners only"; exit 1; }
+        bin="$RUNNER_TEMP/sbom-classpath/bin"; mkdir -p "$bin"; cd "$RUNNER_TEMP/sbom-classpath"
+        curl -fsSLo syft.tgz "https://github.com/anchore/syft/releases/download/v${SYFT_VERSION}/syft_${SYFT_VERSION}_linux_amd64.tar.gz"
+        echo "$SYFT_SHA256  syft.tgz" | sha256sum -c -
+        tar -xzf syft.tgz -C "$bin" syft
+        echo "$bin" >> "$GITHUB_PATH"
+
+    - name: Resolve classpath and generate SBOM
+      shell: bash
+      env:
+        CLASSPATH_CMD: ${{ inputs.classpath }}
+        OUTPUT: ${{ inputs.output }}
+        SOURCE_NAME: ${{ github.repository }}
+        SYFT_CHECK_FOR_APP_UPDATE: "false"
+      run: |
+        set -euo pipefail
+        jars="$(mktemp -d)"
+        cp_line="$(bash -c "$CLASSPATH_CMD")"
+        IFS=: read -ra entries <<< "$cp_line"
+        ws="$(realpath "$GITHUB_WORKSPACE")"
+        n=0
+        for i in "${!entries[@]}"; do
+          e="${entries[$i]}"
+          if [[ "$e" == *.jar ]]; then
+            # one dir per JAR: basenames repeat across groups, and Syft falls back to the file name
+            mkdir "$jars/$i" && cp "$e" "$jars/$i/"
+            n=$((n + 1))
+          elif [[ "$(realpath -m "$e")" != "$ws" && "$(realpath -m "$e")" != "$ws"/* ]]; then
+            # git/local source deps (e.g. ~/.gitlibs) carry no Maven coordinates to match
+            echo "::warning title=Not in SBOM::source directory $e"
+          fi
+        done
+        (( n > 0 )) || { echo "::error::no JARs on the classpath of: $CLASSPATH_CMD"; exit 1; }
+        mkdir -p "$(dirname "$OUTPUT")"
+        syft scan "dir:$jars" --source-name "$SOURCE_NAME" -o "cyclonedx-json=$OUTPUT" -q
+        # without Maven metadata Syft guesses coordinates from the file name, which may not match advisories
+        for jar in "$jars"/*/*.jar; do
+          if ! unzip -Z1 "$jar" | grep '^META-INF/maven/.*/pom\.properties$' > /dev/null; then
+            echo "::warning title=Guessed coordinates::$(basename "$jar") has no pom.properties"
+          fi
+        done
+        echo "$n JARs, $(jq '[.components[] | select(.purl // "" | startswith("pkg:maven/"))] | length' "$OUTPUT") Maven components in $OUTPUT"
