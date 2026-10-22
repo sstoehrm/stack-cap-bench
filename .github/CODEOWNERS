@@ -1,0 +1,6 @@
+# CI, the vulnerability gate and its allowlist need the owner's review.
+/.github/            @sstoehrm
+/.vuln-ignore.yaml   @sstoehrm
+/renovate.json       @sstoehrm
+/.clj-kondo/         @sstoehrm
+/SECURITY.md         @sstoehrm
