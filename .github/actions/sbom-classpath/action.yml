@@ -20,6 +20,7 @@ runs:
     - name: Install Syft
       shell: bash
       env:
+        # renovate: datasource=github-release-attachments depName=anchore/syft extractVersion=^v(?<version>.*)$
         SYFT_VERSION: 1.54.1
         SYFT_SHA256: c069905b391cc4c20a5ba65ad5c10be2a7ba074f8ea6ad203e24d14e303dad47
       run: |

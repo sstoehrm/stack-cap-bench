@@ -24,10 +24,13 @@ runs:
     - name: Install OSV-Scanner and babashka
       shell: bash
       env:
+        # renovate: datasource=github-release-attachments depName=google/osv-scanner extractVersion=^v(?<version>.*)$
         OSV_SCANNER_VERSION: 2.7.0
         OSV_SCANNER_SHA256: 160c6253e2922e9e0a6a9771c5c4c40a4b3c6090b34a3cdd5e80c96cc2e4218b
+        # renovate: datasource=github-release-attachments depName=slsa-framework/slsa-verifier extractVersion=^v(?<version>.*)$
         SLSA_VERIFIER_VERSION: 2.7.1
         SLSA_VERIFIER_SHA256: 946dbec729094195e88ef78e1734324a27869f03e2c6bd2f61cbc06bd5350339
+        # renovate: datasource=github-release-attachments depName=babashka/babashka extractVersion=^v(?<version>.*)$
         BB_VERSION: 1.13.225
         BB_SHA256: ab0e98307405ba19e7c5ba0c3c7cd17a6f90aa90577a72709055f120796d6bfe
       run: |

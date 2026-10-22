@@ -16,9 +16,13 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  # renovate: datasource=java-version depName=java-jdk
   JAVA_VERSION: 25.0.4
+  # renovate: datasource=node-version depName=node versioning=node
   NODE_VERSION: 24.21.0
+  # renovate: datasource=github-tags depName=clojure/brew-install versioning=loose
   CLOJURE_CLI_VERSION: 1.12.6.1673
+  # renovate: datasource=github-releases depName=babashka/babashka extractVersion=^v(?<version>.*)$
   BB_VERSION: 1.13.225
 
 jobs:
@@ -71,6 +75,7 @@ jobs:
 
       - name: Install clj-kondo
         env:
+          # renovate: datasource=github-release-attachments depName=clj-kondo/clj-kondo extractVersion=^v(?<version>.*)$
           CLJ_KONDO_VERSION: 2026.10.20
           CLJ_KONDO_SHA256: cfc093e177d0e4619ae7bf9d5acd8f0ea43e7bb18dae9d64c1fa9fbcd3832681
         run: |
