@@ -24,15 +24,17 @@ runs:
     - name: Install OSV-Scanner and babashka
       shell: bash
       env:
-        # renovate: datasource=github-release-attachments depName=google/osv-scanner extractVersion=^v(?<version>.*)$
-        OSV_SCANNER_VERSION: 2.7.0
+        # renovate: datasource=github-release-attachments depName=google/osv-scanner
+        OSV_SCANNER_VERSION: v2.7.0
         OSV_SCANNER_SHA256: 160c6253e2922e9e0a6a9771c5c4c40a4b3c6090b34a3cdd5e80c96cc2e4218b
-        # renovate: datasource=github-release-attachments depName=slsa-framework/slsa-verifier extractVersion=^v(?<version>.*)$
-        SLSA_VERIFIER_VERSION: 2.7.1
+        # renovate: datasource=github-release-attachments depName=slsa-framework/slsa-verifier
+        SLSA_VERIFIER_VERSION: v2.7.1
         SLSA_VERIFIER_SHA256: 946dbec729094195e88ef78e1734324a27869f03e2c6bd2f61cbc06bd5350339
-        # renovate: datasource=github-release-attachments depName=babashka/babashka extractVersion=^v(?<version>.*)$
-        BB_VERSION: 1.13.225
+        # Renovate bumps BB_VERSION only (babashka's .sha256 files hold no file name);
+        # update BB_SHA256 by hand when sha256sum fails on its PR
         BB_SHA256: ab0e98307405ba19e7c5ba0c3c7cd17a6f90aa90577a72709055f120796d6bfe
+        # renovate: datasource=github-releases depName=babashka/babashka extractVersion=^v(?<version>.*)$
+        BB_VERSION: 1.13.225
       run: |
         # Release binaries pinned by checksum, no setup actions; OSV-Scanner's
         # SLSA provenance is verified as well. Not Trivy: its actions and
@@ -40,18 +42,18 @@ runs:
         set -euo pipefail
         [[ "$RUNNER_OS-$RUNNER_ARCH" == Linux-X64 ]] || { echo "::error::vuln-gate supports Linux X64 runners only"; exit 1; }
         bin="$RUNNER_TEMP/vuln-gate/bin"; mkdir -p "$bin"; cd "$RUNNER_TEMP/vuln-gate"
-        osv="https://github.com/google/osv-scanner/releases/download/v${OSV_SCANNER_VERSION}"
+        osv="https://github.com/google/osv-scanner/releases/download/${OSV_SCANNER_VERSION}"
         curl -fsSLo osv-scanner "$osv/osv-scanner_linux_amd64"
         curl -fsSLo osv-scanner_SHA256SUMS "$osv/osv-scanner_SHA256SUMS"
         curl -fsSLo multiple.intoto.jsonl "$osv/multiple.intoto.jsonl"
-        curl -fsSLo slsa-verifier "https://github.com/slsa-framework/slsa-verifier/releases/download/v${SLSA_VERIFIER_VERSION}/slsa-verifier-linux-amd64"
+        curl -fsSLo slsa-verifier "https://github.com/slsa-framework/slsa-verifier/releases/download/${SLSA_VERIFIER_VERSION}/slsa-verifier-linux-amd64"
         curl -fsSLo bb.tgz "https://github.com/babashka/babashka/releases/download/v${BB_VERSION}/babashka-${BB_VERSION}-linux-amd64-static.tar.gz"
         printf '%s  osv-scanner\n%s  slsa-verifier\n%s  bb.tgz\n' "$OSV_SCANNER_SHA256" "$SLSA_VERIFIER_SHA256" "$BB_SHA256" | sha256sum -c -
         # the release's own checksum list must agree with the pin
         grep -qx "$OSV_SCANNER_SHA256  osv-scanner_linux_amd64" osv-scanner_SHA256SUMS
         chmod +x osv-scanner slsa-verifier
         ./slsa-verifier verify-artifact osv-scanner --provenance-path multiple.intoto.jsonl \
-          --source-uri github.com/google/osv-scanner --source-tag "v${OSV_SCANNER_VERSION}"
+          --source-uri github.com/google/osv-scanner --source-tag "${OSV_SCANNER_VERSION}"
         mv osv-scanner "$bin/"
         tar -xzf bb.tgz -C "$bin" bb
         echo "$bin" >> "$GITHUB_PATH"

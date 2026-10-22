@@ -130,7 +130,9 @@
     (vec (for [item (when (sequential? items) items)]
            (when (map? (:unmark item))
              (some (fn [[k v]] (when (= "expires" (:unmark k))
-                                 (subs s (-> v :start :index) (-> v :end :index))))
+                                 ;; mark indices count code points, subs counts UTF-16 units
+                                 (subs s (.offsetByCodePoints ^String s 0 (-> v :start :index))
+                                       (.offsetByCodePoints ^String s 0 (-> v :end :index)))))
                    (:unmark item)))))))
 
 (defn- blank-str? [x] (or (not (string? x)) (str/blank? x)))

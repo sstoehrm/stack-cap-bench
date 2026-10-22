@@ -16,7 +16,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  # renovate: datasource=java-version depName=java-jdk
+  # renovate: datasource=java-version depName=java-jdk extractVersion=^(?<version>\d+\.\d+\.\d+)
   JAVA_VERSION: 25.0.4
   # renovate: datasource=node-version depName=node versioning=node
   NODE_VERSION: 24.21.0

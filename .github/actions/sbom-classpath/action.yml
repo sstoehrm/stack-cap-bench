@@ -20,14 +20,14 @@ runs:
     - name: Install Syft
       shell: bash
       env:
-        # renovate: datasource=github-release-attachments depName=anchore/syft extractVersion=^v(?<version>.*)$
-        SYFT_VERSION: 1.54.1
+        # renovate: datasource=github-release-attachments depName=anchore/syft
+        SYFT_VERSION: v1.54.1
         SYFT_SHA256: c069905b391cc4c20a5ba65ad5c10be2a7ba074f8ea6ad203e24d14e303dad47
       run: |
         set -euo pipefail
         [[ "$RUNNER_OS-$RUNNER_ARCH" == Linux-X64 ]] || { echo "::error::sbom-classpath supports Linux X64 runners only"; exit 1; }
         bin="$RUNNER_TEMP/sbom-classpath/bin"; mkdir -p "$bin"; cd "$RUNNER_TEMP/sbom-classpath"
-        curl -fsSLo syft.tgz "https://github.com/anchore/syft/releases/download/v${SYFT_VERSION}/syft_${SYFT_VERSION}_linux_amd64.tar.gz"
+        curl -fsSLo syft.tgz "https://github.com/anchore/syft/releases/download/${SYFT_VERSION}/syft_${SYFT_VERSION#v}_linux_amd64.tar.gz"
         echo "$SYFT_SHA256  syft.tgz" | sha256sum -c -
         tar -xzf syft.tgz -C "$bin" syft
         echo "$bin" >> "$GITHUB_PATH"

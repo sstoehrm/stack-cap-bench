@@ -20,8 +20,8 @@ workflow also runs daily: a finding can start failing without any code change.
 
 | Edge case | Rule |
 | --- | --- |
-| Several CVSS scores (v3.x and v4.0, across aliased advisories) | the highest one counts (OSV-Scanner's `max_severity`, computed from the vectors) |
-| No CVSS score at all | the advisory's severity HIGH or CRITICAL (GHSA) counts as ≥ 7.0 |
+| Several CVSS scores (v2, v3.x and v4.0, across aliased advisories) | the highest base score counts (OSV-Scanner's `max_severity`, computed from the vectors) |
+| No CVSS score at all | the advisory's severity HIGH or CRITICAL (GHSA) counts as ≥ 7.0; distro records in image scans (Debian, Ubuntu) carry neither, so only KEV can fail them |
 | CVE has no EPSS score yet (new CVEs) | rule 2 cannot fire; only KEV fails it |
 | ID is not a CVE (GHSA-only) | KEV and EPSS are keyed by CVE, so report only, unless OSV lists a CVE alias |
 | KEV or EPSS cannot be fetched, a report or the allowlist is invalid | the gate fails (exit 2), it never passes blind |

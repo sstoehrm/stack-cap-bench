@@ -130,6 +130,8 @@
   (testing "impossible or non-date expiries are errors, not rolled over"
     (doseq [d ["2026-13-45" "2026-02-30" "2026-12-31T23:30:00-05:00" "\"2026-1-5\""]]
       (is (= 1 (count (:errors (gate/parse-allowlist (str "ignore:\n  - id: CVE-2026-0001\n    reason: r\n    expires: " d "\n"))))) d)))
+  (testing "non-BMP characters (emoji) before the date don't shift it"
+    (is (empty? (:errors (gate/parse-allowlist "ignore:\n  - id: CVE-2026-0001\n    reason: \"blocked 🚧 upstream\"\n    expires: 2026-12-31\n")))))
   (testing "a trailing comment after the date is fine"
     (is (empty? (:errors (gate/parse-allowlist "ignore:\n  - id: CVE-2026-0001\n    reason: r\n    expires: 2026-12-31   # short\n")))))
   (testing "a top level that is not {ignore: [...]} is an error"

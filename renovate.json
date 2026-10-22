@@ -43,6 +43,14 @@
       "groupName": "Clojure dependencies"
     },
     {
+      "description": "shadow-cljs.edn uses :deps true: the npm package and the jar must move together",
+      "matchPackageNames": [
+        "shadow-cljs",
+        "thheller/shadow-cljs"
+      ],
+      "groupName": "shadow-cljs"
+    },
+    {
       "description": "One PR for the CI toolchain and the tools CI downloads (Java, Node, Clojure CLI, babashka, OSV-Scanner, slsa-verifier, Syft, clj-kondo, cyclonedx-npm)",
       "matchManagers": [
         "custom.regex"
@@ -61,7 +69,7 @@
   "customManagers": [
     {
       "customType": "regex",
-      "description": "Versions in workflow and action env: a '# renovate:' comment above NAME_VERSION: x.y.z, and the release asset's checksum in NAME_SHA256 below it, if any",
+      "description": "Versions in workflow and action env: a '# renovate:' comment above NAME_VERSION: x.y.z, and the release asset's checksum in NAME_SHA256 below it, if any (github-release-attachments: keep the tag's v in NAME_VERSION, Renovate looks the digest up by tag)",
       "managerFilePatterns": [
         "/^\\.github/workflows/[^/]+\\.ya?ml$/",
         "/^\\.github/actions/[^/]+/action\\.ya?ml$/"
