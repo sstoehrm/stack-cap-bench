@@ -1,6 +1,6 @@
 {
-  "source" : "token-comparision@98194d6a",
-  "imported" : "2026-10-19",
+  "source" : "token-comparision@b8395400",
+  "imported" : "2026-10-22",
   "topics" : [ {
     "id" : "web",
     "label" : "Web development",
@@ -13821,6 +13821,21 @@
     "output_tokens" : 191846,
     "model" : "gpt-6.1-sol"
   }, {
+    "effort" : "high",
+    "run_id" : "20261021-222650",
+    "attempts" : 21,
+    "steps_passed" : 20,
+    "input_tokens" : 28954564,
+    "agent" : "codex 0.163.0",
+    "tool_calls" : 665,
+    "project" : 5,
+    "wall_min" : 108.79748333333333,
+    "stack" : "angular-java",
+    "cost_usd" : 8.7246064,
+    "complete" : true,
+    "output_tokens" : 308232,
+    "model" : "gpt-6.1-sol"
+  }, {
     "effort" : "medium",
     "run_id" : "20261016-101057",
     "attempts" : 21,
@@ -13864,6 +13879,21 @@
     "cost_usd" : 6.4086088000000005,
     "complete" : true,
     "output_tokens" : 194706,
+    "model" : "gpt-6.1-sol"
+  }, {
+    "effort" : "high",
+    "run_id" : "20261022-075331",
+    "attempts" : 4,
+    "steps_passed" : 4,
+    "input_tokens" : 3601534,
+    "agent" : "codex 0.163.0",
+    "tool_calls" : 111,
+    "project" : 5,
+    "wall_min" : 21.577733333333335,
+    "stack" : "babashka+hammer",
+    "cost_usd" : 1.1371448,
+    "complete" : false,
+    "output_tokens" : 48248,
     "model" : "gpt-6.1-sol"
   }, {
     "effort" : "medium",
@@ -14046,6 +14076,21 @@
     "output_tokens" : 218959,
     "model" : "gpt-6.1-sol"
   }, {
+    "effort" : "high",
+    "run_id" : "20261020-212504",
+    "attempts" : 21,
+    "steps_passed" : 20,
+    "input_tokens" : 31066885,
+    "agent" : "codex 0.163.0",
+    "tool_calls" : 679,
+    "project" : 5,
+    "wall_min" : 108.54401666666666,
+    "stack" : "htmx-go",
+    "cost_usd" : 9.097253199999999,
+    "complete" : true,
+    "output_tokens" : 327012,
+    "model" : "gpt-6.1-sol"
+  }, {
     "effort" : "medium",
     "run_id" : "20261012-200336",
     "attempts" : 21,
@@ -14091,6 +14136,21 @@
     "output_tokens" : 211510,
     "model" : "gpt-6.1-sol"
   }, {
+    "effort" : "high",
+    "run_id" : "20261021-045620",
+    "attempts" : 9,
+    "steps_passed" : 6,
+    "input_tokens" : 11606454,
+    "agent" : "codex 0.163.0",
+    "tool_calls" : 212,
+    "project" : 5,
+    "wall_min" : 48.76065,
+    "stack" : "htmx-python",
+    "cost_usd" : 3.1413087999999996,
+    "complete" : false,
+    "output_tokens" : 110650,
+    "model" : "gpt-6.1-sol"
+  }, {
     "effort" : "medium",
     "run_id" : "20261012-181726",
     "attempts" : 22,
@@ -14134,6 +14194,21 @@
     "cost_usd" : 6.6724044000000005,
     "complete" : true,
     "output_tokens" : 208391,
+    "model" : "gpt-6.1-sol"
+  }, {
+    "effort" : "high",
+    "run_id" : "20261021-021326",
+    "attempts" : 9,
+    "steps_passed" : 6,
+    "input_tokens" : 13540625,
+    "agent" : "codex 0.163.0",
+    "tool_calls" : 284,
+    "project" : 5,
+    "wall_min" : 45.606683333333336,
+    "stack" : "htmx-thymeleaf-java",
+    "cost_usd" : 3.6075644,
+    "complete" : false,
+    "output_tokens" : 125562,
     "model" : "gpt-6.1-sol"
   }, {
     "effort" : "medium",
@@ -14226,6 +14301,21 @@
     "output_tokens" : 166885,
     "model" : "gpt-6.1-sol"
   }, {
+    "effort" : "high",
+    "run_id" : "20261022-005802",
+    "attempts" : 20,
+    "steps_passed" : 20,
+    "input_tokens" : 23278346,
+    "agent" : "codex 0.163.0",
+    "tool_calls" : 549,
+    "project" : 5,
+    "wall_min" : 98.86168333333333,
+    "stack" : "nextjs-ts",
+    "cost_usd" : 7.240370399999999,
+    "complete" : true,
+    "output_tokens" : 272396,
+    "model" : "gpt-6.1-sol"
+  }, {
     "effort" : "medium",
     "run_id" : "20261016-100052",
     "attempts" : 28,
@@ -14271,6 +14361,21 @@
     "output_tokens" : 225555,
     "model" : "gpt-6.1-sol"
   }, {
+    "effort" : "high",
+    "run_id" : "20261022-031204",
+    "attempts" : 23,
+    "steps_passed" : 20,
+    "input_tokens" : 46907531,
+    "agent" : "codex 0.163.0",
+    "tool_calls" : 724,
+    "project" : 5,
+    "wall_min" : 159.06733333333332,
+    "stack" : "phoenix-liveview",
+    "cost_usd" : 11.2752168,
+    "complete" : true,
+    "output_tokens" : 365899,
+    "model" : "gpt-6.1-sol"
+  }, {
     "effort" : "medium",
     "run_id" : "20261012-201311",
     "attempts" : 23,
@@ -14314,6 +14419,21 @@
     "cost_usd" : 6.459160799999999,
     "complete" : true,
     "output_tokens" : 198467,
+    "model" : "gpt-6.1-sol"
+  }, {
+    "effort" : "high",
+    "run_id" : "20261021-055845",
+    "attempts" : 23,
+    "steps_passed" : 20,
+    "input_tokens" : 33914151,
+    "agent" : "codex 0.163.0",
+    "tool_calls" : 745,
+    "project" : 5,
+    "wall_min" : 122.96003333333333,
+    "stack" : "re-frame-clojure",
+    "cost_usd" : 9.3622756,
+    "complete" : true,
+    "output_tokens" : 307014,
     "model" : "gpt-6.1-sol"
   }, {
     "effort" : "medium",
@@ -14406,6 +14526,21 @@
     "output_tokens" : 208474,
     "model" : "gpt-6.1-sol"
   }, {
+    "effort" : "high",
+    "run_id" : "20261021-201012",
+    "attempts" : 20,
+    "steps_passed" : 20,
+    "input_tokens" : 26225081,
+    "agent" : "codex 0.163.0",
+    "tool_calls" : 654,
+    "project" : 5,
+    "wall_min" : 104.69441666666667,
+    "stack" : "react-rust",
+    "cost_usd" : 8.0825492,
+    "complete" : true,
+    "output_tokens" : 274120,
+    "model" : "gpt-6.1-sol"
+  }, {
     "effort" : "medium",
     "run_id" : "20261013-204031",
     "attempts" : 21,
@@ -14451,6 +14586,21 @@
     "output_tokens" : 196116,
     "model" : "gpt-6.1-sol"
   }, {
+    "effort" : "high",
+    "run_id" : "20261021-115702",
+    "attempts" : 21,
+    "steps_passed" : 20,
+    "input_tokens" : 29103481,
+    "agent" : "codex 0.163.0",
+    "tool_calls" : 687,
+    "project" : 5,
+    "wall_min" : 132.23411666666667,
+    "stack" : "reagami+squint-clojure",
+    "cost_usd" : 8.650962,
+    "complete" : true,
+    "output_tokens" : 302992,
+    "model" : "gpt-6.1-sol"
+  }, {
     "effort" : "medium",
     "run_id" : "20261012-201824",
     "attempts" : 22,
@@ -14494,6 +14644,21 @@
     "cost_usd" : 6.289882800000002,
     "complete" : true,
     "output_tokens" : 203081,
+    "model" : "gpt-6.1-sol"
+  }, {
+    "effort" : "high",
+    "run_id" : "20261021-084612",
+    "attempts" : 25,
+    "steps_passed" : 20,
+    "input_tokens" : 32654236,
+    "agent" : "codex 0.163.0",
+    "tool_calls" : 696,
+    "project" : 5,
+    "wall_min" : 153.48455,
+    "stack" : "replicant-clojure",
+    "cost_usd" : 9.161846,
+    "complete" : true,
+    "output_tokens" : 310419,
     "model" : "gpt-6.1-sol"
   }, {
     "effort" : "medium",
@@ -14631,6 +14796,21 @@
     "output_tokens" : 168745,
     "model" : "gpt-6.1-sol"
   }, {
+    "effort" : "high",
+    "run_id" : "20261021-144750",
+    "attempts" : 22,
+    "steps_passed" : 20,
+    "input_tokens" : 26849795,
+    "agent" : "codex 0.163.0",
+    "tool_calls" : 683,
+    "project" : 5,
+    "wall_min" : 134.95418333333333,
+    "stack" : "svelte-kotlin",
+    "cost_usd" : 8.363614799999999,
+    "complete" : true,
+    "output_tokens" : 278382,
+    "model" : "gpt-6.1-sol"
+  }, {
     "effort" : "medium",
     "run_id" : "20261016-114622",
     "attempts" : 20,
@@ -14721,6 +14901,21 @@
     "output_tokens" : 131279,
     "model" : "gpt-6.1-sol"
   }, {
+    "effort" : "high",
+    "run_id" : "20261020-234949",
+    "attempts" : 20,
+    "steps_passed" : 20,
+    "input_tokens" : 32632526,
+    "agent" : "codex 0.163.0",
+    "tool_calls" : 648,
+    "project" : 5,
+    "wall_min" : 105.94705,
+    "stack" : "thymeleaf-java",
+    "cost_usd" : 9.2631044,
+    "complete" : true,
+    "output_tokens" : 318515,
+    "model" : "gpt-6.1-sol"
+  }, {
     "effort" : "medium",
     "run_id" : "20261016-101119",
     "attempts" : 20,
@@ -14809,6 +15004,21 @@
     "cost_usd" : 6.022534000000001,
     "complete" : true,
     "output_tokens" : 189840,
+    "model" : "gpt-6.1-sol"
+  }, {
+    "effort" : "high",
+    "run_id" : "20261021-174533",
+    "attempts" : 20,
+    "steps_passed" : 20,
+    "input_tokens" : 26290505,
+    "agent" : "codex 0.163.0",
+    "tool_calls" : 595,
+    "project" : 5,
+    "wall_min" : 110.75645,
+    "stack" : "vue-go",
+    "cost_usd" : 7.8515836000000006,
+    "complete" : true,
+    "output_tokens" : 278018,
     "model" : "gpt-6.1-sol"
   } ]
 }
