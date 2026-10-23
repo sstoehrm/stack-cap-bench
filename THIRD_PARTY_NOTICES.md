@@ -12,7 +12,7 @@ not distributed and not listed.
 | ClojureScript (`cljs.core`, `clojure.string`) | 1.12.145 | EPL-1.0 | <https://github.com/clojure/clojurescript> |
 | Google Closure Library (43 `goog/*` files) | 0.0-20250515-f04e4c0e | Apache-2.0 | <https://github.com/google/closure-library> |
 | shadow-cljs module glue (`shadow/module/main/append.js`) | 3.5.3 | EPL-1.0 | <https://github.com/thheller/shadow-cljs> |
-| hammer | v0.1.0 | MIT | <https://github.com/sstoehrm/hammer> |
+| hammer | v0.1.3 | MIT | <https://github.com/sstoehrm/hammer> |
 
 - ClojureScript and shadow-cljs: Copyright Rich Hickey and contributors, and
   Thomas Heller. Eclipse Public License 1.0, [LICENSES/EPL-1.0.txt](LICENSES/EPL-1.0.txt).
