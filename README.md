@@ -50,7 +50,19 @@ new data needs no rebuild. Regenerate it from a token-comparision checkout:
 bb import ../token-comparision
 ```
 
-or edit it by hand:
+`main` only takes pull requests that pass CI, so a scheduled or repeated
+import publishes with
+
+```sh
+bb data-pr ../token-comparision
+```
+
+which imports into a throwaway worktree of `origin/main`, pushes a
+`data/<sha>` branch and opens a PR with auto-merge, so the data lands once CI
+is green. It leaves your checkout alone and does nothing when the data is
+unchanged.
+
+Or edit it by hand:
 
 ```json
 {
