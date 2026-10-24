@@ -1,6 +1,6 @@
 {
-  "source" : "token-comparision@b8395400",
-  "imported" : "2026-10-22",
+  "source" : "token-comparision@caf9a65c",
+  "imported" : "2026-10-24",
   "topics" : [ {
     "id" : "web",
     "label" : "Web development",
@@ -13883,17 +13883,17 @@
   }, {
     "effort" : "high",
     "run_id" : "20261022-075331",
-    "attempts" : 9,
-    "steps_passed" : 9,
-    "input_tokens" : 12076959,
+    "attempts" : 20,
+    "steps_passed" : 20,
+    "input_tokens" : 32582303,
     "agent" : "codex 0.163.0",
-    "tool_calls" : 335,
+    "tool_calls" : 778,
     "project" : 5,
-    "wall_min" : 59.15893333333333,
+    "wall_min" : 153.28735,
     "stack" : "babashka+hammer",
-    "cost_usd" : 3.3056508000000004,
-    "complete" : false,
-    "output_tokens" : 120292,
+    "cost_usd" : 8.908576,
+    "complete" : true,
+    "output_tokens" : 300573,
     "model" : "gpt-6.1-sol"
   }, {
     "effort" : "medium",
@@ -13941,6 +13941,21 @@
     "output_tokens" : 211448,
     "model" : "gpt-6.1-sol"
   }, {
+    "effort" : "high",
+    "run_id" : "20261023-071044",
+    "attempts" : 21,
+    "steps_passed" : 20,
+    "input_tokens" : 32500893,
+    "agent" : "codex 0.164.0",
+    "tool_calls" : 722,
+    "project" : 5,
+    "wall_min" : 148.56336666666667,
+    "stack" : "clojure+hammer",
+    "cost_usd" : 8.7249444,
+    "complete" : true,
+    "output_tokens" : 288472,
+    "model" : "gpt-6.1-sol"
+  }, {
     "effort" : "medium",
     "run_id" : "20261016-114617",
     "attempts" : 23,
@@ -13986,6 +14001,21 @@
     "output_tokens" : 190836,
     "model" : "gpt-6.1-sol"
   }, {
+    "effort" : "high",
+    "run_id" : "20261022-134602",
+    "attempts" : 23,
+    "steps_passed" : 20,
+    "input_tokens" : 33650616,
+    "agent" : "codex 0.163.0",
+    "tool_calls" : 607,
+    "project" : 5,
+    "wall_min" : 151.49778333333333,
+    "stack" : "django-python",
+    "cost_usd" : 9.2007356,
+    "complete" : true,
+    "output_tokens" : 313775,
+    "model" : "gpt-6.1-sol"
+  }, {
     "effort" : "medium",
     "run_id" : "20261016-131603",
     "attempts" : 23,
@@ -14029,6 +14059,21 @@
     "cost_usd" : 5.77847,
     "complete" : true,
     "output_tokens" : 202638,
+    "model" : "gpt-6.1-sol"
+  }, {
+    "effort" : "high",
+    "run_id" : "20261022-221620",
+    "attempts" : 22,
+    "steps_passed" : 20,
+    "input_tokens" : 29611924,
+    "agent" : "codex 0.163.0",
+    "tool_calls" : 659,
+    "project" : 5,
+    "wall_min" : 118.54063333333333,
+    "stack" : "hotwire-rails",
+    "cost_usd" : 8.623062400000002,
+    "complete" : true,
+    "output_tokens" : 317876,
     "model" : "gpt-6.1-sol"
   }, {
     "effort" : "medium",
@@ -14256,6 +14301,21 @@
     "output_tokens" : 278754,
     "model" : "gpt-6.1-sol"
   }, {
+    "effort" : "high",
+    "run_id" : "20261023-005511",
+    "attempts" : 23,
+    "steps_passed" : 20,
+    "input_tokens" : 40857429,
+    "agent" : "codex 0.163.0",
+    "tool_calls" : 795,
+    "project" : 5,
+    "wall_min" : 142.5139,
+    "stack" : "lustre-gleam",
+    "cost_usd" : 10.41213,
+    "complete" : true,
+    "output_tokens" : 347276,
+    "model" : "gpt-6.1-sol"
+  }, {
     "effort" : "medium",
     "run_id" : "20261016-082342",
     "attempts" : 20,
@@ -14479,6 +14539,21 @@
     "cost_usd" : 6.285722399999999,
     "complete" : true,
     "output_tokens" : 211299,
+    "model" : "gpt-6.1-sol"
+  }, {
+    "effort" : "high",
+    "run_id" : "20261023-040019",
+    "attempts" : 20,
+    "steps_passed" : 20,
+    "input_tokens" : 20737982,
+    "agent" : "codex 0.163.0",
+    "tool_calls" : 575,
+    "project" : 5,
+    "wall_min" : 127.4409,
+    "stack" : "react-go",
+    "cost_usd" : 7.060057600000001,
+    "complete" : true,
+    "output_tokens" : 276378,
     "model" : "gpt-6.1-sol"
   }, {
     "effort" : "medium",
@@ -14706,6 +14781,21 @@
     "output_tokens" : 197388,
     "model" : "gpt-6.1-sol"
   }, {
+    "effort" : "high",
+    "run_id" : "20261022-194327",
+    "attempts" : 20,
+    "steps_passed" : 20,
+    "input_tokens" : 25568078,
+    "agent" : "codex 0.163.0",
+    "tool_calls" : 637,
+    "project" : 5,
+    "wall_min" : 118.87471666666667,
+    "stack" : "solid-go",
+    "cost_usd" : 7.7553736,
+    "complete" : true,
+    "output_tokens" : 289580,
+    "model" : "gpt-6.1-sol"
+  }, {
     "effort" : "medium",
     "run_id" : "20261016-155108",
     "attempts" : 20,
@@ -14749,6 +14839,21 @@
     "cost_usd" : 6.239011600000001,
     "complete" : false,
     "output_tokens" : 197918,
+    "model" : "gpt-6.1-sol"
+  }, {
+    "effort" : "high",
+    "run_id" : "20261023-101848",
+    "attempts" : 20,
+    "steps_passed" : 20,
+    "input_tokens" : 30709446,
+    "agent" : "codex 0.164.0",
+    "tool_calls" : 697,
+    "project" : 5,
+    "wall_min" : 145.26316666666668,
+    "stack" : "svelte-java",
+    "cost_usd" : 8.981300000000001,
+    "complete" : true,
+    "output_tokens" : 304484,
     "model" : "gpt-6.1-sol"
   }, {
     "effort" : "medium",
@@ -14856,6 +14961,21 @@
     "output_tokens" : 174309,
     "model" : "gpt-6.1-sol"
   }, {
+    "effort" : "high",
+    "run_id" : "20261022-170450",
+    "attempts" : 21,
+    "steps_passed" : 20,
+    "input_tokens" : 26451580,
+    "agent" : "codex 0.163.0",
+    "tool_calls" : 618,
+    "project" : 5,
+    "wall_min" : 124.17788333333333,
+    "stack" : "sveltekit-ts",
+    "cost_usd" : 7.843010399999999,
+    "complete" : true,
+    "output_tokens" : 294826,
+    "model" : "gpt-6.1-sol"
+  }, {
     "effort" : "medium",
     "run_id" : "20261012-181723",
     "attempts" : 20,
@@ -14959,6 +15079,21 @@
     "cost_usd" : 5.214373600000001,
     "complete" : true,
     "output_tokens" : 186491,
+    "model" : "gpt-6.1-sol"
+  }, {
+    "effort" : "high",
+    "run_id" : "20261022-110426",
+    "attempts" : 20,
+    "steps_passed" : 20,
+    "input_tokens" : 22728425,
+    "agent" : "codex 0.163.0",
+    "tool_calls" : 574,
+    "project" : 5,
+    "wall_min" : 127.56878333333333,
+    "stack" : "vanillajs-go",
+    "cost_usd" : 7.5259912,
+    "complete" : true,
+    "output_tokens" : 290461,
     "model" : "gpt-6.1-sol"
   }, {
     "effort" : "medium",
