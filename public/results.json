@@ -1,6 +1,6 @@
 {
-  "source" : "token-comparision@38e59b58",
-  "imported" : "2026-10-25",
+  "source" : "token-comparision@ff4667d5",
+  "imported" : "2026-10-27",
   "topics" : [ {
     "id" : "web",
     "label" : "Web development",
@@ -9936,6 +9936,36 @@
     "output_tokens" : 197507,
     "model" : "grok-4.6"
   }, {
+    "effort" : "high",
+    "run_id" : "20261026-124806",
+    "attempts" : 6,
+    "steps_passed" : 5,
+    "input_tokens" : 3968900,
+    "agent" : "claude-code 2.1.310",
+    "tool_calls" : 94,
+    "project" : 3,
+    "wall_min" : 28.500383333333332,
+    "stack" : "django-python",
+    "cost_usd" : 11.514756250000003,
+    "complete" : true,
+    "output_tokens" : 115143,
+    "model" : "claude-fable-5-1"
+  }, {
+    "effort" : "xhigh",
+    "run_id" : "20261026-124809",
+    "attempts" : 6,
+    "steps_passed" : 5,
+    "input_tokens" : 6235527,
+    "agent" : "codex 0.164.0",
+    "tool_calls" : 210,
+    "project" : 3,
+    "wall_min" : 24.654566666666668,
+    "stack" : "django-python",
+    "cost_usd" : 2.401606,
+    "complete" : true,
+    "output_tokens" : 71212,
+    "model" : "gpt-6-sol"
+  }, {
     "effort" : "medium",
     "run_id" : "20261011-104300",
     "attempts" : 5,
@@ -11510,6 +11540,21 @@
     "complete" : true,
     "output_tokens" : 151443,
     "model" : "grok-4.6"
+  }, {
+    "effort" : "high",
+    "run_id" : "20261026-131441",
+    "attempts" : 6,
+    "steps_passed" : 5,
+    "input_tokens" : 5783408,
+    "agent" : "codex 0.164.0",
+    "tool_calls" : 189,
+    "project" : 3,
+    "wall_min" : 22.914433333333335,
+    "stack" : "phoenix-liveview",
+    "cost_usd" : 2.0731316,
+    "complete" : true,
+    "output_tokens" : 58309,
+    "model" : "gpt-6-sol"
   }, {
     "effort" : "xhigh",
     "run_id" : "20260929-231630",
@@ -14572,6 +14617,21 @@
     "model" : "gpt-6.1-sol"
   }, {
     "effort" : "medium",
+    "run_id" : "20261026-125629",
+    "attempts" : 22,
+    "steps_passed" : 20,
+    "input_tokens" : 94068008,
+    "agent" : "grok 1.0.70",
+    "tool_calls" : 2058,
+    "project" : 5,
+    "wall_min" : 321.73038333333335,
+    "stack" : "htmx-go",
+    "cost_usd" : 20.88626936,
+    "complete" : true,
+    "output_tokens" : 1507982,
+    "model" : "grok-4.7"
+  }, {
+    "effort" : "medium",
     "run_id" : "20261012-200336",
     "attempts" : 21,
     "steps_passed" : 20,
@@ -14630,6 +14690,36 @@
     "complete" : false,
     "output_tokens" : 110650,
     "model" : "gpt-6.1-sol"
+  }, {
+    "effort" : "high",
+    "run_id" : "20261025-104745",
+    "attempts" : 22,
+    "steps_passed" : 20,
+    "input_tokens" : 31001179,
+    "agent" : "codex 0.164.0",
+    "tool_calls" : 612,
+    "project" : 5,
+    "wall_min" : 118.10623333333334,
+    "stack" : "htmx-python",
+    "cost_usd" : 8.330665199999999,
+    "complete" : true,
+    "output_tokens" : 312256,
+    "model" : "gpt-6.1-sol"
+  }, {
+    "effort" : "medium",
+    "run_id" : "20261026-203343",
+    "attempts" : 21,
+    "steps_passed" : 20,
+    "input_tokens" : 112944134,
+    "agent" : "grok 1.0.70",
+    "tool_calls" : 2150,
+    "project" : 5,
+    "wall_min" : 355.7822,
+    "stack" : "htmx-python",
+    "cost_usd" : 24.417994200000003,
+    "complete" : true,
+    "output_tokens" : 1606306,
+    "model" : "grok-4.7"
   }, {
     "effort" : "medium",
     "run_id" : "20261012-181726",
@@ -14690,6 +14780,36 @@
     "complete" : false,
     "output_tokens" : 125562,
     "model" : "gpt-6.1-sol"
+  }, {
+    "effort" : "high",
+    "run_id" : "20261025-075757",
+    "attempts" : 21,
+    "steps_passed" : 20,
+    "input_tokens" : 34484648,
+    "agent" : "codex 0.164.0",
+    "tool_calls" : 674,
+    "project" : 5,
+    "wall_min" : 130.19428333333335,
+    "stack" : "htmx-thymeleaf-java",
+    "cost_usd" : 9.2079228,
+    "complete" : true,
+    "output_tokens" : 331279,
+    "model" : "gpt-6.1-sol"
+  }, {
+    "effort" : "medium",
+    "run_id" : "20261026-185414",
+    "attempts" : 21,
+    "steps_passed" : 20,
+    "input_tokens" : 111320114,
+    "agent" : "grok 1.0.70",
+    "tool_calls" : 2389,
+    "project" : 5,
+    "wall_min" : 372.52675,
+    "stack" : "htmx-thymeleaf-java",
+    "cost_usd" : 24.253198879999996,
+    "complete" : true,
+    "output_tokens" : 1589640,
+    "model" : "grok-4.7"
   }, {
     "effort" : "medium",
     "run_id" : "20261016-133929",
@@ -14932,6 +15052,21 @@
     "model" : "gpt-6.1-sol"
   }, {
     "effort" : "medium",
+    "run_id" : "20261027-014555",
+    "attempts" : 15,
+    "steps_passed" : 13,
+    "input_tokens" : 64515474,
+    "agent" : "grok 1.0.70",
+    "tool_calls" : 1073,
+    "project" : 5,
+    "wall_min" : 236.01135,
+    "stack" : "re-frame-clojure",
+    "cost_usd" : 14.19124564,
+    "complete" : false,
+    "output_tokens" : 1022433,
+    "model" : "grok-4.7"
+  }, {
+    "effort" : "medium",
     "run_id" : "20261016-144805",
     "attempts" : 20,
     "steps_passed" : 20,
@@ -15172,6 +15307,21 @@
     "model" : "gpt-6.1-sol"
   }, {
     "effort" : "medium",
+    "run_id" : "20261027-030420",
+    "attempts" : 10,
+    "steps_passed" : 9,
+    "input_tokens" : 37485990,
+    "agent" : "grok 1.0.70",
+    "tool_calls" : 659,
+    "project" : 5,
+    "wall_min" : 168.40321666666668,
+    "stack" : "replicant-clojure",
+    "cost_usd" : 8.51604904,
+    "complete" : false,
+    "output_tokens" : 712620,
+    "model" : "grok-4.7"
+  }, {
+    "effort" : "medium",
     "run_id" : "20261016-125525",
     "attempts" : 20,
     "steps_passed" : 20,
@@ -15293,17 +15443,17 @@
   }, {
     "effort" : "medium",
     "run_id" : "20261025-055449",
-    "attempts" : 4,
-    "steps_passed" : 4,
-    "input_tokens" : 2281896,
+    "attempts" : 25,
+    "steps_passed" : 20,
+    "input_tokens" : 22012850,
     "agent" : "codex 0.164.0",
-    "tool_calls" : 88,
+    "tool_calls" : 488,
     "project" : 5,
-    "wall_min" : 9.94335,
+    "wall_min" : 70.14983333333333,
     "stack" : "svelte-java",
-    "cost_usd" : 0.8140356000000001,
-    "complete" : false,
-    "output_tokens" : 33649,
+    "cost_usd" : 6.3481264,
+    "complete" : true,
+    "output_tokens" : 213986,
     "model" : "gpt-6.1-sol"
   }, {
     "effort" : "medium",
@@ -15499,6 +15649,36 @@
     "cost_usd" : 4.08683,
     "complete" : false,
     "output_tokens" : 138119,
+    "model" : "gpt-6.1-sol"
+  }, {
+    "effort" : "medium",
+    "run_id" : "20261026-125632",
+    "attempts" : 22,
+    "steps_passed" : 20,
+    "input_tokens" : 108957466,
+    "agent" : "grok 1.0.70",
+    "tool_calls" : 2562,
+    "project" : 5,
+    "wall_min" : 408.7641,
+    "stack" : "thymeleaf-java",
+    "cost_usd" : 24.409419399999997,
+    "complete" : true,
+    "output_tokens" : 1593309,
+    "model" : "grok-4.7"
+  }, {
+    "effort" : "medium",
+    "run_id" : "20261026-133931",
+    "attempts" : 19,
+    "steps_passed" : 14,
+    "input_tokens" : 19564851,
+    "agent" : "codex 0.164.0",
+    "tool_calls" : 346,
+    "project" : 5,
+    "wall_min" : 77.32866666666666,
+    "stack" : "thymeleaf-java",
+    "cost_usd" : 5.1583068,
+    "complete" : false,
+    "output_tokens" : 161144,
     "model" : "gpt-6.1-sol"
   }, {
     "effort" : "medium",
