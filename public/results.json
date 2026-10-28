@@ -1,6 +1,6 @@
 {
-  "source" : "token-comparision@ff4667d5",
-  "imported" : "2026-10-27",
+  "source" : "token-comparision@bdbe794b",
+  "imported" : "2026-10-28",
   "topics" : [ {
     "id" : "web",
     "label" : "Web development",
@@ -15053,17 +15053,17 @@
   }, {
     "effort" : "medium",
     "run_id" : "20261027-014555",
-    "attempts" : 15,
-    "steps_passed" : 13,
-    "input_tokens" : 64515474,
+    "attempts" : 23,
+    "steps_passed" : 20,
+    "input_tokens" : 113893872,
     "agent" : "grok 1.0.70",
-    "tool_calls" : 1073,
+    "tool_calls" : 1937,
     "project" : 5,
-    "wall_min" : 236.01135,
+    "wall_min" : 365.4964166666667,
     "stack" : "re-frame-clojure",
-    "cost_usd" : 14.19124564,
-    "complete" : false,
-    "output_tokens" : 1022433,
+    "cost_usd" : 24.64519368,
+    "complete" : true,
+    "output_tokens" : 1580554,
     "model" : "grok-4.7"
   }, {
     "effort" : "medium",
@@ -15305,21 +15305,6 @@
     "complete" : true,
     "output_tokens" : 310419,
     "model" : "gpt-6.1-sol"
-  }, {
-    "effort" : "medium",
-    "run_id" : "20261027-030420",
-    "attempts" : 10,
-    "steps_passed" : 9,
-    "input_tokens" : 37485990,
-    "agent" : "grok 1.0.70",
-    "tool_calls" : 659,
-    "project" : 5,
-    "wall_min" : 168.40321666666668,
-    "stack" : "replicant-clojure",
-    "cost_usd" : 8.51604904,
-    "complete" : false,
-    "output_tokens" : 712620,
-    "model" : "grok-4.7"
   }, {
     "effort" : "medium",
     "run_id" : "20261016-125525",
