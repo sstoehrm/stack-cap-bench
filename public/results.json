@@ -1,5 +1,5 @@
 {
-  "source" : "token-comparision@bc0bd7f2",
+  "source" : "token-comparision@454346b8",
   "imported" : "2026-11-16",
   "topics" : [ {
     "id" : "web",
@@ -16162,6 +16162,21 @@
     "model" : "grok-4.7"
   }, {
     "effort" : "medium",
+    "run_id" : "20261116-084427",
+    "attempts" : 21,
+    "steps_passed" : 20,
+    "input_tokens" : 13345940,
+    "agent" : "claude-code 2.1.325",
+    "tool_calls" : 241,
+    "project" : 5,
+    "wall_min" : 51.9669,
+    "stack" : "angular-java",
+    "cost_usd" : 34.56925780000001,
+    "complete" : true,
+    "output_tokens" : 335281,
+    "model" : "claude-fable-5-2"
+  }, {
+    "effort" : "medium",
     "run_id" : "20261016-101057",
     "attempts" : 21,
     "steps_passed" : 20,
@@ -16237,6 +16252,21 @@
     "model" : "grok-4.7"
   }, {
     "effort" : "medium",
+    "run_id" : "20261116-103330",
+    "attempts" : 22,
+    "steps_passed" : 20,
+    "input_tokens" : 12793903,
+    "agent" : "claude-code 2.1.325",
+    "tool_calls" : 229,
+    "project" : 5,
+    "wall_min" : 70.24735,
+    "stack" : "babashka+hammer",
+    "cost_usd" : 32.5211166,
+    "complete" : true,
+    "output_tokens" : 282260,
+    "model" : "claude-fable-5-2"
+  }, {
+    "effort" : "medium",
     "run_id" : "20261016-150659",
     "attempts" : 20,
     "steps_passed" : 20,
@@ -16295,6 +16325,21 @@
     "complete" : true,
     "output_tokens" : 288472,
     "model" : "gpt-6.1-sol"
+  }, {
+    "effort" : "medium",
+    "run_id" : "20261116-124748",
+    "attempts" : 21,
+    "steps_passed" : 20,
+    "input_tokens" : 12828799,
+    "agent" : "claude-code 2.1.325",
+    "tool_calls" : 229,
+    "project" : 5,
+    "wall_min" : 50.884033333333335,
+    "stack" : "clojure+hammer",
+    "cost_usd" : 32.5299524,
+    "complete" : true,
+    "output_tokens" : 289292,
+    "model" : "claude-fable-5-2"
   }, {
     "effort" : "medium",
     "run_id" : "20261016-114617",
@@ -16370,6 +16415,21 @@
     "complete" : true,
     "output_tokens" : 1465031,
     "model" : "grok-4.7"
+  }, {
+    "effort" : "medium",
+    "run_id" : "20261116-151650",
+    "attempts" : 2,
+    "steps_passed" : 2,
+    "input_tokens" : 460775,
+    "agent" : "claude-code 2.1.325",
+    "tool_calls" : 15,
+    "project" : 5,
+    "wall_min" : 4.003833333333334,
+    "stack" : "django-python",
+    "cost_usd" : 1.981697,
+    "complete" : false,
+    "output_tokens" : 23761,
+    "model" : "claude-fable-5-2"
   }, {
     "effort" : "medium",
     "run_id" : "20261016-131603",
