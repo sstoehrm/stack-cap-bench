@@ -1,6 +1,6 @@
 {
-  "source" : "token-comparision@454346b8",
-  "imported" : "2026-11-16",
+  "source" : "token-comparision@c98aef8e",
+  "imported" : "2026-11-17",
   "topics" : [ {
     "id" : "web",
     "label" : "Web development",
@@ -16418,17 +16418,17 @@
   }, {
     "effort" : "medium",
     "run_id" : "20261116-151650",
-    "attempts" : 2,
-    "steps_passed" : 2,
-    "input_tokens" : 460775,
+    "attempts" : 20,
+    "steps_passed" : 20,
+    "input_tokens" : 11472373,
     "agent" : "claude-code 2.1.325",
-    "tool_calls" : 15,
+    "tool_calls" : 209,
     "project" : 5,
-    "wall_min" : 4.003833333333334,
+    "wall_min" : 42.34921666666666,
     "stack" : "django-python",
-    "cost_usd" : 1.981697,
-    "complete" : false,
-    "output_tokens" : 23761,
+    "cost_usd" : 30.635748599999996,
+    "complete" : true,
+    "output_tokens" : 287946,
     "model" : "claude-fable-5-2"
   }, {
     "effort" : "medium",
@@ -16490,6 +16490,21 @@
     "complete" : true,
     "output_tokens" : 317876,
     "model" : "gpt-6.1-sol"
+  }, {
+    "effort" : "medium",
+    "run_id" : "20261116-171220",
+    "attempts" : 21,
+    "steps_passed" : 20,
+    "input_tokens" : 10644630,
+    "agent" : "claude-code 2.1.325",
+    "tool_calls" : 208,
+    "project" : 5,
+    "wall_min" : 53.35456666666666,
+    "stack" : "hotwire-rails",
+    "cost_usd" : 30.026027800000005,
+    "complete" : true,
+    "output_tokens" : 297136,
+    "model" : "claude-fable-5-2"
   }, {
     "effort" : "medium",
     "run_id" : "20261012-181720",
@@ -16565,6 +16580,21 @@
     "complete" : true,
     "output_tokens" : 1507982,
     "model" : "grok-4.7"
+  }, {
+    "effort" : "medium",
+    "run_id" : "20261116-184831",
+    "attempts" : 22,
+    "steps_passed" : 20,
+    "input_tokens" : 14634558,
+    "agent" : "claude-code 2.1.325",
+    "tool_calls" : 250,
+    "project" : 5,
+    "wall_min" : 64.92343333333334,
+    "stack" : "htmx-go",
+    "cost_usd" : 38.80238500000001,
+    "complete" : true,
+    "output_tokens" : 387406,
+    "model" : "claude-fable-5-2"
   }, {
     "effort" : "medium",
     "run_id" : "20261012-200336",
@@ -16657,6 +16687,21 @@
     "model" : "grok-4.7"
   }, {
     "effort" : "medium",
+    "run_id" : "20261116-204410",
+    "attempts" : 21,
+    "steps_passed" : 20,
+    "input_tokens" : 10361783,
+    "agent" : "claude-code 2.1.325",
+    "tool_calls" : 207,
+    "project" : 5,
+    "wall_min" : 47.0234,
+    "stack" : "htmx-python",
+    "cost_usd" : 30.4762998,
+    "complete" : true,
+    "output_tokens" : 286767,
+    "model" : "claude-fable-5-2"
+  }, {
+    "effort" : "medium",
     "run_id" : "20261012-181726",
     "attempts" : 22,
     "steps_passed" : 20,
@@ -16745,6 +16790,21 @@
     "complete" : true,
     "output_tokens" : 1589640,
     "model" : "grok-4.7"
+  }, {
+    "effort" : "medium",
+    "run_id" : "20261116-220552",
+    "attempts" : 23,
+    "steps_passed" : 20,
+    "input_tokens" : 14652183,
+    "agent" : "claude-code 2.1.325, claude-code 2.1.326",
+    "tool_calls" : 268,
+    "project" : 5,
+    "wall_min" : 70.35526666666667,
+    "stack" : "htmx-thymeleaf-java",
+    "cost_usd" : 37.2954438,
+    "complete" : true,
+    "output_tokens" : 369693,
+    "model" : "claude-fable-5-2"
   }, {
     "effort" : "medium",
     "run_id" : "20261016-133929",
