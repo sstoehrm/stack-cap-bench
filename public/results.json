@@ -1,5 +1,5 @@
 {
-  "source" : "token-comparision@4bce8f28",
+  "source" : "token-comparision@59b692c5",
   "imported" : "2026-11-18",
   "topics" : [ {
     "id" : "web",
@@ -5496,6 +5496,21 @@
     "output_tokens" : 18011,
     "model" : "gpt-6.2-astra"
   }, {
+    "effort" : "high",
+    "run_id" : "20261118-074813",
+    "attempts" : 5,
+    "steps_passed" : 5,
+    "input_tokens" : 3718004,
+    "agent" : "codex 0.169.0",
+    "tool_calls" : 130,
+    "project" : 2,
+    "wall_min" : 31.37695,
+    "stack" : "angular-java",
+    "cost_usd" : 1.5130000000000001,
+    "complete" : true,
+    "output_tokens" : 54976,
+    "model" : "gpt-6.2-sol"
+  }, {
     "effort" : "medium",
     "run_id" : "20260930-195141",
     "attempts" : 5,
@@ -5780,6 +5795,21 @@
     "complete" : true,
     "output_tokens" : 16710,
     "model" : "gpt-6.2-astra"
+  }, {
+    "effort" : "high",
+    "run_id" : "20261118-082129",
+    "attempts" : 5,
+    "steps_passed" : 5,
+    "input_tokens" : 3378159,
+    "agent" : "codex 0.169.0",
+    "tool_calls" : 114,
+    "project" : 2,
+    "wall_min" : 27.77085,
+    "stack" : "babashka+hammer",
+    "cost_usd" : 1.4107964000000002,
+    "complete" : true,
+    "output_tokens" : 47620,
+    "model" : "gpt-6.2-sol"
   }, {
     "effort" : "xhigh",
     "run_id" : "20260929-223005",
@@ -6066,6 +6096,21 @@
     "output_tokens" : 17505,
     "model" : "gpt-6.2-astra"
   }, {
+    "effort" : "high",
+    "run_id" : "20261118-082141",
+    "attempts" : 5,
+    "steps_passed" : 5,
+    "input_tokens" : 4499533,
+    "agent" : "codex 0.169.0",
+    "tool_calls" : 142,
+    "project" : 2,
+    "wall_min" : 35.024633333333334,
+    "stack" : "clojure+hammer",
+    "cost_usd" : 1.5839436,
+    "complete" : true,
+    "output_tokens" : 53922,
+    "model" : "gpt-6.2-sol"
+  }, {
     "effort" : "low",
     "run_id" : "20261011-054401",
     "attempts" : 5,
@@ -6350,6 +6395,21 @@
     "complete" : true,
     "output_tokens" : 16811,
     "model" : "gpt-6.2-astra"
+  }, {
+    "effort" : "high",
+    "run_id" : "20261118-085040",
+    "attempts" : 5,
+    "steps_passed" : 5,
+    "input_tokens" : 3515508,
+    "agent" : "codex 0.169.0",
+    "tool_calls" : 138,
+    "project" : 2,
+    "wall_min" : 49.4718,
+    "stack" : "django-python",
+    "cost_usd" : 1.3705804,
+    "complete" : true,
+    "output_tokens" : 54311,
+    "model" : "gpt-6.2-sol"
   }, {
     "effort" : "medium",
     "run_id" : "20261011-055155",
@@ -6636,6 +6696,21 @@
     "output_tokens" : 16786,
     "model" : "gpt-6.2-astra"
   }, {
+    "effort" : "high",
+    "run_id" : "20261118-085816",
+    "attempts" : 5,
+    "steps_passed" : 5,
+    "input_tokens" : 4060404,
+    "agent" : "codex 0.169.0",
+    "tool_calls" : 136,
+    "project" : 2,
+    "wall_min" : 43.939416666666666,
+    "stack" : "hotwire-rails",
+    "cost_usd" : 1.5097496,
+    "complete" : true,
+    "output_tokens" : 55410,
+    "model" : "gpt-6.2-sol"
+  }, {
     "effort" : "medium",
     "run_id" : "20261004-220256",
     "attempts" : 5,
@@ -6920,6 +6995,21 @@
     "complete" : true,
     "output_tokens" : 19372,
     "model" : "gpt-6.2-astra"
+  }, {
+    "effort" : "high",
+    "run_id" : "20261118-094138",
+    "attempts" : 5,
+    "steps_passed" : 5,
+    "input_tokens" : 3465567,
+    "agent" : "codex 0.169.0",
+    "tool_calls" : 126,
+    "project" : 2,
+    "wall_min" : 39.32621666666667,
+    "stack" : "htmx-go",
+    "cost_usd" : 1.6246152,
+    "complete" : true,
+    "output_tokens" : 67231,
+    "model" : "gpt-6.2-sol"
   }, {
     "effort" : "medium",
     "run_id" : "20261011-053534",
@@ -7206,6 +7296,21 @@
     "output_tokens" : 18489,
     "model" : "gpt-6.2-astra"
   }, {
+    "effort" : "high",
+    "run_id" : "20261118-094354",
+    "attempts" : 5,
+    "steps_passed" : 5,
+    "input_tokens" : 3526437,
+    "agent" : "codex 0.169.0",
+    "tool_calls" : 137,
+    "project" : 2,
+    "wall_min" : 38.04521666666667,
+    "stack" : "htmx-python",
+    "cost_usd" : 1.5184912,
+    "complete" : true,
+    "output_tokens" : 65603,
+    "model" : "gpt-6.2-sol"
+  }, {
     "effort" : "medium",
     "run_id" : "20261004-222049",
     "attempts" : 5,
@@ -7490,6 +7595,21 @@
     "complete" : true,
     "output_tokens" : 19398,
     "model" : "gpt-6.2-astra"
+  }, {
+    "effort" : "high",
+    "run_id" : "20261118-102223",
+    "attempts" : 5,
+    "steps_passed" : 5,
+    "input_tokens" : 4093487,
+    "agent" : "codex 0.169.0",
+    "tool_calls" : 120,
+    "project" : 2,
+    "wall_min" : 29.477916666666665,
+    "stack" : "htmx-thymeleaf-java",
+    "cost_usd" : 1.5022784000000002,
+    "complete" : true,
+    "output_tokens" : 54029,
+    "model" : "gpt-6.2-sol"
   }, {
     "effort" : "medium",
     "run_id" : "20261011-055532",
@@ -7776,6 +7896,21 @@
     "output_tokens" : 27054,
     "model" : "gpt-6.2-astra"
   }, {
+    "effort" : "high",
+    "run_id" : "20261118-102324",
+    "attempts" : 5,
+    "steps_passed" : 5,
+    "input_tokens" : 5629442,
+    "agent" : "codex 0.169.0",
+    "tool_calls" : 169,
+    "project" : 2,
+    "wall_min" : 35.037816666666664,
+    "stack" : "lustre-gleam",
+    "cost_usd" : 1.8803112,
+    "complete" : true,
+    "output_tokens" : 67264,
+    "model" : "gpt-6.2-sol"
+  }, {
     "effort" : "xhigh",
     "run_id" : "20260929-230259",
     "attempts" : 5,
@@ -8060,6 +8195,21 @@
     "complete" : true,
     "output_tokens" : 15521,
     "model" : "gpt-6.2-astra"
+  }, {
+    "effort" : "high",
+    "run_id" : "20261118-105331",
+    "attempts" : 5,
+    "steps_passed" : 5,
+    "input_tokens" : 2968037,
+    "agent" : "codex 0.169.0",
+    "tool_calls" : 120,
+    "project" : 2,
+    "wall_min" : 23.557166666666667,
+    "stack" : "nextjs-ts",
+    "cost_usd" : 1.3291720000000002,
+    "complete" : true,
+    "output_tokens" : 48449,
+    "model" : "gpt-6.2-sol"
   }, {
     "effort" : "xhigh",
     "run_id" : "20260929-232906",
@@ -8346,6 +8496,21 @@
     "output_tokens" : 20596,
     "model" : "gpt-6.2-astra"
   }, {
+    "effort" : "high",
+    "run_id" : "20261118-110007",
+    "attempts" : 6,
+    "steps_passed" : 5,
+    "input_tokens" : 4484345,
+    "agent" : "codex 0.169.0",
+    "tool_calls" : 161,
+    "project" : 2,
+    "wall_min" : 31.244416666666666,
+    "stack" : "phoenix-liveview",
+    "cost_usd" : 1.6005664,
+    "complete" : true,
+    "output_tokens" : 62659,
+    "model" : "gpt-6.2-sol"
+  }, {
     "effort" : "xhigh",
     "run_id" : "20260930-001346",
     "attempts" : 5,
@@ -8630,6 +8795,21 @@
     "complete" : true,
     "output_tokens" : 20220,
     "model" : "gpt-6.2-astra"
+  }, {
+    "effort" : "high",
+    "run_id" : "20261118-111830",
+    "attempts" : 5,
+    "steps_passed" : 5,
+    "input_tokens" : 4305834,
+    "agent" : "codex 0.169.0",
+    "tool_calls" : 142,
+    "project" : 2,
+    "wall_min" : 26.856166666666667,
+    "stack" : "re-frame-clojure",
+    "cost_usd" : 1.5549060000000001,
+    "complete" : true,
+    "output_tokens" : 55175,
+    "model" : "gpt-6.2-sol"
   }, {
     "effort" : "xhigh",
     "run_id" : "20260930-004230",
@@ -8916,6 +9096,21 @@
     "output_tokens" : 17311,
     "model" : "gpt-6.2-astra"
   }, {
+    "effort" : "high",
+    "run_id" : "20261118-113314",
+    "attempts" : 5,
+    "steps_passed" : 5,
+    "input_tokens" : 3434857,
+    "agent" : "codex 0.169.0",
+    "tool_calls" : 114,
+    "project" : 2,
+    "wall_min" : 25.545366666666666,
+    "stack" : "react-go",
+    "cost_usd" : 1.4178423999999998,
+    "complete" : true,
+    "output_tokens" : 55225,
+    "model" : "gpt-6.2-sol"
+  }, {
     "effort" : "xhigh",
     "run_id" : "20260930-010701",
     "attempts" : 5,
@@ -9200,6 +9395,21 @@
     "complete" : true,
     "output_tokens" : 17797,
     "model" : "gpt-6.2-astra"
+  }, {
+    "effort" : "high",
+    "run_id" : "20261118-114658",
+    "attempts" : 5,
+    "steps_passed" : 5,
+    "input_tokens" : 2883263,
+    "agent" : "codex 0.169.0",
+    "tool_calls" : 117,
+    "project" : 2,
+    "wall_min" : 24.162666666666667,
+    "stack" : "react-rust",
+    "cost_usd" : 1.2711092000000002,
+    "complete" : true,
+    "output_tokens" : 53250,
+    "model" : "gpt-6.2-sol"
   }, {
     "effort" : "xhigh",
     "run_id" : "20260930-013354",
@@ -9486,6 +9696,21 @@
     "output_tokens" : 17989,
     "model" : "gpt-6.2-astra"
   }, {
+    "effort" : "high",
+    "run_id" : "20261118-120011",
+    "attempts" : 5,
+    "steps_passed" : 5,
+    "input_tokens" : 4204862,
+    "agent" : "codex 0.169.0",
+    "tool_calls" : 160,
+    "project" : 2,
+    "wall_min" : 24.129983333333332,
+    "stack" : "reagami+squint-clojure",
+    "cost_usd" : 1.4898548000000003,
+    "complete" : true,
+    "output_tokens" : 49919,
+    "model" : "gpt-6.2-sol"
+  }, {
     "effort" : "xhigh",
     "run_id" : "20260930-020538",
     "attempts" : 5,
@@ -9770,6 +9995,21 @@
     "complete" : true,
     "output_tokens" : 21474,
     "model" : "gpt-6.2-astra"
+  }, {
+    "effort" : "high",
+    "run_id" : "20261118-121233",
+    "attempts" : 3,
+    "steps_passed" : 3,
+    "input_tokens" : 3192242,
+    "agent" : "codex 0.169.0",
+    "tool_calls" : 97,
+    "project" : 2,
+    "wall_min" : 16.782283333333332,
+    "stack" : "replicant-clojure",
+    "cost_usd" : 1.0360812,
+    "complete" : false,
+    "output_tokens" : 33129,
+    "model" : "gpt-6.2-sol"
   }, {
     "effort" : "medium",
     "run_id" : "20261011-060247",
@@ -10613,17 +10853,17 @@
   }, {
     "effort" : "medium",
     "run_id" : "20261118-070405",
-    "attempts" : 3,
-    "steps_passed" : 3,
-    "input_tokens" : 826503,
+    "attempts" : 5,
+    "steps_passed" : 5,
+    "input_tokens" : 1235668,
     "agent" : "codex 0.169.0",
-    "tool_calls" : 41,
+    "tool_calls" : 61,
     "project" : 2,
-    "wall_min" : 19.250216666666667,
+    "wall_min" : 23.863416666666666,
     "stack" : "svelte-kotlin",
-    "cost_usd" : 1.2651936,
-    "complete" : false,
-    "output_tokens" : 10863,
+    "cost_usd" : 1.9947312,
+    "complete" : true,
+    "output_tokens" : 16775,
     "model" : "gpt-6.2-astra"
   }, {
     "effort" : "medium",
@@ -11182,6 +11422,21 @@
     "model" : "gpt-6.2-sol"
   }, {
     "effort" : "medium",
+    "run_id" : "20261118-072412",
+    "attempts" : 5,
+    "steps_passed" : 5,
+    "input_tokens" : 1294823,
+    "agent" : "codex 0.169.0",
+    "tool_calls" : 50,
+    "project" : 2,
+    "wall_min" : 16.23675,
+    "stack" : "thymeleaf-java",
+    "cost_usd" : 1.7805072,
+    "complete" : true,
+    "output_tokens" : 16734,
+    "model" : "gpt-6.2-astra"
+  }, {
+    "effort" : "medium",
     "run_id" : "20261004-215501",
     "attempts" : 5,
     "steps_passed" : 5,
@@ -11450,6 +11705,21 @@
     "complete" : true,
     "output_tokens" : 38552,
     "model" : "gpt-6.2-sol"
+  }, {
+    "effort" : "medium",
+    "run_id" : "20261118-072934",
+    "attempts" : 5,
+    "steps_passed" : 5,
+    "input_tokens" : 1303252,
+    "agent" : "codex 0.169.0",
+    "tool_calls" : 58,
+    "project" : 2,
+    "wall_min" : 17.2214,
+    "stack" : "vanillajs-go",
+    "cost_usd" : 2.048528,
+    "complete" : true,
+    "output_tokens" : 19414,
+    "model" : "gpt-6.2-astra"
   }, {
     "effort" : "high",
     "run_id" : "20260929-214020",
@@ -11720,6 +11990,21 @@
     "complete" : true,
     "output_tokens" : 35735,
     "model" : "gpt-6.2-sol"
+  }, {
+    "effort" : "medium",
+    "run_id" : "20261118-074212",
+    "attempts" : 5,
+    "steps_passed" : 5,
+    "input_tokens" : 1347403,
+    "agent" : "codex 0.169.0",
+    "tool_calls" : 56,
+    "project" : 2,
+    "wall_min" : 37.75605,
+    "stack" : "vue-go",
+    "cost_usd" : 1.8916384,
+    "complete" : true,
+    "output_tokens" : 17411,
+    "model" : "gpt-6.2-astra"
   }, {
     "effort" : "medium",
     "run_id" : "20260930-040608",
